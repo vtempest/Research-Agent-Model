@@ -135,9 +135,9 @@ export function QwkSearchProviders({
       <SessionProvider authClient={authClient} enableGoogleOneTap={googleOneTapEnabled}>
         <ExtractPanelProvider>
           <ChatProvider>
-            <CategoryDockProvider>
-              <ChromeProvider>
-                <MainViewProvider docsEnabled={docsEnabled}>
+            <MainViewProvider docsEnabled={docsEnabled}>
+              <CategoryDockProvider>
+                <ChromeProvider>
                   {/* The app's single scroll container. `overflow-x` is clipped
                       rather than auto because full-bleed `w-screen` children
                       (the workspace shell) measure 100vw, which overhangs this
@@ -154,25 +154,25 @@ export function QwkSearchProviders({
                       {children}
                     </main>
                   </div>
-                </MainViewProvider>
-              </ChromeProvider>
-            </CategoryDockProvider>
-            {showToaster && (
-              <Toaster
-                toastOptions={{
-                  unstyled: true,
-                  classNames: {
-                    toast:
-                      'bg-light-secondary dark:bg-dark-secondary dark:text-white/70 text-black-70 rounded-lg p-4 flex flex-row items-center space-x-2',
-                  },
-                }}
-              />
-            )}
-            {showCookieConsent && <CookieConsent />}
-            {/* Outside the scroll root and after the dock: it is an overlay
-                over the whole app, and it reads the chat, session and view
-                contexts it sits inside. */}
-            {showSpotlight && <SpotlightPalette />}
+                  {showToaster && (
+                    <Toaster
+                      toastOptions={{
+                        unstyled: true,
+                        classNames: {
+                          toast:
+                            'bg-light-secondary dark:bg-dark-secondary dark:text-white/70 text-black-70 rounded-lg p-4 flex flex-row items-center space-x-2',
+                        },
+                      }}
+                    />
+                  )}
+                  {showCookieConsent && <CookieConsent />}
+                  {/* Outside the scroll root and after the dock: it is an overlay
+                      over the whole app, and it reads the chat, session and view
+                      contexts it sits inside. */}
+                  {showSpotlight && <SpotlightPalette />}
+                </ChromeProvider>
+              </CategoryDockProvider>
+            </MainViewProvider>
           </ChatProvider>
         </ExtractPanelProvider>
       </SessionProvider>

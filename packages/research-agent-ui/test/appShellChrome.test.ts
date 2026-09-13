@@ -70,4 +70,18 @@ describe('app shell chrome', () => {
       expect(dock).toContain(`<span className="text-sm">${label}</span>`);
     }
   });
+
+  it('mounts SpotlightPalette and shell chrome inside MainViewProvider', () => {
+    const providers = readFileSync(resolve(SRC, 'app/QwkSearchProviders.tsx'), 'utf8');
+
+    const mainViewOpenIdx = providers.indexOf('<MainViewProvider');
+    const mainViewCloseIdx = providers.indexOf('</MainViewProvider>');
+    const spotlightIdx = providers.indexOf('<SpotlightPalette />');
+
+    expect(mainViewOpenIdx).toBeGreaterThan(-1);
+    expect(mainViewCloseIdx).toBeGreaterThan(mainViewOpenIdx);
+    expect(spotlightIdx).toBeGreaterThan(mainViewOpenIdx);
+    expect(spotlightIdx).toBeLessThan(mainViewCloseIdx);
+  });
 });
+
