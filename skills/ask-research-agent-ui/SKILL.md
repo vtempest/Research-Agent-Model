@@ -111,6 +111,18 @@ writing a builder and giving it a prefix in `SPOTLIGHT_PREFIXES`; add a page by 
 it to `spotlightLinks.ts`, which is hand-kept because the package has no router to
 derive it from.
 
+The palette is chrome: `QwkSearchProviders` mounts it beside the page rather than
+inside the scroll root, which makes it easy to park on the wrong side of a provider.
+It reads `useMainView()`, and for one release it sat outside `MainViewProvider` — the
+hook threw during SSR, and because the provider stack lives in the host's root layout
+that was a 500 on *every* route, not a missing palette on one. Two things hold it down
+now: `useMainView()` returns an inert value (no docs surface, view switches are no-ops)
+instead of throwing when it cannot find its provider, warning once in development; and
+`test/mainViewBoundary.test.tsx` scans `QwkSearchProviders.tsx` to assert every
+`useMainView()` consumer it mounts — the palette, the dock, and any added later — is
+nested inside `MainViewProvider`. `spotlightPalette.test.tsx` cannot catch this: it
+wraps the palette in the provider itself.
+
 **Google Drive picker.** Set both `googleApiKey` and `googleAppId`. The connector holds
 the per-file `drive.file` scope, and Google only releases a picked file when the picker
 knows the app id — with it empty, files come back but downloading them 403s.
@@ -124,6 +136,7 @@ knows the app id — with it empty, files come back but downloading them 403s.
 | Missing-peer errors for `react-reason-editor` | Those are optional peers of the `/workspace` entry — install them, or use the chat-only entry. |
 | Google One Tap never appears | `googleOneTap` defaults to `'auto'` and stays off unless the backend reports Google as a configured provider. Pass `true` to force it. |
 | Ctrl-Space does nothing | The host mounts its own shell instead of `QwkSearchProviders`, or passes `showSpotlight={false}`. Mount `<SpotlightPalette />` inside the session/chat/view providers — it reads all three. |
+| The palette renders but view switching does nothing, and the console warns about `useMainView` | It is mounted outside `MainViewProvider`, so it got the inert context. Move the mount inside the provider; `test/mainViewBoundary.test.tsx` is the guard. |
 | A palette row navigates when the host wanted to handle it in place | `onOpenChat` / `onOpenSettings` must return `true`; the palette falls back to `/c/<id>` and `/settings/<section>` exactly like the history dropdown. |
 | Settings open as a route when a modal was wanted | `onOpenSettings` must return `true`; anything else falls through to route navigation. |
 | Drive picker returns a file that then 403s | `googleAppId` (the Google Cloud project number) is empty. |
