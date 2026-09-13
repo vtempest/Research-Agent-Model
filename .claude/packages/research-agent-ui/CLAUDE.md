@@ -51,6 +51,13 @@ the sources and the ranking be tested without mounting the app.
   REASON's trigger and its collapsed rail leaves a second rail beside it.
   That was #420, reverted by #430; `test/appShellChrome.test.ts` holds the
   line in both directions.
+- **`tsconfig.build.json` clears `paths` on purpose.** The dev config points
+  `chat-agent-toolkit`, `search-web-api` and `extract-webpage` at their
+  `src/*.ts`. Declaration emit runs with `rootDir: ./src`, so those sibling
+  sources become files TS is asked to emit from outside the root — TS7 rejects
+  them (TS6059) and the package build exits 2, which takes the web app's
+  prebuild and therefore the deploy down with it. Leave `paths` empty there so
+  siblings resolve to the `dist/*.d.ts` they publish.
 
 ```bash
 cd packages/research-agent-ui && bun run test

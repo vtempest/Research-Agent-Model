@@ -6,7 +6,16 @@
     "rootDir": "./src",
     "declaration": true,
     "emitDeclarationOnly": true,
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    // The dev config points sibling packages at their `src/*.ts` so editors
+    // and vite follow the live source. Declaration emit cannot: with a
+    // `rootDir` of `./src`, every sibling source pulled in is a file TS is
+    // asked to emit from outside the root, which TS7 rejects (TS6059) — 47 of
+    // them, failing this package's build and with it the web app's prebuild,
+    // so no deploy could be produced at all. Cleared here so the sibling
+    // packages resolve through their `exports` to the `dist/*.d.ts` they
+    // already publish, which is what a consumer of the built package gets.
+    "paths": {}
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "vite.config.ts"]
