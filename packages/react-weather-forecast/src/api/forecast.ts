@@ -66,6 +66,12 @@ async function resolveLocation(options: WeatherForecastOptions): Promise<Weather
     attempts: options.retryAttempts,
     retryDelay: options.retryDelay,
     providers: options.geoProviders,
+    // The forecast cache is keyed by coordinates, so it can only be consulted
+    // once the location is known -- which means a location that is not cached
+    // costs an IP lookup on every refresh, cached forecast or not. This is the
+    // cache that stops that.
+    cache: options.cacheLocation,
+    cacheTtl: options.locationCacheTtl,
     fallbackLocation: options.fallbackLocation,
     onProviderError: options.onProviderError
       ? ({ provider, error }) => options.onProviderError?.({ provider, error, stage: 'geolocation' })

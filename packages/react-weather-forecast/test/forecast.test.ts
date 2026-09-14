@@ -115,15 +115,15 @@ describe('getWeatherForecast', () => {
 
   it('resolves the location by IP when no coordinates are given', async () => {
     const fetchMock = mockGrab.mockImplementation(async (input: string) => {
-      if (input.includes('ipapi.co')) {
-        return { city: 'Austin', country_name: 'United States', latitude: 30.27, longitude: -97.74 };
+      if (input.includes('ipwho.is')) {
+        return { success: true, city: 'Austin', country: 'United States', latitude: 30.27, longitude: -97.74 };
       }
       return openMeteoResponse();
     });
 
     const result = await getWeatherForecast();
 
-    expect(fetchMock.mock.calls[0][0]).toContain('ipapi.co');
+    expect(fetchMock.mock.calls[0][0]).toContain('ipwho.is');
     expect(result.location.city).toBe('Austin');
     expect(result.location.latitude).toBe(30.27);
   });
@@ -274,8 +274,8 @@ describe('getWeatherForecast fallbacks', () => {
     // A geolocation upstream answering 200 with no coordinates used to become
     // `latitude=NaN` in the forecast URL.
     const fetchMock = mockGrab.mockImplementation(async (input: string) => {
-      if (input.includes('ipapi.co')) return { city: 'Nowhere' };
-      if (input.includes('ipwho.is')) return { latitude: 30.27, longitude: -97.74, city: 'Austin' };
+      if (input.includes('ipwho.is')) return { city: 'Nowhere' };
+      if (input.includes('ipapi.co')) return { latitude: 30.27, longitude: -97.74, city: 'Austin' };
       return openMeteoResponse();
     });
 
@@ -288,13 +288,13 @@ describe('getWeatherForecast fallbacks', () => {
 
   it('looks the location up by IP when the given coordinates are unusable', async () => {
     const fetchMock = mockGrab.mockImplementation(async (input: string) => {
-      if (input.includes('ipapi.co')) return { latitude: 30.27, longitude: -97.74, city: 'Austin' };
+      if (input.includes('ipwho.is')) return { latitude: 30.27, longitude: -97.74, city: 'Austin' };
       return openMeteoResponse();
     });
 
     const result = await getWeatherForecast({ latitude: Number.NaN, longitude: -97.74, retryDelay: 0 });
 
-    expect(String(fetchMock.mock.calls[0][0])).toContain('ipapi.co');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('ipwho.is');
     expect(result.location.city).toBe('Austin');
   });
 
@@ -322,7 +322,7 @@ describe('getWeatherForecast fallbacks', () => {
 
   it('sends the timezone geolocation reported when the caller named none', async () => {
     const fetchMock = mockGrab.mockImplementation(async (input: string) => {
-      if (input.includes('ipapi.co')) {
+      if (input.includes('ipwho.is')) {
         return { city: 'Berlin', timezone: 'Europe/Berlin', latitude: 52.52, longitude: 13.4 };
       }
       return openMeteoResponse();
