@@ -75,11 +75,49 @@ export function MainViewProvider({
   return <MainViewContext.Provider value={value}>{children}</MainViewContext.Provider>
 }
 
+/**
+ * What a consumer reads when it is mounted outside `MainViewProvider`: no
+ * document surface, and every view switch a no-op.
+ *
+ * The hook used to throw instead. That is the right signal for a consumer the
+ * provider is meant to wrap, but the shell mounts some of these — the dock,
+ * the spotlight palette — from the root layout, beside the page rather than
+ * inside it. One of them landing on the wrong side of the provider threw
+ * during SSR, which the server turned into a 500 on *every* route rather than
+ * a missing palette on one. A piece of chrome that cannot find its context
+ * should render inert; it should not take the app down.
+ *
+ * Frozen so a consumer that writes to it fails here instead of silently
+ * mutating a value every other detached consumer shares.
+ */
+const DETACHED_MAIN_VIEW: MainViewContextValue = Object.freeze({
+  activeView: 'research',
+  setActiveView: () => {},
+  docsEnabled: false,
+  toggleToDocs: () => {},
+  toggleToResearch: () => {},
+  filesSidebarRequestId: 0,
+  requestFilesSidebar: () => {},
+})
+
+/** Kept module-level so a detached consumer warns once, not once per render. */
+let warnedDetached = false
+
 export function useMainView() {
   const context = useContext(MainViewContext)
 
   if (!context) {
-    throw new Error('useMainView must be used within a MainViewProvider')
+    // Loud in development, where the mount can still be moved; inert in
+    // production, where throwing costs every route.
+    if (!warnedDetached && process.env.NODE_ENV !== 'production') {
+      warnedDetached = true
+      console.error(
+        'useMainView was called outside a MainViewProvider. The component is ' +
+          'rendering with view switching disabled — mount it inside ' +
+          'MainViewProvider (see QwkSearchProviders).',
+      )
+    }
+    return DETACHED_MAIN_VIEW
   }
 
   return context

@@ -38,6 +38,9 @@
       "research-agent-ui": [
         "../../packages/research-agent-ui/src/index.ts"
       ],
+      "research-agent-ui/file-sources": [
+        "../../packages/research-agent-ui/src/lib/file-sources.ts"
+      ],
       "research-agent-ui/*": [
         "../../packages/research-agent-ui/src/*"
       ],
@@ -58,18 +61,6 @@
       ],
       "write-language/*": [
         "../../packages/write-language/src/*"
-      ],
-      "user-help-docs": [
-        "../../packages/user-help-docs/src/index.ts"
-      ],
-      "user-help-docs/*": [
-        "../../packages/user-help-docs/src/*"
-      ],
-      "qwksearch-api-client": [
-        "../../packages/qwksearch-api-client/src/index.ts"
-      ],
-      "qwksearch-api-client/*": [
-        "../../packages/qwksearch-api-client/src/*"
       ],
       "extract-pdf": [
         "../../packages/extract-pdf/src/pdf-to-html.ts"
