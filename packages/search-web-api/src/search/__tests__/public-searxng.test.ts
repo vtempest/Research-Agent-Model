@@ -1,16 +1,17 @@
 /**
  * @fileoverview Unit tests for SearXNG search functionality
  */
-import { searchWeb, searchSearxng } from "../public-searxng";
+import { beforeEach, describe, expect, it, vi, type MockedFunction } from "vitest";
+import { searchWeb, searchSearxng, normalizeGrabResponse } from "../public-searxng";
 import grab from "grab-url";
 
 // Mock grab-url
-jest.mock("grab-url");
-const mockGrab = grab as jest.MockedFunction<typeof grab>;
+vi.mock("grab-url");
+const mockGrab = grab as MockedFunction<typeof grab>;
 
 describe("searchWeb", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Private SearXNG instance (JSON)", () => {
@@ -223,7 +224,7 @@ describe("searchWeb", () => {
         infoboxes: [],
       };
 
-      const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
       mockGrab.mockResolvedValueOnce(mockResults);
 
       const result = await searchWeb("test", {
@@ -316,15 +317,13 @@ describe("searchWeb", () => {
         </article>
       `;
 
-      const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
       mockGrab.mockResolvedValueOnce(mockHtml);
 
       await searchWeb("test", { privateSearxng: false });
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining("domain-only"),
-        expect.any(String)
-      );
+      // The public-scrape path logs a single formatted message.
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("domain-only"));
       consoleSpy.mockRestore();
     });
   });
@@ -491,15 +490,16 @@ describe("searchWeb", () => {
 
 describe("searchSearxng", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
-  it("should adapt options to searchWeb", async () => {
-    mockGrab.mockResolvedValueOnce({
-      results: [{ title: "Test", url: "https://example.com", content: "Content", score: 0.9 }],
-      suggestions: ["test1"],
-      infoboxes: [],
-    });
+  it("should adapt its options onto the underlying search request", async () => {
+    mockGrab.mockResolvedValueOnce(`
+      <article class="result">
+        <h3><a href="https://example.com/article">Test</a></h3>
+        <p class="content">Content</p>
+      </article>
+    `);
 
     const result = await searchSearxng("test query", {
       categories: ["news"],
@@ -507,10 +507,30 @@ describe("searchSearxng", () => {
       language: "fr",
     });
 
+    // searchSearxng maps categories[0] -> category, pageno -> page, language -> lang.
+    expect(mockGrab).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ category_news: 1, pageno: 2, language: "fr" })
+    );
     expect(result).toHaveProperty("results");
     expect(result).toHaveProperty("suggestions");
     expect(result.results).toHaveLength(1);
-    expect(result.suggestions).toHaveLength(1);
+  });
+
+  it("defaults category, page and language when no options are given", async () => {
+    mockGrab.mockResolvedValueOnce(`
+      <article class="result">
+        <h3><a href="https://example.com/article">Test</a></h3>
+        <p class="content">Content</p>
+      </article>
+    `);
+
+    await searchSearxng("test query");
+
+    expect(mockGrab).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ category_general: 1, pageno: 1, language: "en-US" })
+    );
   });
 
   it("should handle array results from searchWeb", async () => {
@@ -525,5 +545,180 @@ describe("searchSearxng", () => {
 
     expect(result.results).toHaveLength(1);
     expect(result.suggestions).toEqual([]);
+  });
+});
+
+describe("grab-url response shapes", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(console, "log").mockImplementation(() => {});
+  });
+
+  // grab-url resolves with `{ error }` instead of rejecting, so these bodies
+  // used to reach `parsedData.results.map` and throw a TypeError, which the
+  // API route reported as a 500.
+  it("returns an empty response when the private instance errors out", async () => {
+    mockGrab.mockResolvedValue({ error: "HTTP error: 429 Too Many Requests" } as any);
+
+    const result = await searchWeb("dd", {
+      privateSearxng: "https://search.example.com",
+      page: 2,
+      maxRetries: 6,
+    });
+
+    expect(result).toEqual({ results: [], suggestions: [], infoboxes: [] });
+    // No point hammering the same private host - the caller falls back.
+    expect(mockGrab).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns an empty response when the private instance serves HTML", async () => {
+    mockGrab.mockResolvedValue({
+      data: "<html><body>Too many requests</body></html>",
+    } as any);
+
+    const result = await searchWeb("dd", {
+      privateSearxng: "https://search.example.com",
+      page: 2,
+    });
+
+    expect(result).toEqual({ results: [], suggestions: [], infoboxes: [] });
+  });
+
+  it("returns an empty response when the private instance JSON has no results", async () => {
+    mockGrab.mockResolvedValue({ isLoading: false, suggestions: [] } as any);
+
+    const result = await searchWeb("dd", {
+      privateSearxng: "https://search.example.com",
+    });
+
+    expect(result).toEqual({ results: [], suggestions: [], infoboxes: [] });
+  });
+
+  it("skips malformed results instead of throwing", async () => {
+    mockGrab.mockResolvedValue({
+      results: [
+        { url: "https://example.com/no-title" },
+        { title: "No URL at all" },
+        null,
+        {
+          title: "Good",
+          url: "https://example.com/good",
+          content: "Snippet",
+          score: "not-a-number",
+          metadata: "not a date | Source",
+        },
+      ],
+      suggestions: ["one"],
+    } as any);
+
+    const result = await searchWeb("dd", {
+      privateSearxng: "https://search.example.com",
+    });
+
+    expect(Array.isArray(result)).toBe(false);
+    if (!Array.isArray(result)) {
+      expect(result.results).toHaveLength(2);
+      expect(result.results[0].title).toBe("");
+      expect(result.results[1].title).toBe("Good");
+      expect(result.results[1].score).toBeUndefined();
+      expect(result.results[1].date).toBeUndefined();
+      expect(result.suggestions).toEqual(["one"]);
+    }
+  });
+
+  it("scrapes HTML that grab-url returned on the `data` field", async () => {
+    mockGrab.mockResolvedValue({
+      data: `
+        <article class="result">
+          <h3><a href="https://example.com/1">Wrapped Result</a></h3>
+          <p class="content">Wrapped snippet</p>
+        </article>
+      `,
+    } as any);
+
+    const result = await searchWeb("test", { privateSearxng: false });
+
+    expect(Array.isArray(result)).toBe(true);
+    if (Array.isArray(result)) {
+      expect(result).toHaveLength(1);
+      expect(result[0].title).toBe("Wrapped Result");
+      expect(result[0].url).toBe("https://example.com/1");
+    }
+  });
+
+  it("tries another public instance when one errors out", async () => {
+    mockGrab
+      .mockResolvedValueOnce({ error: "HTTP error: 502 Bad Gateway" } as any)
+      .mockResolvedValueOnce(`
+        <article class="result">
+          <h3><a href="https://example.com/2">Second Instance</a></h3>
+          <p class="content">Snippet</p>
+        </article>
+      ` as any);
+
+    const result = await searchWeb("test", { privateSearxng: false, maxRetries: 3 });
+
+    expect(mockGrab).toHaveBeenCalledTimes(2);
+    if (Array.isArray(result)) {
+      expect(result[0].title).toBe("Second Instance");
+    }
+  });
+
+  it("gives up with an empty array when every public instance errors out", async () => {
+    mockGrab.mockResolvedValue({ error: "HTTP error: 502 Bad Gateway" } as any);
+
+    const result = await searchWeb("test", { privateSearxng: false, maxRetries: 2 });
+
+    expect(mockGrab).toHaveBeenCalledTimes(3); // initial + 2 retries
+    expect(result).toEqual([]);
+  });
+
+  it("passes the query unencoded and disables grab-url HTML parsing", async () => {
+    mockGrab.mockResolvedValueOnce({ results: [], suggestions: [] } as any);
+
+    await searchWeb("olympic games 2028", {
+      privateSearxng: "https://search.example.com",
+    });
+
+    // grab-url encodes GET params itself; pre-encoding turned spaces into
+    // "%2520" and searched for the literal escape sequence.
+    expect(mockGrab).toHaveBeenCalledWith(
+      "https://search.example.com/search",
+      expect.objectContaining({ q: "olympic games 2028", dom: false }),
+    );
+  });
+});
+
+describe("normalizeGrabResponse", () => {
+  it("reports missing and non-object responses as errors", () => {
+    expect(normalizeGrabResponse(null).error).toBeTruthy();
+    expect(normalizeGrabResponse(undefined).error).toBeTruthy();
+    expect(normalizeGrabResponse(42).error).toBeTruthy();
+  });
+
+  it("passes strings through as text", () => {
+    expect(normalizeGrabResponse("<html></html>")).toEqual({ text: "<html></html>" });
+  });
+
+  it("surfaces the error field grab-url sets on failure", () => {
+    expect(normalizeGrabResponse({ error: "HTTP error: 500" })).toEqual({
+      error: "HTTP error: 500",
+    });
+  });
+
+  it("treats a root-level results array as JSON", () => {
+    const raw = { results: [{ url: "https://example.com" }], isLoading: false };
+    expect(normalizeGrabResponse(raw)).toEqual({ json: raw });
+  });
+
+  it("unwraps text and JSON bodies carried on `data`", () => {
+    expect(normalizeGrabResponse({ data: "<html></html>" })).toEqual({
+      text: "<html></html>",
+    });
+
+    const nested = { results: [{ url: "https://example.com" }] };
+    expect(normalizeGrabResponse({ data: nested })).toEqual({ json: nested });
   });
 });

@@ -1,0 +1,84 @@
+name: Auto-merge PRs and create missing PRs
+
+on:
+  schedule:
+    # Runs at 00:00 and 12:00 UTC. Scheduled workflows can be delayed during
+    # periods of high GitHub Actions load.
+    - cron: "0 */12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-merge-and-create-prs
+  cancel-in-progress: false
+
+jobs:
+  maintain-pull-requests:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GIT_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      BASE_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Merge eligible existing pull requests
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          gh pr list \
+            --repo "$REPOSITORY" \
+            --state open \
+            --json number,isDraft,mergeStateStatus,reviewDecision,statusCheckRollup \
+            --jq '.[] | select(.isDraft == false) | select(.mergeStateStatus == "CLEAN") | select((.reviewDecision == "APPROVED") or (.reviewDecision == "")) | select(all(.statusCheckRollup[]?; (.conclusion == "SUCCESS" or .conclusion == "SKIPPED" or .conclusion == "NEUTRAL"))) | .number' \
+          | while read -r pr_number; do
+              echo "Attempting to merge PR #${pr_number}"
+              gh pr merge "$pr_number" \
+                --repo "$REPOSITORY" \
+                --merge \
+                --delete-branch \
+                --auto || echo "Could not merge PR #${pr_number}; it may require review, checks, or conflict resolution."
+            done
+
+      - name: Create pull requests for branches without one
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git init -q "$GITHUB_WORKSPACE"
+          cd "$GITHUB_WORKSPACE"
+          git remote add origin "https://x-access-token:${GIT_TOKEN}@github.com/${REPOSITORY}.git"
+          git fetch --quiet origin '+refs/heads/*:refs/remotes/origin/*'
+
+          base_sha="$(git rev-parse "origin/${BASE_BRANCH}")"
+
+          git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+            | grep -Ev "^(HEAD|${BASE_BRANCH})$" \
+            | while read -r branch; do
+                open_pr="$(gh pr list --repo "$REPOSITORY" --state open --head "$branch" --json number --jq 'length')"
+                merged_pr="$(gh pr list --repo "$REPOSITORY" --state merged --head "$branch" --json number --jq 'length')"
+                branch_sha="$(git rev-parse "origin/${branch}")"
+
+                if [ "$open_pr" -gt 0 ] || [ "$merged_pr" -gt 0 ]; then
+                  echo "Skipping ${branch}: a pull request already exists or was previously merged."
+                  continue
+                fi
+
+                if git merge-base --is-ancestor "$branch_sha" "$base_sha"; then
+                  echo "Skipping ${branch}: it is already contained in ${BASE_BRANCH}."
+                  continue
+                fi
+
+                echo "Creating PR for ${branch} -> ${BASE_BRANCH}"
+                gh pr create \
+                  --repo "$REPOSITORY" \
+                  --head "$branch" \
+                  --base "$BASE_BRANCH" \
+                  --title "Merge ${branch} into ${BASE_BRANCH}" \
+                  --body "Automated pull request for branch \`${branch}\`."
+              done

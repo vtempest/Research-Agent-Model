@@ -5,8 +5,6 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "skipLibCheck": true,
-    "ignoreDeprecations": "6.0",
-    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -16,11 +14,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "react-reason-editor": ["./src/index.ts"],
       "react-reason-editor/theme": ["./src/theme/theme.ts"],
+      "react-reason-editor/docs-agent": ["./src/docs-agent.ts"],
       "react-reason-editor/locale-bundle": ["./src/locale-bundle.ts"],
       "react-reason-editor/bubble": ["./src/bubble.ts"],
       "react-reason-editor/attachment": ["./src/extensions/Attachment/index.ts"],
@@ -67,8 +65,9 @@
       "react-reason-editor/textdirection": ["./src/extensions/TextDirection/index.ts"],
       "react-reason-editor/textunderline": ["./src/extensions/TextUnderline/index.ts"],
       "react-reason-editor/twitter": ["./src/extensions/Twitter/index.ts"],
-      "react-reason-editor/video": ["./src/extensions/Video/index.ts"]
+      "react-reason-editor/video": ["./src/extensions/Video/index.ts"],
+      "react-reason-editor/wordcount": ["./src/extensions/WordCount/index.ts"]
     }
   },
-  "include": ["src", "lib"]
+  "include": ["src"]
 }

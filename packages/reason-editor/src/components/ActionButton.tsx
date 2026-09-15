@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Toggle, Tooltip, TooltipContent, TooltipTrigger, icons } from '@/components';
 import { cn } from '@/lib/utils';
-import { getShortcutKeys } from '@/utils/plateform';
+import { TooltipShortcutKeys } from '@/components/TooltipShortcutKeys';
 
 import type { ButtonViewReturnComponentProps } from '@/types';
 import type { TooltipContentProps } from '@radix-ui/react-tooltip';
@@ -21,8 +21,10 @@ export interface ActionButtonProps {
   tooltip?: string;
   /* Whether the button is disabled */
   disabled?: boolean;
-  /* Keyboard shortcut keys */
+  /* Keyboard shortcut keys (the action's defaults; the live user binding is resolved from them) */
   shortcutKeys?: string[];
+  /* Explicit shortcut-registry action id, when the default keys alone are ambiguous */
+  shortcutId?: string;
   /* Custom CSS class */
   customClass?: string;
   /* Loading state */
@@ -51,13 +53,17 @@ const ActionButton = React.forwardRef<HTMLButtonElement, Partial<ActionButtonPro
   (props, ref) => {
     const {
       icon = undefined,
-      // title = undefined,
+      // Pulled out of `rest` so it never reaches the DOM as the `title`
+      // attribute: the browser would draw its own native tooltip on hover,
+      // overlapping and offset from the styled Radix one below.
+      title: _title = undefined,
       tooltip = undefined,
       disabled = false,
       customClass = '',
       // color = undefined,
       loading: _loading = undefined,
       shortcutKeys = undefined,
+      shortcutId = undefined,
       tooltipOptions = {},
       action = undefined,
       isActive: _isActive = undefined,
@@ -98,11 +104,11 @@ const ActionButton = React.forwardRef<HTMLButtonElement, Partial<ActionButtonPro
         </TooltipTrigger>
 
         {tooltip && (
-          <TooltipContent {...tooltipOptions} className='richtext-tooltip'>
-            <div className='richtext-flex richtext-max-w-24 richtext-flex-col richtext-items-center richtext-text-center'>
+          <TooltipContent {...tooltipOptions} className='richtext-max-w-[18rem]'>
+            <div className='richtext-flex richtext-flex-col richtext-items-center richtext-text-center'>
               <div>{tooltip}</div>
 
-              {!!shortcutKeys?.length && <span>{getShortcutKeys(shortcutKeys)}</span>}
+              <TooltipShortcutKeys shortcutId={shortcutId} shortcutKeys={shortcutKeys} />
             </div>
           </TooltipContent>
         )}

@@ -1,3 +1,6 @@
+/**
+ * @fileoverview Footer component that renders a bar of links (with optional Lucide icons) pinned to the bottom of the screen, collapsing into an info-icon popover on mobile.
+ */
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -7,6 +10,8 @@ interface FooterLink {
     url: string;
     text: string;
     icon?: string;
+    /** When set, clicking the link runs this instead of navigating to `url` (e.g. to open a popup). */
+    onClick?: () => void;
 }
 
 interface FooterProps {
@@ -49,7 +54,7 @@ export default function Footer({
     }, [open]);
 
     const renderLinks = () =>
-        listFooterLinks.map(({ url, text, icon }) => {
+        listFooterLinks.map(({ url, text, icon, onClick }) => {
             const IconComponent = icon ? (LucideIcons as any)[icon] : null;
 
             const isExternal = url.startsWith("http");
@@ -69,6 +74,19 @@ export default function Footer({
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-current transition-all duration-300 group-hover:w-full group-hover:shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
                 </>
             );
+
+            if (onClick) {
+                return (
+                    <button
+                        key={url}
+                        type="button"
+                        onClick={onClick}
+                        className="relative group inline-flex items-center gap-1 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300 whitespace-nowrap"
+                    >
+                        {content}
+                    </button>
+                );
+            }
 
             return isExternal ? (
                 <a
@@ -98,7 +116,7 @@ export default function Footer({
             <div
                 className={`hidden md:flex absolute bottom-2 left-1/2 -translate-x-1/2 text-slate-200 text-xs z-20 ${optionBackgroundColor} rounded-lg px-2 py-1 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex-wrap items-center justify-center gap-x-6 max-w-[90vw]`}
             >
-                <div className="max-w-4xl mx-auto grid grid-cols-3 gap-2">
+                <div className="max-w-4xl mx-auto grid grid-cols-4 gap-2">
                     {renderLinks()}
                 </div>
             </div>

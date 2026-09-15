@@ -1,6 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "react-reason-editor",
+  // Wrangler deletes plaintext Variables set in the Cloudflare dashboard on every
+  // deploy unless keep_vars is set. Secrets are never deleted either way.
+  "keep_vars": true,
   "compatibility_date": "2026-07-06",
   "observability": {
     "enabled": true

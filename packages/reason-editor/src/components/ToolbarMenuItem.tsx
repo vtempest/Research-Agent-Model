@@ -10,13 +10,15 @@ interface DropdownMenuItemProps {
   label?: string;
   className?: string;
   icon?: React.ReactNode;
+  /** Keyboard shortcut hint shown at the end of the row, e.g. "Ctrl+Shift+8" */
+  shortcut?: string;
 }
 
 /**
  * Wrapper for dropdown menu items that makes the entire row (icon + label) clickable
  * and suppresses the tooltip when a label is present
  */
-export function ToolbarMenuItem({ children, label, className, icon }: DropdownMenuItemProps) {
+export function ToolbarMenuItem({ children, label, className, icon, shortcut }: DropdownMenuItemProps) {
   const buttonRef = useRef<HTMLDivElement | null>(null);
 
   // Clone the child element (usually an ActionButton) and suppress its tooltip if we have a label
@@ -51,9 +53,14 @@ export function ToolbarMenuItem({ children, label, className, icon }: DropdownMe
           {icon}
         </span>
       )}
-      <div className="flex items-center gap-2 flex-1">
+      <div className="flex items-center gap-2 flex-1 min-w-0">
         {enhancedChild}
-        {label && <span className="text-xs whitespace-nowrap flex-1">{label}</span>}
+        {label && <span className="text-xs whitespace-nowrap truncate">{label}</span>}
+        {shortcut && (
+          <span className="text-[10px] text-gray-400 dark:text-gray-500 ml-auto whitespace-nowrap shrink-0">
+            {shortcut}
+          </span>
+        )}
       </div>
     </div>
   );

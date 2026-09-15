@@ -1,0 +1,56 @@
+{
+  "name": "user-help-docs",
+  "description": "User-facing help documentation, hosted at /docs in qwksearch-web via Fumadocs",
+  "type": "module",
+  "version": "0.2.0",
+  "private": true,
+  "license": "rights.institute/PROSPER",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSourceAGI/qwksearch-research-agent.git",
+    "directory": "packages/user-help-docs"
+  },
+  "exports": {
+    ".": "./src/source.ts",
+    "./config": "./src/config.ts",
+    "./vite": "./src/vite.ts",
+    "./search": "./src/search.ts",
+    "./llms": "./src/llms.ts",
+    "./layout.config": "./src/layout.config.tsx",
+    "./mdx-components": "./src/mdx-components.tsx",
+    "./components/docs-actions": "./src/components/layout/docs-actions.tsx",
+    "./components/breadcrumb": "./src/components/layout/breadcrumb.tsx",
+    "./components/theme-dropdown": "./src/components/layout/theme-dropdown.tsx",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@mdx-js/rollup": "^3.1.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "fumadocs-core": "^16.15.8",
+    "fumadocs-ui": "^16.15.8",
+    "lucide-react": "^1.43.0",
+    "remark-frontmatter": "^5.0.0",
+    "shadcn-theme-menu": "^1.1.47",
+    "tailwind-merge": "^3.6.0"
+  },
+  "peerDependencies": {
+    "next": ">=15",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/mdx": "^2.0.14",
+    "@types/node": "^26.5.0",
+    "@types/react": "^19.2.18",
+    "@vitest/coverage-v8": "^5.0.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  }
+}

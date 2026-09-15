@@ -606,7 +606,10 @@ function getMockForUrl(url: string, options?: RequestInit): Response {
   if (u.includes("google.com/search") && !u.includes("tbm=isch") && !u.includes("news.google.com")) return makeMockResponse({ html: GOOGLE_HTML });
   if (u.includes("bing.com/search")) return makeMockResponse({ html: BING_HTML });
   if (u.includes("duckduckgo.com/html")) return makeMockResponse({ html: DUCKDUCKGO_HTML });
-  if (u.includes("search.yahoo.com/search")) return makeMockResponse({ html: YAHOO_HTML });
+  // `news.search.yahoo.com` ends in this host, so the news engine would be
+  // served the general-search page and parse nothing out of it — the same
+  // trap the `news.google.com` guard above sidesteps.
+  if (u.includes("search.yahoo.com/search") && !u.includes("news.search.yahoo.com")) return makeMockResponse({ html: YAHOO_HTML });
   if (u.includes("api.qwant.com")) return makeMockResponse({ json: { data: { result: { items: [{ url: "https://example.com", title: "Qwant Title", desc: "Qwant description." }] } } } });
   if (u.includes("startpage.com/sp/search")) return makeMockResponse({ html: STARTPAGE_HTML });
   if (u.includes("search.brave.com")) return makeMockResponse({ html: BRAVE_HTML });

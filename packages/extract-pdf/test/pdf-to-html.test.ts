@@ -1,46 +1,38 @@
-import { describe, it, expect } from "bun:test";
+import { afterAll, beforeAll, describe, it, expect } from "bun:test";
 import { convertPDFToHTML } from "../src/pdf-to-html";
-
-/**
- * Builds a minimal 1-page valid PDF in memory with a 24pt heading
- * ("Test Document") and a 12pt body line ("This is a sample paragraph.").
- */
-function minimalPDFBuffer(): ArrayBuffer {
-  const stream = [
-    "BT",
-    "/F1 24 Tf 72 700 Td (Test Document) Tj",
-    "/F1 12 Tf 0 -50 Td (This is a sample paragraph.) Tj",
-    "ET",
-  ].join("\n");
-
-  const objs: (string | null)[] = [
-    null,
-    "<</Type /Catalog /Pages 2 0 R>>",
-    "<</Type /Pages /Kids [3 0 R] /Count 1>>",
-    "<</Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources <</Font <</F1 4 0 R>>>> /Contents 5 0 R>>",
-    "<</Type /Font /Subtype /Type1 /BaseFont /Helvetica>>",
-    `<</Length ${stream.length}>>\nstream\n${stream}\nendstream`,
-  ];
-
-  let doc = "%PDF-1.4\n";
-  const offsets: number[] = [];
-
-  for (let n = 1; n <= 5; n++) {
-    offsets[n] = doc.length;
-    doc += `${n} 0 obj\n${objs[n]}\nendobj\n`;
-  }
-
-  const xrefAt = doc.length;
-  doc += "xref\n0 6\n";
-  doc += "0000000000 65535 f \n";
-  for (let i = 1; i <= 5; i++)
-    doc += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
-  doc += `trailer\n<</Size 6 /Root 1 0 R>>\nstartxref\n${xrefAt}\n%%EOF\n`;
-
-  return new TextEncoder().encode(doc).buffer;
-}
+import { minimalPDFBuffer } from "./helpers/minimal-pdf";
 
 const TIMEOUT = 30_000;
+
+/**
+ * Serves the fixture PDF from localhost for the URL case below.
+ *
+ * That test used to fetch https://www.africau.edu/images/default/sample.pdf.
+ * The host now answers 403, so an unrelated third party going down turned the
+ * whole extract-pdf suite red on every branch. Serving our own bytes still
+ * drives the real URL branch of `convertPDFToHTML` — `grab()` fetches it as an
+ * arraybuffer and the result goes through the same parser — without depending
+ * on anything outside the repo.
+ */
+let pdfServer: ReturnType<typeof Bun.serve>;
+let pdfUrl: string;
+
+beforeAll(() => {
+  const pdf = minimalPDFBuffer();
+
+  // Port 0 asks the OS for a free port, so parallel test files cannot collide.
+  pdfServer = Bun.serve({
+    port: 0,
+    fetch: () =>
+      new Response(pdf, { headers: { "content-type": "application/pdf" } }),
+  });
+
+  pdfUrl = `http://localhost:${pdfServer.port}/sample.pdf`;
+});
+
+afterAll(() => {
+  pdfServer?.stop(true);
+});
 
 describe("convertPDFToHTML", () => {
   it("returns html and format fields from a buffer", async () => {
@@ -81,9 +73,13 @@ describe("convertPDFToHTML", () => {
   }, TIMEOUT);
 
   it("accepts a PDF by URL", async () => {
-    const url = "https://www.africau.edu/images/default/sample.pdf";
-    const result = (await convertPDFToHTML(url)) as any;
+    const result = (await convertPDFToHTML(pdfUrl)) as any;
     expect(result.error).toBeUndefined();
-    expect(result.html.length).toBeGreaterThan(100);
-  }, 60_000);
+
+    // Same assertions as the buffer case: fetching the bytes over HTTP must
+    // land in the parser identically to handing them over directly.
+    expect(result.format).toBe("pdf");
+    expect(result.html).toContain("Test Document");
+    expect(result.html).toContain("sample paragraph");
+  }, TIMEOUT);
 });

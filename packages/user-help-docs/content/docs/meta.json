@@ -1,0 +1,28 @@
+{
+  "title": "QwkSearch Docs",
+  "root": true,
+  "pages": [
+    "index",
+    "quickstart",
+    "features",
+    "comparison",
+    "---Using QwkSearch---",
+    "search",
+    "reader",
+    "chat",
+    "reason-editor",
+    "---Apps & Integrations---",
+    "browser-extension",
+    "desktop-app",
+    "vscode-extension",
+    "mcp-server",
+    "---Developers---",
+    "api",
+    "packages",
+    "self-hosting",
+    "---Help---",
+    "faq",
+    "---Reference---",
+    "architecture"
+  ]
+}

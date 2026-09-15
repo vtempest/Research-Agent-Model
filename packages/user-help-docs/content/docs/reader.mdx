@@ -1,0 +1,126 @@
+---
+title: "Reading & Extraction"
+description: "Turning a URL, PDF, YouTube video or uploaded file into clean, citable text."
+icon: "FileText"
+---
+
+Every answer QwkSearch gives is grounded in text it actually extracted, not in
+a search-result snippet. The extractor — nicknamed **Tractor** — is what makes
+that possible, and you can use it directly from the reader, the API, or as a
+standalone npm package.
+
+## What it does
+
+<Steps>
+
+<Step>
+
+### Main content detection
+
+Combines Mozilla Readability and Postlight Mercury heuristics with 100+
+per-site adapters that know where a given publisher puts its article body,
+byline and date. The result is reading-mode HTML: headings, images and links,
+without navigation, ads or comment threads.
+
+</Step>
+
+<Step>
+
+### PDF to HTML
+
+PDFs are parsed into structured HTML — headings, lists, bold/italics, links,
+footnotes, quotes and code blocks — with repeated page headers removed,
+footnote anchors linked to their footnotes, and the original page number kept
+in an invisible element so citations can point at a page.
+
+Extraction runs on [`pdfjs-serverless`](https://github.com/johannschopplich/pdfjs-serverless),
+so it works in Cloudflare Workers and other serverless runtimes, not just
+Node.js. Scanned or infographic-heavy PDFs can additionally be run through
+IBM's `granite-docling-258M` OCR model.
+
+</Step>
+
+<Step>
+
+### YouTube transcripts
+
+A YouTube URL is replaced by the video's full transcript — both manual captions
+and auto-generated subtitles — with timestamps preserved, and without a
+headless browser.
+
+</Step>
+
+<Step>
+
+### Citation extraction
+
+Author, date, publication and title are read from HTML meta tags and common
+class-name patterns, then validated against a database of ~90,000 first and
+last names so that "Reuters Staff" is treated as an organization and
+"J. Marsh" as a person. Output is APA-formatted.
+
+</Step>
+
+</Steps>
+
+## From the app
+
+Click any citation in an answer, or paste a URL into the search box, to open
+the reader. Inside the reader you can:
+
+- **Ask about this article** — a question answered only from this document,
+  not from a new web search.
+- **Generate follow-up questions** — suggested next questions for this source.
+- **Save quotes** — highlighted passages are stored against the document and
+  show up in the REASON editor's quote list.
+- **Copy the citation** — APA, ready to paste.
+
+## Uploads
+
+Signed-in users can upload PDF, DOCX, TXT and HTML files. They're stored in
+Cloudflare R2 and extracted with the same pipeline, so an uploaded paper
+behaves exactly like a URL you searched for.
+
+```http
+POST   /api/doc/uploads   # upload
+GET    /api/doc/uploads   # fetch extracted content
+DELETE /api/doc/uploads   # remove
+```
+
+Google Docs can be imported directly (**Settings → Google Drive**), and
+documents you write can be exported back.
+
+## From the API
+
+```http
+GET  /api/scraper?url=https://example.com/article
+POST /api/scraper
+```
+
+```http
+GET /api/doc/article?url=https://example.com/article
+```
+
+`/api/scraper` runs a fresh extraction; `/api/doc/article` returns the cached
+article record if one exists. See [API](/docs/api).
+
+## As a package
+
+| Package | Use it for |
+|---|---|
+| [`extract-webpage`](https://www.npmjs.com/package/extract-webpage) | The whole pipeline: search, extract, cite, outline |
+| [`extract-pdf`](https://www.npmjs.com/package/extract-pdf) | PDF → structured HTML, with optional OCR |
+| [`extract-youtube`](https://www.npmjs.com/package/extract-youtube) | Transcripts as SRT or WebVTT, no browser |
+| [`render-url-to-html`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/render-url-to-html) | JS-rendered pages via Browser Rendering, Puppeteer or JSDOM |
+
+```bash
+bun i extract-webpage
+```
+
+## When extraction fails
+
+Some pages can't be extracted server-side: hard paywalls, Cloudflare
+challenges, or content that only exists after client-side JavaScript runs. For
+the last case, `render-url-to-html` renders the page first and hands the DOM to
+the extractor. For the first two, use the [browser extension](/docs/browser-extension),
+which reads the page from the tab you already have open and authenticated.

@@ -1,0 +1,52 @@
+{
+  "name": "@debate-agents/multi-agent-trading",
+  "version": "1.0.0",
+  "description": "JavaScript port of Multi-Agent Trading System with LangGraph for value-to-growth ex-US equity analysis",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js",
+    "dev": "nodemon main.js",
+    "test": "jest",
+    "health-check": "node health_check.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "trading",
+    "multi-agent",
+    "langgraph",
+    "gemini",
+    "ai",
+    "stocks",
+    "langchain"
+  ],
+  "author": "Debate Agents Team",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@langchain/community": "^0.3.0",
+    "@langchain/core": "^0.3.0",
+    "@langchain/google-genai": "^0.1.0",
+    "@langchain/langgraph": "^0.2.0",
+    "@langchain/openai": "^0.3.0",
+    "chromadb": "^1.9.0",
+    "dotenv": "^16.4.0",
+    "finnhub": "^1.2.0",
+    "structlog": "^1.0.0",
+    "winston": "^3.11.0",
+    "yahoo-finance2": "^2.13.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.3",
+    "prettier": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

@@ -46,6 +46,18 @@ function looksLikeMarkdown(text: string): boolean {
 }
 
 /**
+ * Detects whether the pasted `text/html` already carries real formatting
+ * (headings, lists, tables, blockquotes, inline emphasis/styling). Rich
+ * sources like MS Word and Google Docs always populate text/html this way,
+ * and that HTML already preserves fonts/colors/etc. that plain text can't
+ * express — so it must win over the markdown heuristic below, which only
+ * has plain text to work with and would otherwise flatten all formatting.
+ */
+function htmlHasRichFormatting(html: string): boolean {
+  return /<(h[1-6]|ul|ol|li|table|blockquote|b|strong|i|em|u|font)\b|style\s*=\s*"[^"]*[a-z-]+\s*:/i.test(html);
+}
+
+/**
  * Pre-processes markdown text to fix table formatting.
  * When copying from many sources, blank lines get inserted between table rows,
  * which prevents marked's GFM table parser from recognizing them.
@@ -108,6 +120,9 @@ export const MarkdownPaste = Extension.create<MarkdownPasteOptions>({
 
             const clipboardData = event.clipboardData;
             if (!clipboardData) return false;
+
+            const htmlData = clipboardData.getData('text/html');
+            if (htmlData && htmlHasRichFormatting(htmlData)) return false;
 
             const rawText = clipboardData.getData('text/plain');
             if (!rawText || !looksLikeMarkdown(rawText)) return false;

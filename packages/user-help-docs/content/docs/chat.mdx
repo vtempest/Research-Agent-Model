@@ -1,0 +1,137 @@
+---
+title: "Chat & Research Agent"
+description: "Cited answers, model providers, memory, voice, and chat history."
+icon: "MessagesSquare"
+---
+
+The chat surface is where a question becomes a cited answer. It searches,
+extracts the top results, and streams a response whose every claim links back
+to the document it came from.
+
+## Answer flow
+
+1. Your question is expanded into search queries and run across your enabled
+   [search engines](/docs/search).
+2. The top results are [extracted](/docs/reader) to full text — not snippets.
+3. The extracted text plus your question goes to the model you selected.
+4. The answer streams back with numbered citations, and follow-up questions are
+   generated alongside it.
+
+Attach a PDF, DOCX, URL, Google Doc or YouTube link to the message and step 1
+is skipped for that source — it's read directly.
+
+## Choosing a model
+
+QwkSearch is provider-agnostic. Out of the box the picker covers Anthropic
+(Claude), OpenAI (GPT), Google (Gemini), xAI (Grok), Groq, Amazon Bedrock,
+OpenRouter, DeepSeek, NVIDIA and others.
+
+Under **Settings → Providers** you can add your own:
+
+```http
+GET    /api/agent/providers              # list configured providers
+POST   /api/agent/providers              # add one (name + API key + base URL)
+PATCH  /api/agent/providers/{id}         # update
+DELETE /api/agent/providers/{id}         # remove
+POST   /api/agent/providers/{id}/models  # add a model to the picker
+POST   /api/agent/test-models            # probe which models a key can reach
+```
+
+`POST /api/agent/test-models` is worth running after adding a key — it tells
+you which models that key is actually entitled to, rather than failing later
+mid-answer.
+
+Any OpenAI-compatible endpoint works, including a local Ollama or vLLM server,
+which keeps both the search and the generation on machines you control.
+
+## Chat history
+
+Chats are saved per account, searchable by title, and shareable by link.
+
+```http
+GET    /api/agent/chats            # list
+GET    /api/agent/chats/search     # search by title
+GET    /api/agent/chats/{id}       # one chat with its messages
+POST   /api/agent/chats/share      # create a share link
+DELETE /api/agent/chats/{id}       # delete one
+DELETE /api/agent/chats            # delete all
+```
+
+Privacy mode skips history entirely for that session.
+
+## Voice
+
+- **Speak a question** — audio is transcribed with Whisper on Cloudflare
+  Workers AI (`POST /api/agent/transcript`).
+- **Hear the answer** — text-to-speech via Kokoro or Deepgram
+  (`POST /api/agent/voice`). Guests are limited to 10 requests a day; signed-in
+  users aren't.
+
+Hands-free control is packaged separately as
+[`use-voice-control`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/use-voice-control).
+
+## Spotlight search — <kbd>Ctrl</kbd> <kbd>Space</kbd>
+
+Press <kbd>Ctrl</kbd> <kbd>Space</kbd> anywhere in the app and one bar opens in
+front of everything. Type and it searches your past chats, the app's pages, the
+settings sections and the things the app can do — and whatever you typed is
+always askable from the top row, so a question you meant to ask never turns into
+a dead end.
+
+Start the query with a letter and a space to look in one place only:
+
+| Type | Searches |
+| --- | --- |
+| `c ` | your past chats |
+| `t ` | pages — Library, News, Settings, the REASON editor… |
+| `s ` | settings sections |
+| `a ` | actions — new chat, incognito, focus mode, sign in/out |
+| `w ` | ask the research agent |
+
+<kbd>Tab</kbd> cycles through those scopes without retyping, <kbd>↑</kbd>
+<kbd>↓</kbd> move, <kbd>Enter</kbd> opens and <kbd>Esc</kbd> closes. Matching is
+plain substring matching on every word you type, in any order, so what you see
+is what you asked for. (On a Mac it is Ctrl, not Cmd — macOS keeps
+<kbd>Cmd</kbd> <kbd>Space</kbd> for its own Spotlight.) It's also in the dock's
+settings menu as **Search everything**.
+
+## Discover
+
+`GET /api/agent/discover` returns curated content by topic — the feed shown on
+the home page when you haven't asked anything yet.
+
+`GET /api/news/trending` backs the trending-news widget above the search box:
+the day's most-viewed Wikipedia topics, each with matching headlines from
+[The News API](https://www.thenewsapi.com/). Add `?limit=` for fewer topics, or
+`?topic=` for one topic's headlines. It needs a `THENEWSAPI_API_KEY` on the
+server — the key never reaches the browser, and the widget hides itself when
+the key isn't set. Settings → Search can point the widget at your own deployed
+[`trending-news-api`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/trending-news-api)
+worker instead.
+
+## Connecting other tools
+
+The agent can call out to MCP servers you register, which is how it reaches
+tools QwkSearch doesn't ship itself:
+
+```http
+GET    /api/agent/mcpservers              # list
+POST   /api/agent/mcpservers              # add
+PATCH  /api/agent/mcpservers/{id}         # update
+POST   /api/agent/mcpservers/{id}/toggle  # enable/disable
+DELETE /api/agent/mcpservers/{id}         # remove
+```
+
+To go the other way — letting Claude Desktop or another assistant call
+QwkSearch — see the [MCP server](/docs/mcp-server).
+
+## As a package
+
+The agent orchestration is published as
+[`chat-agent-toolkit`](https://www.npmjs.com/package/chat-agent-toolkit) and the
+UI as [`research-agent-ui`](https://www.npmjs.com/package/research-agent-ui), so
+you can embed either half in your own app.
+
+```bash
+bun i chat-agent-toolkit research-agent-ui
+```

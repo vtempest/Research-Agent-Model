@@ -2,6 +2,7 @@ import vinext from "vinext";
 import { createLogger, defineConfig } from "vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import rsc from "@vitejs/plugin-rsc";
+import { helpDocsMdxPlugin } from "user-help-docs/vite";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 
@@ -43,7 +44,14 @@ export default defineConfig(({ command }) => ({
       // require() lazily inside a try/catch; it has no place in the Worker
       // bundle and is never installed on Linux, so leave it external.
       // `@mastra/core` and `@mastra/mcp` are optional dependencies with incorrect package.json exports.
-      external: ["fsevents", /^@mastra\//],
+      // `@llamaindex/liteparse` (dynamically imported by extract-pdf's
+      // "liteparse" ParseMethod, behind a try/catch) ships a native napi addon
+      // that workerd cannot load; nothing in this app opts into that method,
+      // so keep it external rather than trying to bundle the .node binary.
+      // `@napi-rs/canvas` (dynamically imported by extract-pdf's Docling OCR
+      // page rasterizer, behind a try/catch fallback) is likewise a native
+      // napi addon workerd cannot load.
+      external: ["fsevents", /^@mastra\//, "@llamaindex/liteparse", "@napi-rs/canvas"],
     },
     rolldownOptions: {
       // Rolldown (Vite 8.x bundler) needs its own external list.
@@ -62,8 +70,23 @@ export default defineConfig(({ command }) => ({
       // lazy-loaded voice component. It is a browser-only library and must be
       // bundled client-side; the `externalize-kokoro-on-server` plugin below
       // keeps it external in the server (rsc/ssr) worker build instead.
-      external: ["fsevents", /^@mastra\//],
+      //
+      // `@llamaindex/liteparse` and `@napi-rs/canvas` are likewise kept
+      // external — see the comments in `rollupOptions.external` above.
+      external: ["fsevents", /^@mastra\//, "@llamaindex/liteparse", "@napi-rs/canvas"],
     },
+  },
+  environments: {
+    // Cloudflare rejects a Worker upload whose source maps total more than
+    // 15MB gzipped ("total sourcemap size is too large", API error 10021).
+    // The unminified rsc/ssr bundles blow past that on their own (~68MB raw /
+    // ~15.4MB gzipped), so `wrangler deploy` fails after the whole build has
+    // run. Since `minify` is off, the deployed Worker chunks are already
+    // readable source and the maps buy very little there, so don't emit them
+    // for the two Worker environments. The client build keeps its maps: those
+    // ship as static assets and don't count toward the Worker limit.
+    rsc: { build: { sourcemap: false } },
+    ssr: { build: { sourcemap: false } },
   },
   ssr: {
     // Bundle workspace packages into the standalone output instead of treating
@@ -78,9 +101,15 @@ export default defineConfig(({ command }) => ({
       "shadcn-app-dock",
       "search-web-api",
       "research-agent-ui",
+      // `/api/news/trending` imports `trending-news-api/server`.
+      "trending-news-api",
     ],
   },
   plugins: [
+    // Compiles the `/docs` help content (packages/user-help-docs) to modules at
+    // build time. Without it the docs would have to compile MDX per request,
+    // which needs `new Function` — workerd refuses, 500ing every docs page.
+    helpDocsMdxPlugin(),
     {
       // `kokoro-js` (transformers.js / onnxruntime-web) is a browser-only TTS
       // library. It must be BUNDLED into the client so the lazy-loaded voice

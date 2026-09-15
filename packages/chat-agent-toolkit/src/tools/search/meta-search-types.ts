@@ -25,6 +25,8 @@ export interface MetaSearchAgentType {
     category?: string,
     sourceExtractionEnabled?: boolean,
     thinkingTimeLimit?: number,
+    /** User-authored replacement for the focus mode's query-expansion prompt. */
+    queryExpansionPrompt?: string,
   ) => Promise<EventEmitter>;
 }
 

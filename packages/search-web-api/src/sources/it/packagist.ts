@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the Packagist API for PHP package search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const packagist: EngineFunction = async (
   query: string,

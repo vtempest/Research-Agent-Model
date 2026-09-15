@@ -1,0 +1,188 @@
+---
+title: "Cloudflare Worker Variables"
+description: "Why dashboard-set Worker variables vanish on deploy, and the keep_vars setting this repo uses so they do not."
+---
+
+## Symptom
+
+Variables you entered in the Cloudflare dashboard (**Workers & Pages → your
+Worker → Settings → Variables**) disappear after a rebuild or deploy, and the
+Worker starts failing on missing configuration.
+
+## Cause
+
+The rebuild runs Wrangler, and Wrangler treats its own configuration file as the
+source of truth. By default `wrangler deploy` **deletes every plaintext variable
+on the Worker before setting the ones found in `wrangler.toml` /
+`wrangler.jsonc`** — so any variable that exists only in the dashboard is wiped.
+Secrets (`wrangler secret put`) are never deleted by a deploy, with or without
+the flag.
+See [Wrangler commands](https://developers.cloudflare.com/workers/wrangler/commands/workers/)
+and [Source of truth](https://developers.cloudflare.com/workers/wrangler/configuration/#source-of-truth).
+
+## Immediate fix
+
+Deploy with `--keep-vars`:
+
+```bash
+npx wrangler deploy --keep-vars
+```
+
+For version uploads:
+
+```bash
+npx wrangler versions upload --keep-vars
+```
+
+## Permanent fix (what this repo does)
+
+`keep_vars` is set in the Wrangler config, so **every** deploy path — a local
+`wrangler deploy`, Workers Builds, a GitHub Actions job, or a framework wrapper
+such as `opennextjs-cloudflare` / `vinext-cloudflare` — preserves dashboard
+variables without anyone having to remember the flag:
+
+```jsonc
+{
+  "name": "my-worker",
+  "main": "src/index.ts",
+  "keep_vars": true
+}
+```
+
+TOML:
+
+```toml
+name = "my-worker"
+main = "src/index.ts"
+keep_vars = true
+```
+
+`keep_vars` is a **top-level-only** key: it applies to the Worker as a whole and
+cannot be set inside a named environment (`env.production`, `env.staging`).
+Wrangler ignores it there and warns about an unexpected field.
+
+## Better long-term setup
+
+Keep one source of truth instead of mixing dashboard variables with CLI
+deployments.
+
+Non-sensitive configuration belongs in the Wrangler config:
+
+```jsonc
+{
+  "vars": {
+    "API_URL": "https://api.example.com",
+    "APP_ENV": "production"
+  }
+}
+```
+
+API keys, database credentials, and tokens belong in secrets:
+
+```bash
+npx wrangler secret put DATABASE_URL
+npx wrangler secret put OPENAI_API_KEY
+```
+
+Cloudflare stores secrets encrypted and does not show their values in the
+dashboard or in Wrangler, but code reads them exactly like ordinary variables
+([Environment variables](https://developers.cloudflare.com/workers/configuration/environment-variables/)):
+
+```js
+export default {
+  async fetch(request, env) {
+    const apiKey = env.OPENAI_API_KEY;
+    const apiUrl = env.API_URL;
+
+    return new Response('ok');
+  },
+};
+```
+
+Read them off `env`, not `process.env`, unless the Worker runs with the relevant
+Node.js compatibility flag.
+
+## Wrangler environments
+
+Variables and bindings are **not inherited** between Wrangler environments —
+Cloudflare treats each one as effectively a separate Worker:
+
+```bash
+npx wrangler deploy
+npx wrangler deploy --env staging
+npx wrangler deploy --env production
+```
+
+Each environment needs its own `vars` block and its own secrets
+([Environments](https://developers.cloudflare.com/workers/wrangler/environments/)):
+
+```jsonc
+{
+  "name": "my-worker",
+  "main": "src/index.ts",
+  "keep_vars": true,
+  "env": {
+    "production": {
+      "vars": { "APP_ENV": "production", "API_URL": "https://api.example.com" }
+    },
+    "staging": {
+      "vars": { "APP_ENV": "staging", "API_URL": "https://staging-api.example.com" }
+    }
+  }
+}
+```
+
+```bash
+npx wrangler secret put OPENAI_API_KEY --env production
+npx wrangler secret put OPENAI_API_KEY --env staging
+```
+
+## Deploying from GitHub Actions
+
+A workflow step that runs bare Wrangler has the same problem:
+
+```yaml
+- name: Deploy Worker
+  run: npx wrangler deploy --keep-vars
+  env:
+    CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+```
+
+For production, prefer defining configuration in the Wrangler config and
+uploading secrets from CI rather than depending on dashboard variables:
+
+```bash
+npx wrangler deploy --secrets-file .secrets.json
+```
+
+Never commit `.secrets.json`, `.dev.vars`, or API keys.
+
+## The four things people confuse
+
+| | Where it lives | Survives a Wrangler deploy? |
+| --- | --- | --- |
+| Build variables/secrets | Workers Builds settings | Only used while the framework builds |
+| Worker runtime variables | `vars` in the Wrangler config | Yes — the config is the source of truth |
+| Dashboard variables | Cloudflare dashboard only | **Only with `keep_vars` / `--keep-vars`** |
+| Secrets | `wrangler secret put` | Yes — deploys never delete secrets |
+
+See also
+[Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
+
+## Wrangler configs in this repository
+
+Every one of these sets `keep_vars`:
+
+- `apps/qwksearch-web/wrangler.jsonc`
+- `apps/qwk-in-lobe/apps/share/wrangler.jsonc`
+- `apps/qwk-in-lobe/apps/workbench/wrangler.jsonc`
+- `apps/qwk-in-lobe/wrangler.jsonc`
+- `apps/qwk-in-lobe/wrangler.local.jsonc`
+- `apps/qwk-in-lobe/wrangler.smoke.jsonc`
+- `packages/extract-pdf/server/wrangler.jsonc`
+- `packages/language-model-training/webui/wrangler.json`
+- `packages/react-weather-forecast/worker/wrangler.jsonc`
+- `packages/reason-editor/wrangler.jsonc`
+- `packages/research-agent-ui/wrangler.example.jsonc`
+- `packages/trending-news-api/worker/wrangler.jsonc`

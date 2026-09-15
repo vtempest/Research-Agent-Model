@@ -1,13 +1,13 @@
 /**
- * Main chat conversation thread: renders ordered message sections, a floating share/export toolbar
- * (Markdown, PDF, DOCX, Google Docs, QwkDocs, copy link), the history dropdown, new-chat button,
- * the sticky ChatInputBox, and the global ArticleExtractPanel. Adjusts layout when the side panel is open.
+ * @fileoverview Main chat conversation thread: renders ordered message sections, a floating share/export toolbar (Markdown, PDF, DOCX, Google Docs, QwkDocs, copy link), the history dropdown, new-chat button, the sticky ChatInputBox, and the global ArticleExtractPanel.
+ *
+ * Adjusts layout when the side panel is open.
  */
 'use client';
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import MessageBox from './ChatMessageBubble';
-import QuantumWaveOrbital from 'quantum-sphere-loading-icon/react';
+import RandomLoadingAnimation from './RandomLoadingAnimation';
 
 import { useChat } from '../../hooks/useChat';
 import { useExtractPanel } from '../ArticleReader/ExtractPanelContext';
@@ -97,18 +97,9 @@ const Chat = () => {
               </Fragment>
             );
           })}
-          {loading && !messageAppeared && (
-            <div className="flex items-center justify-center">
-
-              <div style={{ height: '200px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <QuantumWaveOrbital
-                  autoRandomize={true}
-                  onSphereClick={() => console.log('Sphere clicked')}
-                  className="my-custom-class"
-                />
-              </div>
-            </div>
-          )}
+          {/* Unmounts once the response starts streaming, so the next
+              response mounts a freshly randomized animation. */}
+          {loading && !messageAppeared && <RandomLoadingAnimation />}
           <div ref={messageEnd} className="h-0" />
         </div>
 

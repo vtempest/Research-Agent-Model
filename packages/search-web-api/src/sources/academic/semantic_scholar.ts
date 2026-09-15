@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the Semantic Scholar API for academic papers.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const semantic_scholar: EngineFunction = async (
   query: string,

@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import { createRequire } from 'node:module';
 import * as path from 'node:path';
 
 import react from '@vitejs/plugin-react';
@@ -11,17 +13,156 @@ import postcssReplace from 'postcss-replace';
 // to use v4 for their own styles.
 import tailwindcss3 from 'tailwindcss3';
 import dts from 'unplugin-dts/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+
+// A few internal modules (e.g. src/editor/TiptapEditorWrapper.tsx) import
+// the package by its own published name — the self-reference Node resolves
+// once consumers install this package for real. During this library's own
+// build there is no such install yet, so point those specifiers straight at
+// their source equivalents (mirrors demo/vite.config.ts's resolver, which
+// does the same for the demo build).
+//
+// Extension subpaths (e.g. react-reason-editor/wordcount) are handled
+// generically rather than as a fixed list: without this, an unresolved
+// subpath falls through to Node's own self-reference algorithm, which
+// points at the not-yet-written dist/*.js chunk for that entry. Whether
+// that resolves depends on Rolldown's (non-deterministic) transform order
+// relative to when the target entry's own chunk gets emitted, so the build
+// would pass or fail from run to run.
+function selfReferenceResolver(srcDir: string): Plugin {
+  const extDir = path.resolve(srcDir, 'extensions');
+  // Map lowercase package subpaths to PascalCase extension dirs
+  // (e.g. bulletlist -> BulletList). First-letter capitalization alone
+  // misses multi-word names, which would fall through to the package
+  // self-reference and race the not-yet-built dist output.
+  const extDirByLowerName = new Map<string, string>();
+  for (const dir of fs.readdirSync(extDir)) {
+    extDirByLowerName.set(dir.toLowerCase(), dir);
+  }
+
+  return {
+    name: 'reason-editor-self-reference',
+    enforce: 'pre',
+    resolveId(id) {
+      if (id === 'react-reason-editor') return path.resolve(srcDir, 'index.ts');
+      if (id === 'react-reason-editor/style.css') return path.resolve(srcDir, 'styles/index.scss');
+      if (id === 'react-reason-editor/theme') return path.resolve(srcDir, 'theme/theme.ts');
+      if (id === 'react-reason-editor/locale-bundle') return path.resolve(srcDir, 'locale-bundle.ts');
+      if (id === 'react-reason-editor/docs-agent') return path.resolve(srcDir, 'docs-agent.ts');
+      // Rolldown fails to resolve this one extension subpath as a
+      // cross-entry self-reference (unlike every other `./extensions/*`
+      // export, which it resolves natively during this build), so it needs
+      // the same explicit source redirect as the paths above.
+      if (id === 'react-reason-editor/wordcount') return path.resolve(srcDir, 'extensions/WordCount/index.ts');
+    },
+  };
+}
+
+// `novel@1.0.2` is published against Tiptap v2 while this package is on v3.
+// The root package.json `overrides` already force every one of Novel's
+// `@tiptap/*` dependencies onto the v3 line, and almost all of Novel's runtime
+// surface (EditorProvider, useCurrentEditor, Extension/Node/Mark, ReactRenderer,
+// @tiptap/pm/*) is API-compatible across that jump. Two imports are not, and
+// both are rewritten here rather than by patching node_modules:
+//
+//  1. `export { default as TextStyle } from '@tiptap/extension-text-style'` —
+//     v3's text-style package dropped its default export in favour of named
+//     ones. Nothing here imports Novel's `TextStyle` (baseKit registers the
+//     named v3 export directly), but the module is still parsed, so the
+//     missing export breaks dev prebundling.
+//
+//  2. `import { BubbleMenu } from '@tiptap/react'` — v3 moved `BubbleMenu` to
+//     the `@tiptap/react/menus` subpath. Novel only uses it for `EditorBubble`,
+//     which this package does not re-export (it has its own bubble menus), but
+//     Novel's dist declares it with an unannotated top-level `forwardRef(...)`
+//     call, so it survives tree-shaking and the dangling import surfaces as a
+//     MISSING_EXPORT error in *consumers'* builds of this package's dist.
+function novelTiptapV3Compat(): Plugin {
+  return {
+    name: 'novel-tiptap-v3-compat',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!id.includes('/novel/dist/')) return null;
+
+      let patched = code.replace(
+        /export\s*\{\s*default as TextStyle\s*\}\s*from\s*(['"])@tiptap\/extension-text-style\1/,
+        "export{TextStyle}from'@tiptap/extension-text-style'"
+      );
+
+      patched = patched.replace(
+        /import\s*\{([^}]*)\}\s*from\s*(['"])@tiptap\/react\2/,
+        (match, names: string) => {
+          const kept = names
+            .split(',')
+            .map((name) => name.trim())
+            .filter((name) => name && name.split(/\s+as\s+/)[0]?.trim() !== 'BubbleMenu');
+          if (kept.length === names.split(',').filter((n) => n.trim()).length) return match;
+          return `import{${kept.join(',')}}from'@tiptap/react';import{BubbleMenu}from'@tiptap/react/menus'`;
+        }
+      );
+
+      return patched === code ? null : { code: patched, map: null };
+    },
+  };
+}
+
+// Dependencies that must be bundled from their *environment-neutral* build,
+// not the `browser` one.
+//
+// Vite builds this library with the browser export conditions, so a dependency
+// that ships a DOM-only build behind `browser` gets that build inlined into
+// dist/ — where it is frozen for every consumer, whatever conditions they
+// themselves resolve with. Resolving through `createRequire` instead applies
+// Node's conditions, which yields the entry that runs anywhere (browsers
+// included).
+//
+// `decode-named-character-reference` (reached through the remark/micromark
+// stack behind the Markdown extensions) is the case in point: its `browser`
+// entry decodes entities by assigning to the `innerHTML` of a module-scope
+// `document.createElement('i')`, so merely *loading* the chunk throws
+// "ReferenceError: document is not defined" when the app server-renders a
+// route that mounts the editor — and because that happens while the SSR shell
+// is still loading, React has no boundary to fall back to and the whole
+// response becomes the error page. Its default entry is a plain lookup table
+// over `character-entities`: no DOM, same results.
+//
+// Resolution is done from the *importer*, not from this config file: these are
+// transitive dependencies, and the package manager only links a package into
+// the `node_modules` of the dependents that declare it.
+const nodeConditionDependencies = ['decode-named-character-reference'];
+
+function nodeConditionResolver(ids: string[]): Plugin {
+  const wanted = new Set(ids);
+
+  return {
+    name: 'reason-editor-node-condition-resolve',
+    enforce: 'pre',
+    resolveId(id, importer) {
+      if (!wanted.has(id) || !importer) return null;
+      try {
+        return createRequire(importer).resolve(id);
+      } catch {
+        // Not resolvable from this importer — leave it to Vite's own resolver
+        // rather than failing the build.
+        return null;
+      }
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
   const isDev = mode !== 'production';
+  const srcDir = path.resolve(__dirname, 'src');
 
   const entry = [
     path.resolve(__dirname, 'src/index.ts'),
     path.resolve(__dirname, 'src/locale-bundle.ts'),
     path.resolve(__dirname, 'src/bubble.ts'),
     path.resolve(__dirname, 'src/theme/theme.ts'),
+    path.resolve(__dirname, 'src/reason-docs.ts'),
+    path.resolve(__dirname, 'src/editor-kit.ts'),
+    path.resolve(__dirname, 'src/docs-agent.ts'),
   ];
 
   const files = await globbySync('src/extensions/**/*.ts', {
@@ -66,15 +207,61 @@ export default defineConfig(async ({ mode }) => {
   // fs.writeFileSync('./package.json', JSON.stringify(packageJson, null, 2))
 
   return {
-    plugins: [react(), dts({
-      exclude: ['src/editor-views/**'],
+    plugins: [selfReferenceResolver(srcDir), nodeConditionResolver(nodeConditionDependencies), novelTiptapV3Compat(), react(), dts({
+      // Pin the declaration source root to src/ so declarations emit directly
+      // under dist/ (e.g. dist/extensions/Bold/index.d.ts) matching the
+      // package.json export/type paths, with no post-build hoist step.
+      entryRoot: path.resolve(__dirname, 'src'),
+      // The example-editor tree is excluded from the public declaration
+      // output *except* for the handful of modules `editor-kit.ts` re-exports
+      // (the toolbar, bubble menus, and config builder) -- those need real
+      // .d.ts files on disk, or `editor-kit`'s own declaration (which
+      // re-exports `from './editor-views/...'`) would point at files that
+      // were never emitted.
+      exclude: [
+        'src/editor-views/App.tsx',
+        'src/editor-views/Editor-with-toolbar.tsx',
+        'src/editor-views/main.tsx',
+        'src/editor-views/emojis.ts',
+        'src/editor-views/config/SettingsModal.tsx',
+      ],
       compilerOptions: {
+        rootDir: path.resolve(__dirname, 'src'),
         skipLibCheck: true,
         skipDefaultLibCheck: true,
+      },
+      // unplugin-dts prints its type errors and carries on, so a build with
+      // broken declarations still exits 0 -- which is how a tree carrying nine
+      // declaration errors (TS2883 on the Plate kits, an undefined `dragEntry`,
+      // a stale `docx-preview` call signature) still packed a tarball and still
+      // reached `npm publish`. The declarations are this package's public
+      // contract, so treat any diagnostic as fatal.
+      afterDiagnostic: (diagnostics) => {
+        if (diagnostics.length === 0) return;
+        throw new Error(
+          `Declaration build reported ${diagnostics.length} TypeScript error(s); see the diagnostics above.`,
+        );
       },
     })],
     resolve: {
       alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+      // Novel resolves its own `@tiptap/*` copies. A second `@tiptap/core` or
+      // `@tiptap/pm` in the graph means a second ProseMirror schema and a
+      // second plugin-key counter, so Novel's shell must bind to the exact
+      // instances this package's extensions are built against.
+      dedupe: [
+        '@tiptap/core',
+        '@tiptap/pm',
+        '@tiptap/react',
+        '@tiptap/suggestion',
+        'react',
+        'react-dom',
+      ],
+    },
+    optimizeDeps: {
+      // Novel is pre-bundled ESM with `sideEffects: false`; letting esbuild
+      // prebundle it would bypass the `novel-tiptap-v3-compat` transform above.
+      exclude: ['novel'],
     },
     css: {
       postcss: {
@@ -129,12 +316,132 @@ export default defineConfig(async ({ mode }) => {
           },
         },
         external: [
+          '@tiptap/core',
+          // Every @tiptap/pm/* subpath actually used by the bundled extensions
+          // must stay external, not just model/state/view: prosemirror-state
+          // keeps a module-scoped counter that auto-generates plugin keys
+          // ("plugin$", "plugin$1", ...). A subpath left un-externalized gets
+          // its dependency tree (down to prosemirror-state) inlined into this
+          // package's own dist bundle — a second copy of that module, with its
+          // own independent counter — so a plugin built from the inlined copy
+          // collides with one built from the app's externally-resolved copy
+          // the moment both land in the same EditorState (thrown as "Adding
+          // different instances of a keyed plugin").
+          '@tiptap/pm/commands',
+          '@tiptap/pm/dropcursor',
+          '@tiptap/pm/gapcursor',
+          '@tiptap/pm/history',
+          '@tiptap/pm/keymap',
           '@tiptap/pm/model',
+          '@tiptap/pm/schema-list',
           '@tiptap/pm/state',
+          '@tiptap/pm/tables',
+          '@tiptap/pm/transform',
           '@tiptap/pm/view',
+          // @tiptap/react pulls in use-sync-external-store's CJS shim. Bundled
+          // in (rather than externalized), Rolldown's CJS interop for it falls
+          // back to a runtime `require("react")`, which crashes under strict
+          // Node ESM — e.g. Next.js SSR — where no `require` global exists.
+          '@tiptap/react',
+          // Where v3 moved BubbleMenu/FloatingMenu. Reached both by this
+          // package's own bubble menus and by Novel's `EditorBubble` after the
+          // `novel-tiptap-v3-compat` rewrite above.
+          '@tiptap/react/menus',
           'react',
           'react-dom',
           'react/jsx-runtime',
+          // `platejs` is compiled by the React Compiler, whose output calls
+          // into `react-compiler-runtime`. That package is CJS-only (a bare
+          // `main: dist/index.js`, no ESM build) and its module body opens
+          // with `require("react")`. Bundled in here — where `react` itself is
+          // external — Rolldown can only emit that as its `__require` shim,
+          // which throws "Calling `require` for \"react\" in an environment
+          // that doesn't expose the `require` function" both in the browser
+          // and in the Cloudflare Worker that server-renders the app (a 500 on
+          // any route mounting a Plate editor). Left external, the host
+          // bundler resolves the real CJS package and rewrites its
+          // `require("react")` against the React it already bundles.
+          'react-compiler-runtime',
+          // `@platejs/core`'s static renderer (behind `serializeHtml`, which
+          // `plate-to-html.ts` uses to turn a Plate value back into the HTML
+          // the document store keeps) imports `react-dom/server`. Vite
+          // resolves that to react-dom's CJS `server.browser` build, whose
+          // body does `require("react")` / `require("react-dom")` — the same
+          // `__require` crash as above once `react`/`react-dom` are external
+          // here. The subpaths are named alongside the bare specifier so the
+          // condition the host picks stays external too.
+          'react-dom/server',
+          'react-dom/server.browser',
+          'react-dom/server.edge',
+          // Pulled in transitively (e.g. by swr, and vendored into grab-url's
+          // own dist). Its shim does a NODE_ENV-conditional `require(...)`,
+          // which Rollup can't resolve to a single static import — bundling
+          // it produces a "dynamic require" call that has no `require` to
+          // run against in an ESM output. Left external, host bundlers
+          // (Next.js/webpack) resolve the real CJS package and its
+          // conditional require normally.
+          'use-sync-external-store',
+          'use-sync-external-store/shim',
+          'use-sync-external-store/shim/index.js',
+          'use-sync-external-store/shim/with-selector',
+          'use-sync-external-store/shim/with-selector.js',
+          'use-sync-external-store/with-selector',
+          // grab-url's own published dist already vendors the
+          // use-sync-external-store shim above (same dynamic-require issue),
+          // so it must stay external too rather than get re-bundled here.
+          'grab-url',
+          // Reached from the Plate equation node. The package ships one build
+          // per environment and picks between them with export conditions:
+          // the `browser` one opens with a top-level
+          // `!!document.documentElement.currentStyle`, while the `workerd` /
+          // `worker` / `edge-light` ones guard that behind an `isBrowser`
+          // check. This is a *library* build, so its conditions are the
+          // browser ones — bundling the package in therefore freezes the
+          // unguarded `document` read into dist/, where every consumer gets
+          // it regardless of the conditions *they* resolve with. Server-
+          // rendering any route that mounts the editor then dies on module
+          // evaluation with "ReferenceError: document is not defined", and
+          // because the throw happens while the SSR shell is still loading,
+          // React has no boundary to fall back to and the whole response is
+          // the error page (the app's homepage, which mounts the research
+          // workspace, served a 500 this way). Left external, the host
+          // bundler resolves the package per environment and the Worker/SSR
+          // build gets the guarded build.
+          'react-textarea-autosize',
+          // React Compiler's runtime, reached from every `@platejs/*` (they all
+          // depend on `platejs`, whose compiled output calls into it). It is
+          // CommonJS-only — no `exports`, no `module`, no `"type": "module"`,
+          // just `main: dist/index.js` — and its single dependency is
+          // `require("react")`. Bundled in against an externalized `react`,
+          // Rolldown wraps it as CJS and emits that `require` literally into
+          // the chunk, where it has nothing to call: the browser throws
+          // "Calling `require` for \"react\" in an environment that doesn't
+          // expose the `require` function" the moment the editor chunk is
+          // lazy-loaded, and the Cloudflare Worker's SSR pass throws
+          // "Dynamic require of \"react\" is not supported" and serves a 500.
+          // Left external, the host bundler resolves the real CJS package and
+          // its `require("react")` the normal way.
+          'react-compiler-runtime',
+          // `@platejs/core`'s static renderer reaches this through
+          // `await import("react-dom/server")`. The subpath is not covered by
+          // the plain `react-dom` entry above (externals match the specifier),
+          // so it gets bundled — and in the browser that resolves to
+          // `react-dom/server.browser`'s CommonJS build, whose own
+          // `require("react")` fails the same way `react-compiler-runtime`
+          // does. Latent rather than constant (only Plate's HTML
+          // serialization loads the chunk), but the same defect.
+          'react-dom/server',
+          'react-dom/server.browser',
+          // The voice engines behind the ReadAloud/Transcribe extensions. Left
+          // external so the host resolves the real package: bundling them drags
+          // in Moonshine's on-device speech model runtime as a 2 MB chunk, and
+          // that recognizer is only ever a fallback for browsers with no native
+          // one. `@moonshine-ai/moonshine-js` is named too so the lazy import
+          // inside it stays a runtime resolution even if the engines are reached
+          // by some other path.
+          'use-voice-control/client',
+          'use-voice-control/react',
+          '@moonshine-ai/moonshine-js',
           'katex',
           'docx',
           '@radix-ui/react-dropdown-menu',
@@ -164,6 +471,9 @@ export default defineConfig(async ({ mode }) => {
           'clsx',
           'harper.js',
           'harper.js/binary',
+          // Pulls in swr, which shares the same use-sync-external-store CJS
+          // shim problem as @tiptap/react above.
+          'react-tweet',
         ],
       },
     },

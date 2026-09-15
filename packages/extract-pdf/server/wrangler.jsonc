@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pdf-to-html-docling",
+  // Wrangler deletes plaintext Variables set in the Cloudflare dashboard on every
+  // deploy unless keep_vars is set. Secrets are never deleted either way.
+  "keep_vars": true,
+  "main": "server.js",
+  "compatibility_date": "2025-05-01",
+  // Required for Node.js built-ins (crypto, stream, path, etc.) used by
+  // @huggingface/transformers and @hono/node-server.
+  "compatibility_flags": ["nodejs_compat_v2"],
+  "dev": {
+    "port": 3000,
+    "local_protocol": "http"
+  },
+  // Workers free tier: 128 MB. Model inference is heavy — bump this when
+  // deploying to a paid account or Workers AI.
+  "limits": {
+    "cpu_ms": 30000
+  }
+}

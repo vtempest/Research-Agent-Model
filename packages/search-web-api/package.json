@@ -2,7 +2,7 @@
   "name": "search-web-api",
   "description": "70+ search engines across 10 categories and Scrape Extract API",
   "type": "module",
-  "version": "1.0.76",
+  "version": "1.0.221",
   "author": "vtempest",
   "license": "rights.institute/PROSPER",
   "repository": {
@@ -12,10 +12,12 @@
   },
   "exports": {
     ".": {
+      "types": "./src/search.ts",
       "import": "./src/search.ts",
       "require": "./src/search.ts"
     },
     "./*": {
+      "types": "./src/*.ts",
       "import": "./src/*",
       "require": "./src/*"
     }
@@ -23,22 +25,25 @@
   "scripts": {
     "dev": "bun --watch demo/index.ts",
     "start": "bun demo/index.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:live": "RUN_LIVE_TESTS=1 vitest run",
+    "test:coverage": "vitest run --coverage",
+    "example:autocomplete": "bun examples/autocomplete-engines.ts"
   },
   "dependencies": {
-    "@huggingface/transformers": "^3.8.1",
-    "@scalar/hono-api-reference": "^0.9.26",
-    "chrono-node": "^2.9.0",
-    "grab-url": "^1.0.8",
-    "hono": "^4.6.12",
-    "linkedom": "^0.18.0",
-    "tldts": "^7.0.25"
+    "@huggingface/transformers": "^4.2.0",
+    "@scalar/hono-api-reference": "^0.12.1",
+    "chrono-node": "^2.10.1",
+    "grab-url": "^1.6.22",
+    "hono": "^4.13.7",
+    "linkedom": "^0.18.13",
+    "tldts": "^7.4.12"
   },
   "devDependencies": {
-    "@types/node": "^25.9.3",
-    "@vitest/coverage-v8": "^4.0.18",
-    "tsx": "^4.7.1",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "@types/node": "^26.5.0",
+    "@vitest/coverage-v8": "^5.0.0",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
   }
 }

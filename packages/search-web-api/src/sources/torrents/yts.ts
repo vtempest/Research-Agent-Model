@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the YTS API for movie torrent search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const yts: EngineFunction = async (
   query: string,

@@ -1,0 +1,33 @@
+{
+  "name": "qwksearch-vscode-reason-editor-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tiptap/core": "^3.31.3",
+    "@tiptap/react": "^3.31.3",
+    "html-to-docx": "^1.8.0",
+    "mammoth": "^1.12.2",
+    "marked": "^18.0.12",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-reason-editor": "file:../../../packages/reason-editor",
+    "turndown": "^7.2.4",
+    "turndown-plugin-gfm": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@types/turndown": "^5.0.6",
+    "@types/vscode-webview": "^1.57.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  },
+  "license": "rights.institute/PROSPER"
+}

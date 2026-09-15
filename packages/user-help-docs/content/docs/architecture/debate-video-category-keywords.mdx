@@ -1,0 +1,107 @@
+---
+title: "Debate Video Category Keywords"
+description: "Per-category keyword assignments for the policy debate video index, derived from the round title convention."
+---
+
+Per-category keyword assignments for a policy debate video index, derived from the
+naming convention the rounds themselves use. One primary keyword per category, with
+no two categories competing for the same head term.
+
+## Title convention
+
+Round videos are titled with a fixed four-part pattern:
+
+```
+{Year} {Tournament} - {Round} - {Team A} vs {Team B}
+
+2025 NDT - Quarters - Kansas MR vs Wake BM
+2025 NDT - Octas    - Michigan SS vs Kansas MR
+2026 TOC - Finals   - GBN CR vs MBA HL
+2025 TOC - Semis    - Northview CT vs MBA HM
+```
+
+That pattern splits the categories into two groups with very different keyword
+situations:
+
+- **Tournament and round categories** — the category name appears verbatim in every
+  title in the category. Keywords can be mined directly from the corpus.
+- **Argument and speech categories** — the category name appears in *no* title. These
+  are tags applied to rounds, so their keywords come from search demand rather than
+  from the corpus, and the dominant intent is instructional ("how do I run this")
+  rather than archival ("show me the round").
+
+## Category assignments
+
+### Rounds
+
+| Category | Videos | Primary keyword | Supporting terms |
+| --- | --- | --- | --- |
+| Finals | 232 | policy debate finals | final round, championship round, `{tournament} finals {year}` |
+| Semis | 160 | policy debate semifinals | semis, semifinal round, `{tournament} semis` |
+| Quarters | 175 | policy debate quarterfinals | quarters, quarterfinal round, `{tournament} quarters` |
+| Octas | 37 | elimination rounds / outrounds | octafinals, octas, octos, doubles, round of 16 |
+
+### Tournaments
+
+| Category | Videos | Primary keyword | Supporting terms |
+| --- | --- | --- | --- |
+| NDT | 305 | National Debate Tournament | NDT rounds, NDT `{year}`, college policy debate rounds |
+| TOC | 156 | Tournament of Champions debate | TOC policy `{year}`, high school policy debate rounds |
+| Shirley | 117 | Wake Forest Shirley | Franklin R. Shirley Classic, Shirley `{year}` |
+| CEDA | 89 | CEDA Nationals | CEDA debate rounds, CEDA `{year}` |
+| Harvard | 44 | Harvard debate tournament | Harvard invitational, Harvard `{year}` |
+
+### Arguments
+
+| Category | Videos | Primary keyword | Supporting terms |
+| --- | --- | --- | --- |
+| Theory | 68 | debate theory | condo bad, conditionality, theory shell |
+| Counterplan | 45 | counterplan debate | PIC, process CP, states CP, counterplan example |
+| Kritik | 43 | kritik debate | K debate, cap K, security K, K aff, kritik example |
+| Framework | 34 | framework debate | FW vs K aff, framework block, fairness impact |
+| Topicality | 21 | topicality debate | T shell, T-USFG, extra-T |
+| Disadvantage | 13 | politics disadvantage | politics DA, uniqueness link impact |
+
+### Speeches
+
+| Category | Videos | Primary keyword | Supporting terms |
+| --- | --- | --- | --- |
+| 2NR | 242 | 2NR strategy | how to give a 2NR, 2NR example, 2NR vs 2AR |
+| 1AC | 217 | 1AC example | sample 1AC, how to write a 1AC, 1AC speech |
+
+## Anti-cannibalization rules
+
+1. **Only the Finals category targets the bare term "finals."** Tournament categories
+   target `{tournament} + rounds/year` and never take `{tournament} finals` as their
+   primary.
+2. **Cross terms** ("NDT finals 2025", "TOC semis") carry real demand but belong to the
+   intersection filter page, canonicalized toward whichever side has more inventory —
+   here that is the tournament (NDT at 305 over Finals at 232).
+3. **Speech categories own instructional intent; argument categories own conceptual
+   intent.** 1AC and 2NR never target "kritik" and the reverse, even though most
+   2NR-tagged rounds are in fact kritik rounds.
+4. **Octas is in-group jargon.** Almost nobody outside the activity searches it, and 37
+   videos will not sustain a standalone page. Run it as an "elimination rounds" hub
+   that absorbs octas, doubles, and any round of 16.
+
+## Thin categories
+
+Disadvantage (13) and Topicality (21) do not have the inventory to support standalone
+pages. Fold both into a combined core negative arguments page alongside Counterplan
+(45) until each clears roughly 40 videos on its own.
+
+## Verifying against the corpus
+
+The tournament and round keywords above should be checked against the actual title
+list rather than assumed. Stripping the team codes and the leading year leaves the
+tournament and round tokens, which n-gram cleanly:
+
+```bash
+# titles.txt = one video title per line
+sed -E 's/ vs .*//; s/^[0-9]{4} //' titles.txt \
+  | tr '[:upper:]' '[:lower:]' | tr -cs '[:alnum:]' '\n' \
+  | grep -vE '^(the|a|vs|round|)$' | sort | uniq -c | sort -rn | head -40
+```
+
+The argument and speech categories will not appear in that output at all, which is the
+expected result and the reason their keywords are demand-derived.

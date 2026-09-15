@@ -1,6 +1,8 @@
 /**
- * Primary animated chat input box with cycling placeholder text, debounced autocomplete dropdown,
- * drag-and-drop / paste file handling, voice input waveform, and attachment tray for files and pasted content.
+ * @fileoverview Primary animated chat input box for the composer.
+ *
+ * Renders a cycling animated placeholder, a debounced autocomplete/domain-suggestion dropdown, drag-and-drop
+ * and paste file handling, a voice-input waveform, and an attachment tray for files and pasted content.
  */
 "use client"
 
@@ -12,6 +14,8 @@ import { FilePreviewCard } from "../FileUpload/FilePreviewCard";
 import { PastedContentCard } from "./PastedContentCard";
 import { useChat } from '../../hooks/useChat';
 import { useSpeechInput } from '../../hooks/voice/useSpeechToTranscript';
+import { useVoiceAutoStart } from '../../hooks/voice/useVoiceAutoStart';
+import { SpokenPhraseOverlay } from 'use-voice-control/react';
 import { useFileHandling } from '../FileUpload/useFileHandling';
 import FileUploadDropdown from '../FileUpload/FileUploadDropdown';
 import { LiveWaveform } from '../../ui/live-waveform';
@@ -21,6 +25,7 @@ interface DomainSuggestion {
     domain: string;
     name: string;
     favicon: string;
+    rank: number;
 }
 
 const PLACEHOLDERS = [
@@ -93,8 +98,25 @@ const ChatInputBox = ({ onNewChat }: ChatInputBoxProps) => {
         if (textareaRef.current) textareaRef.current.style.height = "auto";
     };
 
-    const { isListening, toggleSpeech, isSpeechSupported } = useSpeechInput(
-        (transcript) => setMessage(transcript),
+    // Text the input held before the phrase currently being dictated. Each
+    // recognizer update rewrites only what comes after it, so the in-progress
+    // words appear (and correct themselves) live without eating what was typed
+    // or dictated earlier.
+    const dictationBaseRef = useRef("");
+
+    const appendToBase = (base: string, phrase: string) =>
+        base && !/\s$/.test(base) ? `${base} ${phrase}` : `${base}${phrase}`;
+
+    const { isListening, toggleSpeech, isSpeechSupported, lastPhrase, phraseId } = useSpeechInput(
+        (phrase) => {
+            // A settled phrase becomes part of the base, so the next one lands
+            // after it rather than replacing it.
+            setMessage(() => {
+                const next = `${appendToBase(dictationBaseRef.current, phrase)} `;
+                dictationBaseRef.current = next;
+                return next;
+            });
+        },
         () => {
             setMessage(prev => {
                 if (prev.trim()) {
@@ -105,8 +127,21 @@ const ChatInputBox = ({ onNewChat }: ChatInputBoxProps) => {
                 }
                 return prev;
             });
+        },
+        {
+            onPartial: (text) =>
+                setMessage(text ? appendToBase(dictationBaseRef.current, text) : dictationBaseRef.current),
         }
     );
+
+    // Anything already in the box when the mic opens is kept and dictated onto.
+    useEffect(() => {
+        if (isListening) dictationBaseRef.current = message;
+        // Only when listening starts — `message` changes constantly while dictating.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isListening]);
+
+    useVoiceAutoStart({ isSpeechSupported, isListening, toggleSpeech });
 
     const [placeholderIndex, setPlaceholderIndex] = useState(0);
     const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -345,6 +380,14 @@ const ChatInputBox = ({ onNewChat }: ChatInputBoxProps) => {
                     </div>
                 )}
 
+                {/* Echoes each dictated phrase in the middle of the screen, so what
+                    was heard is readable without watching the input box. */}
+                <SpokenPhraseOverlay
+                    phrase={lastPhrase}
+                    phraseId={phraseId}
+                    visible={isListening}
+                />
+
                 {/* Input Row */}
                 <div className="flex items-center gap-2 p-3">
                     {/* Settings dropdown + Paperclip (from FileUploadDropdown) */}
@@ -503,6 +546,11 @@ const ChatInputBox = ({ onNewChat }: ChatInputBoxProps) => {
                                         <img src={d.favicon} alt="" className="w-4 h-4 rounded-sm shrink-0" />
                                         <span className="truncate font-medium">{d.name || d.domain}</span>
                                         <span className="truncate text-[13px] text-text-400 shrink-0">{d.domain}</span>
+                                        {Number.isFinite(d.rank) && d.rank < Number.MAX_SAFE_INTEGER && (
+                                            <span className="ml-auto shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-semibold tabular-nums bg-bg-200 dark:bg-[#3A3A38] text-text-400">
+                                                #{d.rank.toLocaleString()}
+                                            </span>
+                                        )}
                                     </button>
                                 </li>
                             ))}

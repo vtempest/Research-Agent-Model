@@ -10,6 +10,20 @@ import { generateDeepgramSpeech } from "./core/deepgram";
 
 export * from "./types/types";
 
+// Markdown handling is exported from the root entry so a server route can turn a
+// document into speakable text with the same rules the CLI and the browser use.
+export {
+  looksLikeMarkdown,
+  markdownToSpeech,
+  markdownToSpeechSegments,
+  stripInlineMarkdown,
+  type MarkdownToSpeechOptions,
+  type SpeechSegment,
+  type SpeechSegmentType,
+} from "./utils/markdown-to-speech";
+
+export { encodeWav, concatSamples, wavDurationSeconds } from "./utils/wav";
+
 /**
  * Generate speech from text using the specified provider
  *

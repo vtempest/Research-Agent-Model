@@ -1,0 +1,63 @@
+---
+title: "Packages"
+description: "The ~20 npm packages the QwkSearch monorepo publishes, usable on their own."
+icon: "Package"
+---
+
+QwkSearch is built out of libraries that stand on their own. If you only want
+the PDF extractor, the search aggregator or the editor, install just that.
+
+## Search & extraction
+
+| Package | Description |
+|---|---|
+| [`search-web-api`](https://www.npmjs.com/package/search-web-api) | 70+ search engines across 13 categories, plus a scrape/extract API served over Hono |
+| [`extract-webpage`](https://www.npmjs.com/package/extract-webpage) | The full pipeline — search, extract, cite and outline a topic with a research agent |
+| [`extract-pdf`](https://www.npmjs.com/package/extract-pdf) | PDF → structured HTML with optional `granite-docling-258M` OCR; runs in Node, Workers and browsers |
+| [`extract-youtube`](https://www.npmjs.com/package/extract-youtube) | Serverless YouTube transcript extraction (SRT, WebVTT), no headless browser |
+| [`render-url-to-html`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/render-url-to-html) | URL → fully rendered DOM via Cloudflare Browser Rendering, Puppeteer or JSDOM |
+| [`html-renderer-api`](https://www.npmjs.com/package/html-renderer-api) | Server API that renders the DOM with Puppeteer and gets past bot checks |
+| [`domain-rank`](https://www.npmjs.com/package/domain-rank) | Top-million domain lookup — source name, influence rank and favicon, from Tranco and CommonCrawl |
+| [`searxng-search-cloudflare`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/searxng-search-cloudflare) | Deployment config for a private SearXNG metasearch proxy |
+
+## Agents & language models
+
+| Package | Description |
+|---|---|
+| [`chat-agent-toolkit`](https://www.npmjs.com/package/chat-agent-toolkit) | Multi-provider agent toolkit — generation, web search, extraction and memory across 10+ providers, on the Vercel AI SDK, Mastra and MCP |
+| [`write-language`](https://www.npmjs.com/package/write-language) | One interface for streaming and non-streaming generation across 10+ LLM providers |
+| [`qwksearch-mcp-server`](https://www.npmjs.com/package/qwksearch-mcp-server) | MCP server exposing web search, extraction and JS rendering over stdio — see [MCP server](/docs/mcp-server) |
+| [`qwksearch-api-client`](https://www.npmjs.com/package/qwksearch-api-client) | Generated TypeScript client for the [QwkSearch API](/docs/api) |
+| [`notebooklm-api-client`](https://www.npmjs.com/package/notebooklm-api-client) | API client for Google's NotebookLM |
+| [`language-model-training`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/language-model-training) | A GPT-style transformer on Tinygrad with a Wikipedia pipeline, FastAPI control plane and monitoring dashboard |
+
+## UI
+
+| Package | Description |
+|---|---|
+| [`research-agent-ui`](https://www.npmjs.com/package/research-agent-ui) | The chat research UI — conversation window, article reader, search config, uploads, history |
+| [`reason-editor`](https://www.npmjs.com/package/react-reason-editor) | The [REASON editor](/docs/reason-editor): Tiptap-based rich text with toolbar, documents manager and outlines |
+| [`reason-editor-sidebar`](https://www.npmjs.com/package/react-reason-editor-sidebar) | REASON's file/folder sidebar, open-tabs panel and split-view menu, standalone |
+| [`shadcn-settings`](https://www.npmjs.com/package/shadcn-settings) | Schema-driven settings forms on shadcn/ui — text, password, textarea, select and switch fields |
+| [`shadcn-app-dock`](https://www.npmjs.com/package/shadcn-app-dock) | macOS-style category dock with hover magnification and a theme switcher |
+| [`use-voice-control`](https://www.npmjs.com/package/use-voice-control) | React speech-to-text, text-to-speech and voice-activity detection, plus a read-aloud CLI |
+| [`trending-news-api`](https://www.npmjs.com/package/trending-news-api) | Trending news widget backed by Wikipedia pageviews and The News API |
+| [`use-weather-forecast`](https://www.npmjs.com/package/use-weather-forecast) | Weather forecast component using Open-Meteo and IP geolocation |
+
+## Internal
+
+| Package | Description |
+|---|---|
+| [`user-help-docs`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/user-help-docs) | This documentation site — content plus the Fumadocs layer that renders it |
+
+## Installing
+
+```bash
+bun i extract-pdf                     # just the PDF extractor
+bun i search-web-api extract-webpage  # search + extraction
+bun i chat-agent-toolkit              # the whole agent
+```
+
+Every package is licensed under [PROSPER](https://rights.institute/PROSPER).
+Source for all of them is under
+[`packages/`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages).

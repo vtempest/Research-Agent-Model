@@ -198,7 +198,8 @@
                   "chatModel": { "$ref": "#/components/schemas/ModelWithProvider" },
                   "sourceExtractionEnabled": { "type": "boolean" },
                   "thinkingTimeLimit": { "type": "integer", "minimum": 0 },
-                  "systemInstructions": { "type": "string" }
+                  "systemInstructions": { "type": "string" },
+                  "queryExpansionPrompt": { "type": "string" }
                 }
               }
             }
@@ -531,7 +532,8 @@
                 "properties": {
                   "chatHistory": { "type": "array", "items": { "type": "object" } },
                   "chatModel": { "$ref": "#/components/schemas/ModelWithProvider" },
-                  "maxQuestions": { "type": "integer", "default": 3 }
+                  "maxQuestions": { "type": "integer", "default": 3 },
+                  "promptTemplate": { "type": "string" }
                 }
               }
             }
@@ -2607,7 +2609,8 @@
         "properties": {
           "domain": { "type": "string" },
           "name": { "type": "string" },
-          "favicon": { "type": "string" }
+          "favicon": { "type": "string" },
+          "rank": { "type": "number" }
         }
       },
       "Article": {

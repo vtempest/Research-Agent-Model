@@ -1,6 +1,8 @@
 /**
- * React hook that lazily loads the Google Picker API scripts and exposes `openPicker` to let users
- * select files from Google Drive using an OAuth access token.
+ * @fileoverview Hook that lazily loads the Google Picker API and exposes a function to open it.
+ *
+ * `useGooglePicker` loads the Google API client and Picker scripts on mount, then returns `openPicker`,
+ * which lets the user select files from Google Drive using an OAuth access token.
  */
 'use client';
 
@@ -65,7 +67,7 @@ export const useGooglePicker = () => {
 
     try {
       const { picker } = googleApi;
-      const pickerInstance = new picker.PickerBuilder()
+      const builder = new picker.PickerBuilder()
         .addView(picker.ViewId.DOCS)
         .addView(picker.ViewId.DOCS_IMAGES)
         .addView(picker.ViewId.DOCS_VIDEOS)
@@ -77,7 +79,16 @@ export const useGooglePicker = () => {
             )
         )
         .setOAuthToken(accessToken)
-        .setDeveloperKey(researchAgentUIConfig.googleApiKey)
+        .setDeveloperKey(researchAgentUIConfig.googleApiKey);
+
+      // The Drive connector is authorized with the per-file `drive.file`
+      // scope, so picking a file is what grants access to it — and Google
+      // only issues that grant when the picker names the app asking for it.
+      if (researchAgentUIConfig.googleAppId) {
+        builder.setAppId(researchAgentUIConfig.googleAppId);
+      }
+
+      const pickerInstance = builder
         .setCallback((data: google.picker.ResponseObject) => {
           if (data.action === picker.Action.PICKED) {
             const files = data.docs;

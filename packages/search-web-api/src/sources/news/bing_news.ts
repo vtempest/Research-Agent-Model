@@ -1,5 +1,8 @@
+/**
+ * @fileoverview Engine adapter that scrapes Bing News search results.
+ */
 import { parseHTML } from "linkedom";
-import { EngineFunction } from "../../types/search-engine-interface.js";
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const bing_news: EngineFunction = async (
   q: string,

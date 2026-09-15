@@ -42,6 +42,10 @@ describe('YouTubeTranscriptApi', () => {
       });
 
       expect(fetchPromise).toBeInstanceOf(Promise);
+      // The call really does go out to YouTube, and this test only asserts the
+      // method's shape. Swallow the settlement so a rejected request cannot
+      // take the worker down as an unhandled rejection.
+      fetchPromise.catch(() => undefined);
     });
   });
 
@@ -54,6 +58,7 @@ describe('YouTubeTranscriptApi', () => {
     it('should return a promise', () => {
       const listPromise = api.list('test-video-id');
       expect(listPromise).toBeInstanceOf(Promise);
+      listPromise.catch(() => undefined);
     });
   });
 });

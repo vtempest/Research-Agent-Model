@@ -1,66 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDB } from "@/lib/database";
-import { user } from "@/lib/database/schema";
-import { getSession } from "@/lib/auth/session";
-import { like, or, desc, count } from "drizzle-orm";
+import { assertAdmin } from "@/lib/auth/admin";
+import { getAdminDB } from "@/lib/admin/db";
+import { DEFAULT_SORT, loadSiteUsageTotals, loadUserUsagePage } from "@/lib/admin/user-usage";
 
 export const runtime = "nodejs";
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
-  .split(",")
-  .map((e) => e.trim().toLowerCase())
-  .filter(Boolean);
+const DEFAULT_LIMIT = 25;
+const MAX_LIMIT = 100;
 
-async function assertAdmin() {
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  if (
-    ADMIN_EMAILS.length > 0 &&
-    !ADMIN_EMAILS.includes(session.user.email.toLowerCase())
-  ) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-  return null;
+function intParam(raw: string | null, fallback: number): number {
+  const parsed = parseInt(raw ?? "", 10);
+  return Number.isNaN(parsed) ? fallback : parsed;
 }
 
+/**
+ * Paginated user directory with per-user usage counters, for the admin page.
+ * Supports search over name/email/id, an anonymous-account filter, and sorting
+ * by any column — usage counters included — so power users and dormant
+ * accounts can both be found without paging through the whole directory.
+ */
 export async function GET(req: NextRequest) {
   const guard = await assertAdmin();
   if (guard) return guard;
 
   const { searchParams } = req.nextUrl;
-  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "25", 10)));
-  const q = searchParams.get("q")?.trim() ?? "";
-  const offset = (page - 1) * limit;
+  // `|| fallback` would turn an explicit `0` into the default instead of
+  // clamping it, so unparseable input is caught with Number.isNaN.
+  const page = Math.max(1, intParam(searchParams.get("page"), 1));
+  const limit = Math.min(MAX_LIMIT, Math.max(1, intParam(searchParams.get("limit"), DEFAULT_LIMIT)));
 
-  const db = getDB();
+  const db = getAdminDB();
 
-  const where = q
-    ? or(
-        like(user.email, `%${q}%`),
-        like(user.name, `%${q}%`),
-        like(user.id, `%${q}%`),
-      )
-    : undefined;
-
-  const [rows, [{ total }]] = await Promise.all([
-    db
-      .select()
-      .from(user)
-      .where(where)
-      .orderBy(desc(user.createdAt))
-      .limit(limit)
-      .offset(offset),
-    db.select({ total: count() }).from(user).where(where),
+  const [{ users, matchedUsers }, totals] = await Promise.all([
+    loadUserUsagePage(db, {
+      page,
+      limit,
+      search: searchParams.get("q")?.trim() || undefined,
+      hideAnonymous: searchParams.get("hideAnonymous") === "true",
+      sort: searchParams.get("sort") ?? DEFAULT_SORT,
+      dir: searchParams.get("dir") === "asc" ? "asc" : "desc",
+    }),
+    loadSiteUsageTotals(db),
   ]);
 
+  const pageCount = Math.max(Math.ceil(matchedUsers / limit), 1);
+
   return NextResponse.json({
-    users: rows,
-    total,
+    users,
     page,
     limit,
-    pages: Math.ceil(total / limit),
+    matchedUsers,
+    pageCount,
+    totals,
+    // `total`/`pages` are the pre-usage-counter names for the same numbers,
+    // kept so existing clients of this endpoint keep working.
+    total: matchedUsers,
+    pages: pageCount,
   });
 }

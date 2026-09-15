@@ -1,7 +1,7 @@
 /** @fileoverview DOCX conversion pipeline with style-aware HTML normalization for card parsing. */
 import JSZip from "jszip";
 import { Parser } from "htmlparser2";
-import { parseAsync, renderDocument } from "docx-preview";
+import { renderAsync } from "docx-preview";
 import { parseHTML } from "linkedom";
 import grab from "grab-url";
 
@@ -199,29 +199,28 @@ async function renderWithDocxPreview(
   headingStyles: HeadingStyles,
   plainTextOnly: boolean,
 ): Promise<string> {
-  // Create virtual DOM using linkedom for server-side rendering
-  const { document } = parseHTML(
-    "<!DOCTYPE html><html><head></head><body></body></html>",
-  );
+  // docx-preview's renderer always creates elements via the real global
+  // `window.document`, regardless of what container it's given, so the
+  // render containers must come from the real document when one exists.
+  // linkedom's virtual DOM is only usable in true server-side environments
+  // without a global document; mixing real DOM nodes into a linkedom tree
+  // throws ("parentNode has only a getter") because native nodes have a
+  // read-only parentNode accessor.
+  const hasRealDocument =
+    typeof document !== "undefined" && typeof window !== "undefined";
+  const activeDocument = hasRealDocument
+    ? document
+    : parseHTML("<!DOCTYPE html><html><head></head><body></body></html>")
+        .document;
 
-  const bodyContainer = document.createElement("div");
-  const styleContainer = document.createElement("style");
+  const bodyContainer = activeDocument.createElement("div");
+  const styleContainer = activeDocument.createElement("style");
 
-  // Parse the document to get internal structure
-  const wordDocument = await parseAsync(arrayBuffer, {
-    ignoreWidth: true,
-    ignoreHeight: true,
-    ignoreFonts: true,
-    breakPages: false,
-    renderHeaders: false,
-    renderFooters: false,
-    renderFootnotes: false,
-    renderEndnotes: false,
-    useBase64URL: true,
-  });
-
-  // Render to virtual DOM so this works in server-side environments too.
-  await renderDocument(wordDocument, bodyContainer, styleContainer, {
+  // Parse and render in one call. docx-preview's `renderDocument` dropped its
+  // container arguments in 0.4 and now returns the rendered nodes instead;
+  // `renderAsync` is the entry point that still fills the containers this
+  // function reads back below.
+  await renderAsync(arrayBuffer, bodyContainer, styleContainer, {
     className: "docx",
     ignoreWidth: true,
     ignoreHeight: true,

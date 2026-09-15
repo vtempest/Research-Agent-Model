@@ -38,6 +38,8 @@ logs/
 # Testing
 /coverage/
 coverage/
+html/
+.vitest/
 test-report.junit.xml
 
 # Miscellaneous
@@ -52,11 +54,30 @@ pnpm-lock*
 
 apps/qwksearch-web/.open-next
 .dev.vars
-packages/reason-editor/demo
-.claude
+.claude/*
+!.claude/skills
+# Agent docs for Claude Code — checked in on purpose (see CLAUDE.md)
+!.claude/apps
+!.claude/packages
+!.claude/architecture
+!.claude/settings.json
+.claude/settings.local.json
+CLAUDE.local.md
 .turbo
 
 yarn.lock
 .yarnrc.yml
-bun.lock
 bun.lockb
+
+# Only the lockfile at the repo root is real: bun resolves every workspace
+# package from it, so a bun.lock inside one is never refreshed by an install
+# here, goes stale, and then fails its own `bun install --frozen-lockfile`
+# wherever that package is installed on its own.
+packages/*/bun.lock
+packages/render-url-to-html/*/bun.lock
+apps/*/bun.lock
+
+
+# Written by search-web-api's live engine-health suite on every run
+packages/search-web-api/test/engine-health-report.json
+packages/search-web-api/test/engine-health-summary.txt

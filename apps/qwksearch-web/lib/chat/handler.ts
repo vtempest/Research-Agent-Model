@@ -277,6 +277,7 @@ export const handleChatRequest = async (req: Request): Promise<Response> => {
       body.category,
       body.sourceExtractionEnabled,
       body.thinkingTimeLimit,
+      body.queryExpansionPrompt ?? undefined,
     );
 
     // --- Set up the SSE response stream ---

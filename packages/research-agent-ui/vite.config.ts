@@ -14,6 +14,10 @@ export default defineConfig({
     lib: {
       entry: {
         index: fileURLToPath(new URL("./src/index.ts", import.meta.url)),
+        // The same app as `index`, plus the REASON editor and its sidebar.
+        // A separate entry so importing the root never drags the editor's
+        // dependency tree into a chat-only consumer's bundle.
+        workspace: fileURLToPath(new URL("./src/workspace.ts", import.meta.url)),
         config: fileURLToPath(new URL("./src/config.ts", import.meta.url)),
         api: fileURLToPath(new URL("./src/api/index.ts", import.meta.url)),
       },
@@ -35,7 +39,9 @@ export default defineConfig({
         !/^[A-Za-z]:[/\\]/.test(id),
       output: {
         banner: (chunk) =>
-          chunk.name === "index" ? '"use client";' : "",
+          chunk.name === "index" || chunk.name === "workspace"
+            ? '"use client";'
+            : "",
       },
     },
   },

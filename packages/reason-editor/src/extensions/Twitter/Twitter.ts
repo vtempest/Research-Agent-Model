@@ -48,15 +48,25 @@ interface SetTweetOptions {
   src: string;
 }
 
+// Declared under `reasonTwitter` rather than `twitter`: `novel` — a dependency
+// of this package — already augments `@tiptap/core` with a `twitter` namespace
+// carrying `setTweet` alone, and TypeScript rejects a second declaration of the
+// same property with a different shape (TS2717). Command namespaces are
+// flattened into `editor.commands`, so the call sites are unchanged either way.
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
-    twitter: {
+    reasonTwitter: {
       /**
        * Insert a tweet
        * @param options The tweet attributes
        * @example editor.commands.setTweet({ src: 'https://x.com/seanpk/status/1800145949580517852' })
        */
       setTweet: (options: SetTweetOptions) => ReturnType;
+      /**
+       * Replace the tweet in the selected node
+       * @param options The tweet attributes
+       * @example editor.commands.updateTweet({ src: 'https://x.com/seanpk/status/1800145949580517852' })
+       */
       updateTweet: (options: SetTweetOptions) => ReturnType;
     };
   }

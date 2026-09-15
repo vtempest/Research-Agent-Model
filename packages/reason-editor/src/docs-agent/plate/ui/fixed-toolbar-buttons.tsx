@@ -1,0 +1,142 @@
+'use client';
+
+import * as React from 'react';
+
+import {
+  BaselineIcon,
+  BoldIcon,
+  Code2Icon,
+  HighlighterIcon,
+  ItalicIcon,
+  PaintBucketIcon,
+  StrikethroughIcon,
+  UnderlineIcon,
+} from 'lucide-react';
+import { KEYS } from 'platejs';
+import { useEditorReadOnly } from 'platejs/react';
+
+import { AlignToolbarButton } from './align-toolbar-button';
+import { EmojiToolbarButton } from './emoji-toolbar-button';
+import { InlineEquationToolbarButton } from './equation-toolbar-button';
+import { ExportToolbarButton } from './export-toolbar-button';
+import { FontColorToolbarButton } from './font-color-toolbar-button';
+import { FontSizeToolbarButton } from './font-size-toolbar-button';
+import { RedoToolbarButton, UndoToolbarButton } from './history-toolbar-button';
+import { ImportToolbarButton } from './import-toolbar-button';
+import { IndentToolbarButton, OutdentToolbarButton } from './indent-toolbar-button';
+import { InsertToolbarButton } from './insert-toolbar-button';
+import { LineHeightToolbarButton } from './line-height-toolbar-button';
+import { LinkToolbarButton } from './link-toolbar-button';
+import {
+  BulletedListToolbarButton,
+  NumberedListToolbarButton,
+  TodoListToolbarButton,
+} from './list-toolbar-button';
+import { MarkToolbarButton } from './mark-toolbar-button';
+import { MediaToolbarButton } from './media-toolbar-button';
+import { MoreToolbarButton } from './more-toolbar-button';
+import { TableToolbarButton } from './table-toolbar-button';
+import { ToggleToolbarButton } from './toggle-toolbar-button';
+import { ToolbarGroup } from './toolbar';
+import { TranscribeToolbarButton } from './transcribe-toolbar-button';
+import { TurnIntoToolbarButton } from './turn-into-toolbar-button';
+
+/**
+ * Every button the Plate playground's fixed toolbar offers, restricted to the
+ * plugins `../plate-editor-config.ts` actually registers, and with REASON's own
+ * Dictate toggle appended.
+ *
+ * Order follows the playground: history, block type and size, marks, colour,
+ * alignment and lists, links and tables, insert and media, spacing, then the
+ * document-level actions. `ToolbarGroup` draws the dividers, so grouping here is
+ * also the visual grouping.
+ *
+ * Left out on purpose, because their plugins are not installed: the AI menu and
+ * Copilot, comments, suggestions and the review/edit mode switch, Excalidraw and
+ * code drawings, dates and footnotes.
+ */
+export function FixedToolbarButtons() {
+  const readOnly = useEditorReadOnly();
+
+  if (readOnly) return null;
+
+  return (
+    <>
+      <ToolbarGroup>
+        <UndoToolbarButton />
+        <RedoToolbarButton />
+      </ToolbarGroup>
+
+      <ToolbarGroup>
+        <TurnIntoToolbarButton />
+        <FontSizeToolbarButton />
+      </ToolbarGroup>
+
+      <ToolbarGroup>
+        <MarkToolbarButton nodeType={KEYS.bold} tooltip="Bold (⌘B)">
+          <BoldIcon />
+        </MarkToolbarButton>
+        <MarkToolbarButton nodeType={KEYS.italic} tooltip="Italic (⌘I)">
+          <ItalicIcon />
+        </MarkToolbarButton>
+        <MarkToolbarButton nodeType={KEYS.underline} tooltip="Underline (⌘U)">
+          <UnderlineIcon />
+        </MarkToolbarButton>
+        <MarkToolbarButton nodeType={KEYS.strikethrough} tooltip="Strikethrough (⌘⇧X)">
+          <StrikethroughIcon />
+        </MarkToolbarButton>
+        <MarkToolbarButton nodeType={KEYS.code} tooltip="Code (⌘E)">
+          <Code2Icon />
+        </MarkToolbarButton>
+        <MoreToolbarButton />
+      </ToolbarGroup>
+
+      <ToolbarGroup>
+        <FontColorToolbarButton nodeType={KEYS.color} tooltip="Text colour">
+          <BaselineIcon />
+        </FontColorToolbarButton>
+        <FontColorToolbarButton nodeType={KEYS.backgroundColor} tooltip="Background colour">
+          <PaintBucketIcon />
+        </FontColorToolbarButton>
+        <MarkToolbarButton nodeType={KEYS.highlight} tooltip="Highlight (⌘⇧H)">
+          <HighlighterIcon />
+        </MarkToolbarButton>
+      </ToolbarGroup>
+
+      <ToolbarGroup>
+        <AlignToolbarButton />
+        <NumberedListToolbarButton />
+        <BulletedListToolbarButton />
+        <TodoListToolbarButton />
+        <ToggleToolbarButton />
+      </ToolbarGroup>
+
+      <ToolbarGroup>
+        <LinkToolbarButton />
+        <TableToolbarButton />
+        <EmojiToolbarButton />
+      </ToolbarGroup>
+
+      <ToolbarGroup>
+        <InsertToolbarButton />
+        <MediaToolbarButton nodeType={KEYS.img} />
+        <MediaToolbarButton nodeType={KEYS.video} />
+        <MediaToolbarButton nodeType={KEYS.audio} />
+        <MediaToolbarButton nodeType={KEYS.file} />
+        <InlineEquationToolbarButton />
+      </ToolbarGroup>
+
+      <ToolbarGroup>
+        <LineHeightToolbarButton />
+        <OutdentToolbarButton />
+        <IndentToolbarButton />
+      </ToolbarGroup>
+
+      <ToolbarGroup>
+        <ImportToolbarButton />
+        <ExportToolbarButton />
+        <TranscribeToolbarButton />
+      </ToolbarGroup>
+    </>
+  );
+}

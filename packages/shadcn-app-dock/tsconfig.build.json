@@ -2,6 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
+    // TypeScript 7 no longer infers the common source directory (TS5011).
+    "rootDir": "./src",
     "declaration": true,
     "emitDeclarationOnly": true,
     "declarationDir": "./dist"

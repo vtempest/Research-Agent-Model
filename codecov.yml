@@ -1,0 +1,203 @@
+# Codecov configuration for the QwkSearch monorepo.
+#
+# Each workspace package uploads its own lcov report under its own flag (see
+# .github/workflows/test-coverage.yml), so the dashboard shows a per-package
+# percentage as well as the project total.
+
+codecov:
+  require_ci_to_pass: false
+
+coverage:
+  precision: 2
+  round: down
+  range: "50...90"
+
+  status:
+    project:
+      default:
+        # Report coverage without failing the build while the suites are still
+        # being filled in; tighten to a real target once the numbers settle.
+        target: auto
+        threshold: 2%
+        informational: true
+    patch:
+      default:
+        target: 70%
+        threshold: 5%
+        informational: true
+
+# `carryforward` keeps a package's last known coverage when a PR does not
+# touch it, so untouched packages do not read as 0% on every upload.
+flag_management:
+  default_rules:
+    carryforward: true
+    statuses:
+      - type: project
+        target: auto
+        threshold: 2%
+        informational: true
+
+comment:
+  layout: "header, diff, flags, components, files, footer"
+  behavior: default
+  require_changes: false
+
+# Group packages so the PR comment summarizes coverage by area rather than
+# by twenty individual flags.
+component_management:
+  individual_components:
+    - component_id: apps
+      name: Apps
+      paths:
+        - apps/**
+    - component_id: search
+      name: Search & extraction
+      paths:
+        - packages/search-web-api/**
+        - packages/extract-webpage/**
+        - packages/extract-pdf/**
+        - packages/extract-youtube/**
+        - packages/domain-rank/**
+        - packages/html-renderer-api/**
+        - packages/render-url-to-html/**
+    - component_id: llm
+      name: LLM toolkit
+      paths:
+        - packages/chat-agent-toolkit/**
+        - packages/write-language/**
+        - packages/qwksearch-mcp-server/**
+    - component_id: ui
+      name: UI packages
+      paths:
+        - packages/reason-editor/**
+        - packages/research-agent-ui/**
+        - packages/shadcn-app-dock/**
+        - packages/shadcn-settings/**
+        - packages/react-weather-forecast/**
+        - packages/trending-news-api/**
+        - packages/use-voice-control/**
+    - component_id: clients
+      name: API clients
+      paths:
+        - packages/qwksearch-api-client/**
+        - packages/notebooklm-api-client/**
+
+    # One component per `packages/*` directory, scoped to that folder only,
+    # so each package's README can link a badge that reports just its own
+    # coverage rather than the project total. Kept alongside the grouped
+    # components above, which remain the areas the PR comment digest uses.
+    - component_id: package-chat-agent-toolkit
+      name: "Package: chat-agent-toolkit"
+      paths:
+        - packages/chat-agent-toolkit/**
+    - component_id: package-domain-rank
+      name: "Package: domain-rank"
+      paths:
+        - packages/domain-rank/**
+    - component_id: package-extract-pdf
+      name: "Package: extract-pdf"
+      paths:
+        - packages/extract-pdf/**
+    - component_id: package-extract-webpage
+      name: "Package: extract-webpage"
+      paths:
+        - packages/extract-webpage/**
+    - component_id: package-extract-youtube
+      name: "Package: extract-youtube"
+      paths:
+        - packages/extract-youtube/**
+    - component_id: package-html-renderer-api
+      name: "Package: html-renderer-api"
+      paths:
+        - packages/html-renderer-api/**
+    - component_id: package-language-model-training
+      name: "Package: language-model-training"
+      paths:
+        - packages/language-model-training/**
+    - component_id: package-notebooklm-api-client
+      name: "Package: notebooklm-api-client"
+      paths:
+        - packages/notebooklm-api-client/**
+    - component_id: package-qwksearch-api-client
+      name: "Package: qwksearch-api-client"
+      paths:
+        - packages/qwksearch-api-client/**
+    - component_id: package-qwksearch-mcp-server
+      name: "Package: qwksearch-mcp-server"
+      paths:
+        - packages/qwksearch-mcp-server/**
+    - component_id: package-react-weather-forecast
+      name: "Package: react-weather-forecast"
+      paths:
+        - packages/react-weather-forecast/**
+    - component_id: package-reason-editor
+      name: "Package: reason-editor"
+      paths:
+        - packages/reason-editor/**
+    - component_id: package-reason-editor-sidebar
+      name: "Package: reason-editor-sidebar"
+      paths:
+        - packages/reason-editor-sidebar/**
+    - component_id: package-render-url-to-html
+      name: "Package: render-url-to-html"
+      paths:
+        - packages/render-url-to-html/**
+    - component_id: package-research-agent-ui
+      name: "Package: research-agent-ui"
+      paths:
+        - packages/research-agent-ui/**
+    - component_id: package-search-web-api
+      name: "Package: search-web-api"
+      paths:
+        - packages/search-web-api/**
+    - component_id: package-searxng-search-cloudflare
+      name: "Package: searxng-search-cloudflare"
+      paths:
+        - packages/searxng-search-cloudflare/**
+    - component_id: package-shadcn-app-dock
+      name: "Package: shadcn-app-dock"
+      paths:
+        - packages/shadcn-app-dock/**
+    - component_id: package-shadcn-settings
+      name: "Package: shadcn-settings"
+      paths:
+        - packages/shadcn-settings/**
+    - component_id: package-trending-news-api
+      name: "Package: trending-news-api"
+      paths:
+        - packages/trending-news-api/**
+    - component_id: package-use-voice-control
+      name: "Package: use-voice-control"
+      paths:
+        - packages/use-voice-control/**
+    - component_id: package-user-help-docs
+      name: "Package: user-help-docs"
+      paths:
+        - packages/user-help-docs/**
+    - component_id: package-write-language
+      name: "Package: write-language"
+      paths:
+        - packages/write-language/**
+
+ignore:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/.next/**"
+  - "**/.output/**"
+  - "**/.wxt/**"
+  - "**/.svelte-kit/**"
+  - "**/coverage/**"
+  - "**/test/**"
+  - "**/tests/**"
+  - "**/__tests__/**"
+  - "**/*.test.*"
+  - "**/*.spec.*"
+  - "**/*.config.*"
+  - "**/*.d.ts"
+  - "**/*.gen.ts"
+  - "packages/language-model-training/**"
+  - "packages/searxng-search-cloudflare/**"
+  # A vendored pnpm workspace that no coverage job installs or runs; without
+  # this it would land in the "Apps" component via `apps/**`.
+  - "apps/qwk-in-lobe/**"

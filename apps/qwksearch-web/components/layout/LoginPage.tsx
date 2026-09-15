@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { Mail } from "lucide-react"
 import { FaGoogle, FaDiscord, FaFacebook, FaLinkedin } from 'react-icons/fa'
@@ -12,7 +11,36 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth/client"
-import { APP_NAME } from "@/lib/config/site"
+import { config } from "@/lib/config/site"
+
+/**
+ * Brand mark shown above the sign-in form. Served from an external host, so it
+ * uses a plain <img> rather than next/image: the Worker's image optimizer only
+ * proxies assets out of the local ASSETS bundle (see worker/index.ts), which is
+ * why the previous "/icons/apple-touch-icon.png" — a path that does not exist,
+ * the file lives at "/apple-touch-icon.png" — came back as a 404.
+ */
+const LOGO_URL = "https://i.imgur.com/VRrWzUG.png"
+
+/**
+ * Turns a better-auth client error into something a signed-out visitor can act
+ * on. A 403 here is the origin check rejecting the request, which means the
+ * host the app is being served from is not in the backend's trustedOrigins.
+ */
+function describeAuthError(
+    error: { message?: string; status?: number; statusText?: string } | null,
+    label: string,
+): string {
+    if (error?.status === 403) {
+        return `${label} sign-in was rejected by the server for this domain (${
+            typeof window !== "undefined" ? window.location.origin : "this origin"
+        }). Add it to BETTER_AUTH_TRUSTED_ORIGINS.`
+    }
+    if (error?.status === 404) {
+        return `${label} sign-in is not configured on the server.`
+    }
+    return error?.message || error?.statusText || `${label} sign-in failed. Please try again.`
+}
 
 // Google Sign In Button
 function GoogleSignIn() {
@@ -21,10 +49,18 @@ function GoogleSignIn() {
     const handleSignIn = async () => {
         setIsLoading(true)
         try {
-            await authClient.signIn.social({
+            // better-auth's client resolves with `{ data, error }` instead of
+            // rejecting, so a failed sign-in has to be read off `error` — a
+            // bare try/catch silently swallowed every failure and left the
+            // button doing nothing at all.
+            const { error } = await authClient.signIn.social({
                 provider: "google",
                 callbackURL: "/",
             })
+            if (error) {
+                console.error("Google sign-in error:", error)
+                toast.error(describeAuthError(error, "Google"))
+            }
         } catch (error: any) {
             console.error("Google sign-in error:", error)
             toast.error(error?.message ?? "Failed to sign in with Google. Provider may not be configured.")
@@ -54,16 +90,21 @@ interface OAuthSignInProps {
 function OAuthSignIn({ provider }: OAuthSignInProps) {
     const [isLoading, setIsLoading] = useState(false)
 
+    const providerName = provider.charAt(0).toUpperCase() + provider.slice(1)
+
     const handleSignIn = async () => {
         setIsLoading(true)
         try {
-            await authClient.signIn.social({
+            const { error } = await authClient.signIn.social({
                 provider,
                 callbackURL: "/",
             })
+            if (error) {
+                console.error(`${provider} sign-in error:`, error)
+                toast.error(describeAuthError(error, providerName))
+            }
         } catch (error: any) {
             console.error(`${provider} sign-in error:`, error)
-            const providerName = provider.charAt(0).toUpperCase() + provider.slice(1)
             toast.error(error?.message ?? `${providerName} sign-in is not configured. Please use magic link or contact support.`)
         } finally {
             setIsLoading(false)
@@ -78,9 +119,7 @@ function OAuthSignIn({ provider }: OAuthSignInProps) {
         }
     }
 
-    const getLabel = () => {
-        return provider.charAt(0).toUpperCase() + provider.slice(1)
-    }
+    const getLabel = () => providerName
 
     return (
         <Button
@@ -106,10 +145,17 @@ function MagicLinkSignIn() {
         setIsLoading(true)
 
         try {
-            await authClient.signIn.magicLink({
+            // Same `{ data, error }` contract as the social providers: without
+            // this check a rejected request still showed "Magic link sent!".
+            const { error } = await authClient.signIn.magicLink({
                 email,
                 callbackURL: "/",
             })
+            if (error) {
+                console.error("Magic link error:", error)
+                toast.error(describeAuthError(error, "Magic link"))
+                return
+            }
             setEmailSent(true)
             toast.success("Magic link sent! Check your email (or console in dev mode).")
         } catch (error) {
@@ -205,18 +251,13 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="flex flex-col items-center gap-4">
-                    <div className="flex items-center gap-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg overflow-hidden">
-                            <Image
-                                src="/icons/apple-touch-icon.png"
-                                alt="Logo"
-                                width={40}
-                                height={40}
-                                className="h-full w-full object-cover"
-                            />
-                        </div>
-                        <span className="text-2xl font-bold">{APP_NAME}</span>
-                    </div>
+                    <img
+                        src={LOGO_URL}
+                        alt={config.appName}
+                        width={160}
+                        height={160}
+                        className="h-20 w-auto object-contain"
+                    />
                     <div className="text-center">
                         <p className="text-sm text-muted-foreground">
                             {hasOAuthProviders ? "Sign in to continue" : "Sign in with email"}

@@ -8,6 +8,9 @@ fastapi>=0.110.0
 uvicorn[standard]>=0.29.0
 pydantic>=2.0.0
 
+# Vast.ai training backend (src/cloud/vast_utils.py, src/services/vast_job.py)
+requests>=2.31.0
+
 # Wikipedia-scale pipeline: MongoDB client for dumpster-dive article storage
 pymongo>=4.6.0
 
@@ -19,3 +22,6 @@ seaborn>=0.11.0
 tqdm>=4.64.0
 psutil>=5.8.0
 ipython>=8.0.0
+
+# Testing
+pytest-cov>=4.1.0

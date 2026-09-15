@@ -69,6 +69,7 @@ export const user = sqliteTable("user", {
   updatedAt: integer("updated_at", {
     mode: "timestamp",
   }).notNull(),
+  isAnonymous: integer("is_anonymous", { mode: "boolean" }),
 });
 
 export const session = sqliteTable("session", {
@@ -232,6 +233,44 @@ export const documents = sqliteTable(
       parentIdIdx: index("idx_documents_parentId").on(table.parentId),
       userIdIdx: index("idx_documents_userId").on(table.userId),
       createdAtIdx: index("idx_documents_createdAt").on(table.createdAt),
+    };
+  },
+);
+
+// One row per user who has requested access to a document they don't own.
+// The unique constraint on (documentId, requesterUserId) is what enforces
+// "only one request per user per document" — the access-request API relies
+// on this to refuse a second send rather than re-checking application-side.
+export const documentAccessRequests = sqliteTable(
+  "document_access_requests",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    documentId: integer("documentId")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    requesterUserId: text("requesterUserId")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    ownerUserId: text("ownerUserId").notNull(),
+    status: text("status", { enum: ["sent", "failed"] })
+      .notNull()
+      .default("sent"),
+    createdAt: text("createdAt")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => {
+    return {
+      documentIdIdx: index("idx_document_access_requests_documentId").on(
+        table.documentId,
+      ),
+      requesterUserIdIdx: index(
+        "idx_document_access_requests_requesterUserId",
+      ).on(table.requesterUserId),
+      uniqueRequest: unique("uq_document_access_requests_doc_requester").on(
+        table.documentId,
+        table.requesterUserId,
+      ),
     };
   },
 );

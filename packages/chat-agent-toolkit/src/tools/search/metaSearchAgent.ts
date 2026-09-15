@@ -88,11 +88,19 @@ class MetaSearchAgent implements MetaSearchAgentType {
     sourceExtractionEnabled = false,
     thinkingTimeLimit = 0,
     emitter?: EventEmitter,
+    queryGeneratorPromptOverride?: string,
   ): Promise<{ query: string; docs: Document[] }> {
+    // A user-authored query-expansion prompt (Settings → Search Settings)
+    // replaces the focus mode's built-in one. Blank or whitespace-only text
+    // means "use the built-in prompt".
+    const queryGeneratorPrompt = queryGeneratorPromptOverride?.trim()
+      ? queryGeneratorPromptOverride
+      : this.config.queryGeneratorPrompt;
+
     const { text: retrieverOutput } = await generateText({
       model: llm,
       temperature: 0,
-      system: this.config.queryGeneratorPrompt,
+      system: queryGeneratorPrompt,
       messages: [
         ...this.config.queryGeneratorFewShots.map(([role, content]) => ({
           role,
@@ -333,6 +341,7 @@ class MetaSearchAgent implements MetaSearchAgentType {
     category: string,
     sourceExtractionEnabled: boolean,
     thinkingTimeLimit: number,
+    queryExpansionPrompt?: string,
   ): Promise<void> {
     try {
       let docs: Document[] | null = null;
@@ -347,6 +356,7 @@ class MetaSearchAgent implements MetaSearchAgentType {
           sourceExtractionEnabled,
           thinkingTimeLimit,
           emitter,
+          queryExpansionPrompt,
         );
         query = result.query;
         docs = result.docs;
@@ -454,6 +464,7 @@ class MetaSearchAgent implements MetaSearchAgentType {
     category: string = "general",
     sourceExtractionEnabled = false,
     thinkingTimeLimit = 0,
+    queryExpansionPrompt?: string,
   ) {
     const emitter = new EventEmitter();
 
@@ -471,6 +482,7 @@ class MetaSearchAgent implements MetaSearchAgentType {
         category,
         sourceExtractionEnabled,
         thinkingTimeLimit,
+        queryExpansionPrompt,
       );
     }, 0);
 

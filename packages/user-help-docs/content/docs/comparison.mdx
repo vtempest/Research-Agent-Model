@@ -1,0 +1,32 @@
+---
+title: "Comparison"
+description: "How QwkSearch compares to Perplexity, ChatGPT, Claude, Gemini, and Grok."
+icon: "GitCompare"
+---
+
+Where QwkSearch sits next to the closed research assistants. ✅ means the
+feature is there and works the way the row describes, ⚠️ that it exists but is
+partial or indirect, ❌ that it isn't offered.
+
+| Feature |  <img src="https://www.google.com/s2/favicons?domain=qwksearch.com&sz=20" width="20" height="20" alt="QwkSearch" /> QwkSearch |  <img src="https://www.google.com/s2/favicons?domain=perplexity.ai&sz=20" width="20" height="20" alt="Perplexity" /> Perplexity |  <img src="https://www.google.com/s2/favicons?domain=chatgpt.com&sz=20" width="20" height="20" alt="ChatGPT" /> ChatGPT |  <img src="https://www.google.com/s2/favicons?domain=claude.ai&sz=20" width="20" height="20" alt="Claude" /> Claude | <img src="https://www.google.com/s2/favicons?domain=google.com&sz=20" width="20" height="20" alt="Google" /> Google Gemini |  <img src="https://www.google.com/s2/favicons?domain=grok.com&sz=20" width="20" height="20" alt="Grok" /> Grok |
+|---|---|---|---|---|---|---|
+| Open source | ✅ Yes | ❌ No | ❌ No | ❌ No | ❌ No | ❌ No |
+| Self-hostable (Cloudflare Workers, Docker) | ✅ Yes | ❌ No | ❌ No | ❌ No | ❌ No | ❌ No |
+| Choice of LLM provider | ✅ Claude, GPT, Gemini, Grok, Llama, Chinese LLMs, etc. | ❌ Fixed/limited | ❌ OpenAI only | ❌ Anthropic only | ❌ Gemini only | ❌ Grok/xAI only |
+| Search coverage | ✅ 100+ sites across 10 categories (web, academic, news, video, files, images, etc.) | ⚠️ Web-focused | ⚠️ Web search, varies by mode | ⚠️ Web search | ✅ Broad web index, no AI synthesis by default | ⚠️ Web/X-focused |
+| Cited answers with APA formatting | ✅ Built-in citation extraction & formatting | ✅ Yes | ⚠️ Inconsistent | ⚠️ Inconsistent | ❌ No | ⚠️ Citations available, not APA-focused |
+| PDF / YouTube / DOCX ingestion | ✅ Yes, with transcript & structure extraction | ⚠️ PDF only | ⚠️ Limited | ⚠️ Limited | ⚠️ Gemini supports some file uploads | ⚠️ Limited |
+| Research writing/notes editor | ✅ Full Lexical-based editor with outline notation (REASON) | ❌ No | ⚠️ Canvas/projects, not a dedicated research editor | ⚠️ Projects/artifacts, not a dedicated research editor | ⚠️ Workspace/Canvas features, not a dedicated research editor | ❌ No |
+| Browser extension | ✅ AI tab manager | ✅ Yes | ⚠️ Limited | ❌ No | ✅ Yes | ❌ No |
+| Desktop app | ✅ Tauri-based | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No | ⚠️ Web/mobile app; no standard desktop app |
+| Editor/IDE integration | ✅ VS Code extension | ❌ No | ⚠️ Codex/Copilot-style tools are separate | ⚠️ Claude Code is separate | ⚠️ Gemini Code Assist is separate | ⚠️ Grok Code Fast / developer tools are separate |
+| Privacy mode (no saved history) | ✅ Yes | ⚠️ Limited | ⚠️ Limited | ⚠️ Limited | ⚠️ Limited | ⚠️ Limited |
+| Pricing | ✅ Free & open-source; pay-per-use API | 💲 Subscription | 💲 Subscription | 💲 Subscription | 💲 Freemium | 💲 Freemium  |
+
+<Callout type="info">
+Competitor capabilities change often and this table is maintained by hand —
+check the vendor's own docs before relying on a row. The QwkSearch column is
+the one you can check yourself — every claim in it is documented on these pages
+and implemented in the
+[repository](https://github.com/OpenSourceAGI/qwksearch-research-agent).
+</Callout>

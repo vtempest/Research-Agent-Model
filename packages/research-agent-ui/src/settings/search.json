@@ -1,0 +1,267 @@
+[
+  {
+    "name": "Background Art",
+    "key": "showBackgroundArt",
+    "type": "switch",
+    "required": false,
+    "description": "Show a random artistic background on the chat homepage.",
+    "default": true,
+    "scope": "client"
+  },
+  {
+    "name": "Orb Hover Glow",
+    "key": "orbHoverGlow",
+    "type": "switch",
+    "required": false,
+    "description": "Highlight the homepage orb animation with a color glow when you hover over it.",
+    "default": false,
+    "scope": "client"
+  },
+  {
+    "name": "Cursor Glow Trail",
+    "key": "cursorGlowTrail",
+    "type": "switch",
+    "required": false,
+    "description": "Paint a colored glow trail that follows your cursor across the chat homepage background.",
+    "default": false,
+    "scope": "client"
+  },
+  {
+    "name": "Search Result Glow Effect",
+    "key": "searchResultGlow",
+    "type": "switch",
+    "required": false,
+    "description": "Add a cursor-following glow border to source cards in the search results panel.",
+    "default": false,
+    "scope": "client"
+  },
+  {
+    "name": "TTS Voice",
+    "key": "ttsSpeaker",
+    "type": "select",
+    "required": false,
+    "description": "Voice used for read-aloud text-to-speech.",
+    "default": "angus",
+    "scope": "client",
+    "options": [
+      { "name": "Angus", "value": "angus" },
+      { "name": "Asteria", "value": "asteria" },
+      { "name": "Arcas", "value": "arcas" },
+      { "name": "Orion", "value": "orion" },
+      { "name": "Orpheus", "value": "orpheus" },
+      { "name": "Athena", "value": "athena" },
+      { "name": "Luna", "value": "luna" },
+      { "name": "Zeus", "value": "zeus" },
+      { "name": "Perseus", "value": "perseus" },
+      { "name": "Helios", "value": "helios" },
+      { "name": "Hera", "value": "hera" },
+      { "name": "Stella", "value": "stella" }
+    ]
+  },
+  {
+    "name": "System Instructions",
+    "key": "systemInstructions",
+    "type": "textarea",
+    "required": false,
+    "description": "Add custom behavior or tone for the model.",
+    "placeholder": "e.g., \"Respond in a friendly and concise tone\" or \"Use British English and format answers as bullet points.\"",
+    "scope": "client"
+  },
+  {
+    "name": "Follow-up Questions",
+    "key": "maxFollowupQuestions",
+    "type": "select",
+    "options": [
+      { "name": "2 questions", "value": "2" },
+      { "name": "3 questions", "value": "3" },
+      { "name": "4 questions (default)", "value": "4" },
+      { "name": "5 questions", "value": "5" },
+      { "name": "6 questions", "value": "6" }
+    ],
+    "required": false,
+    "description": "Number of follow-up question suggestions to generate after each chat response.",
+    "default": "4",
+    "scope": "client"
+  },
+  {
+    "name": "Follow-up Questions Prompt",
+    "key": "followUpQuestionsPrompt",
+    "type": "textarea",
+    "required": false,
+    "description": "Prompt used to generate the follow-up question suggestions shown after each answer. Use {maxQuestions} for the count set above and {chat_history} for the conversation. Clear the box to restore the built-in prompt.",
+    "placeholder": "Leave blank to use the built-in follow-up prompt.",
+    "default": "",
+    "rows": 14,
+    "scope": "client"
+  },
+  {
+    "name": "Query Expansion Prompt",
+    "key": "queryExpansionPrompt",
+    "type": "textarea",
+    "required": false,
+    "description": "Prompt that rewrites your message into a standalone web-search query before sources are fetched. Keep returning the query inside a <question> block, and any URLs inside a <links> block. Clear the box to restore the built-in prompt.",
+    "placeholder": "Leave blank to use the built-in query expansion prompt.",
+    "default": "",
+    "rows": 14,
+    "scope": "client"
+  },
+  {
+    "name": "SearXNG URL",
+    "key": "searxngURL",
+    "type": "string",
+    "required": false,
+    "description": "The URL of your SearXNG instance",
+    "placeholder": "http://localhost:4000",
+    "default": "",
+    "scope": "server",
+    "env": "SEARXNG_API_URL"
+  },
+  {
+    "name": "Proxy URL",
+    "key": "proxyURL",
+    "type": "string",
+    "required": false,
+    "description": "Optional HTTP/HTTPS/SOCKS5 proxy for outbound search and scrape requests. Format: http://user:pass@host:port or socks5://host:port",
+    "placeholder": "http://user:pass@proxy.example.com:8080",
+    "default": "",
+    "scope": "server",
+    "env": "PROXY_URL",
+    "links": [
+      { "name": "Webshare", "url": "https://www.webshare.io/?referral_code=proxy" },
+      { "name": "Bright Data", "url": "https://brightdata.com" },
+      { "name": "ProxyMesh", "url": "https://proxymesh.com" },
+      { "name": "Free Proxy List", "url": "https://free-proxy-list.net" }
+    ]
+  },
+  {
+    "name": "Tavily API Key",
+    "key": "tavilyApiKey",
+    "type": "password",
+    "required": false,
+    "description": "Optional. Enter your own Tavily API key to override the site default. Leave blank to use the site-provided key.",
+    "placeholder": "tvly-...",
+    "default": "",
+    "scope": "server",
+    "env": "TAVILY_API_KEY"
+  },
+  {
+    "name": "Scrape timeout (seconds)",
+    "key": "sourceScrapeTimeout",
+    "type": "select",
+    "options": [
+      { "name": "3 seconds", "value": "3" },
+      { "name": "5 seconds (default)", "value": "5" },
+      { "name": "10 seconds", "value": "10" },
+      { "name": "15 seconds", "value": "15" },
+      { "name": "20 seconds", "value": "20" }
+    ],
+    "required": false,
+    "description": "Maximum time to wait when scraping each source URL. Slower timeouts allow more content but increase response time.",
+    "default": "5",
+    "scope": "server"
+  },
+  {
+    "name": "Show Weather Widget",
+    "key": "showWeatherWidget",
+    "type": "switch",
+    "required": false,
+    "description": "Show the weather widget on the chat homepage.",
+    "default": true,
+    "scope": "client"
+  },
+  {
+    "name": "Weather Locations",
+    "key": "weatherLocations",
+    "type": "textarea",
+    "required": false,
+    "description": "Show the homepage weather widget for one or more places. Enter one location per line as \"Label, latitude, longitude\" (for example: Tokyo, 35.68, 139.69). Leave blank to auto-detect your current location.",
+    "placeholder": "Tokyo, 35.68, 139.69\nNew York, 40.71, -74.01",
+    "scope": "client",
+    "default": ""
+  },
+  {
+    "name": "Weather Forecast Days",
+    "key": "weatherForecastDays",
+    "type": "select",
+    "required": false,
+    "description": "Number of upcoming days to show in the weather widget.",
+    "default": "5",
+    "scope": "client",
+    "options": [
+      { "name": "3 days", "value": "3" },
+      { "name": "5 days (default)", "value": "5" },
+      { "name": "7 days", "value": "7" }
+    ]
+  },
+  {
+    "name": "Weather Forecast Hours",
+    "key": "weatherForecastHours",
+    "type": "select",
+    "required": false,
+    "description": "Number of upcoming hours to show in the weather widget.",
+    "default": "12",
+    "scope": "client",
+    "options": [
+      { "name": "6 hours", "value": "6" },
+      { "name": "12 hours (default)", "value": "12" },
+      { "name": "24 hours", "value": "24" }
+    ]
+  },
+  {
+    "name": "Weather Temperature Unit",
+    "key": "weatherTemperatureUnit",
+    "type": "select",
+    "required": false,
+    "description": "Default temperature unit for the weather widget. You can still toggle it directly on the widget.",
+    "default": "fahrenheit",
+    "scope": "client",
+    "options": [
+      { "name": "Fahrenheit (default)", "value": "fahrenheit" },
+      { "name": "Celsius", "value": "celsius" }
+    ]
+  },
+  {
+    "name": "Show Trending News Widget",
+    "key": "showTrendingNewsWidget",
+    "type": "switch",
+    "required": false,
+    "description": "Show the trending news widget on the chat homepage.",
+    "default": true,
+    "scope": "client"
+  },
+  {
+    "name": "Trending News API URL",
+    "key": "trendingNewsApiUrl",
+    "type": "string",
+    "required": false,
+    "description": "Leave blank to use this app's built-in news endpoint (/api/news/trending). Set it to the URL of your own deployed trending-news-api Cloudflare Worker to read from that instead.",
+    "placeholder": "https://trending-news-api.your-subdomain.workers.dev",
+    "scope": "client",
+    "default": ""
+  },
+  {
+    "name": "Trending News Topics",
+    "key": "trendingNewsMaxTopics",
+    "type": "select",
+    "required": false,
+    "description": "Number of trending topics to show in the trending news widget.",
+    "default": "6",
+    "scope": "client",
+    "options": [
+      { "name": "4 topics", "value": "4" },
+      { "name": "6 topics (default)", "value": "6" },
+      { "name": "8 topics", "value": "8" },
+      { "name": "10 topics", "value": "10" },
+      { "name": "12 topics", "value": "12" }
+    ]
+  },
+  {
+    "name": "Trending News Images",
+    "key": "trendingNewsShowImages",
+    "type": "switch",
+    "required": false,
+    "description": "Show article thumbnail images in the trending news widget.",
+    "default": true,
+    "scope": "client"
+  }
+]

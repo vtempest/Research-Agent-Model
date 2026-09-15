@@ -15,14 +15,15 @@ describe("OpenRouter Provider Configuration", () => {
     expect(openRouterProvider.provider).toBe("OpenRouter");
   });
 
-  test("Nemotron 3 Super 120B should be the default model for OpenRouter", () => {
+  test("OpenRouter's auto-router should be the default model", () => {
     const openRouterProvider = LANGUAGE_MODELS.find(
       (p) => p.provider.toLowerCase() === "openrouter"
     );
 
-    expect(openRouterProvider.default).toBe(
-      "nvidia/nemotron-3-super-120b-a12b:free"
-    );
+    // `openrouter/free` rotates across whatever free model is healthy, which is
+    // why it is picked first everywhere (see useChat/chatConfig.ts); Nemotron 3
+    // Super 120B is the named fallback when the router is not on offer.
+    expect(openRouterProvider.default).toBe("openrouter/free");
   });
 
   test("Nemotron 3 Super 120B should be marked as free with proper metadata", () => {
@@ -36,7 +37,7 @@ describe("OpenRouter Provider Configuration", () => {
 
     expect(nemotronModel).toBeDefined();
     expect(nemotronModel.free).toBe(true);
-    expect(nemotronModel.type).toBe("text-generation");
+    expect(nemotronModel.type).toBe("text");
     expect(nemotronModel.contextLength).toBe(1_000_000);
   });
 
@@ -69,7 +70,7 @@ describe("OpenRouter Provider Configuration", () => {
       expect(model.name).toBeDefined();
       expect(model.contextLength).toBeGreaterThan(0);
       expect(model.free).toBe(true);
-      expect(model.type).toBe("text-generation");
+      expect(model.type).toBe("text");
     });
   });
 

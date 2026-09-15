@@ -3,6 +3,9 @@ name: Publish to npm
 on:
   push:
     branches: [master]
+  # Lets a release be kicked off by hand from the Actions tab when nothing
+  # has been pushed to master (e.g. re-running a release after fixing a token).
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -48,6 +51,82 @@ jobs:
           chmod +x "$RUNNER_TEMP/husky-shim/husky"
           echo "$RUNNER_TEMP/husky-shim" >> "$GITHUB_PATH"
 
+      # A publish credential that no longer authorizes writes is the single
+      # most likely reason for this workflow to fail, and it fails *late*: npm
+      # answers an unauthorized PUT with `E404 ... could not be found or you do
+      # not have permission to access it`, which reads like a missing package.
+      # Every package in the workspace gets built (minutes of vite) before the
+      # first one hits it, and each failed attempt still signs a provenance
+      # statement into the public sigstore transparency log. Check the
+      # credential up front instead.
+      #
+      # Two supported credentials, in order of preference:
+      #
+      #   1. Trusted publishing (OIDC). No secret at all: npm >= 11.5.1 trades
+      #      this job's `id-token` for a short-lived publish token. Nothing to
+      #      rotate and nothing to expire, but each package must name this
+      #      repo + workflow as a trusted publisher on npmjs.com
+      #      (npmjs.com/package/<name>/access -> Trusted publisher:
+      #      OpenSourceAGI/qwksearch-research-agent, npm-publish.yml).
+      #   2. An NPM_TOKEN secret. npm granular access tokens expire (90 days
+      #      max), so this needs rotating; classic automation tokens no longer
+      #      work for direct publishing.
+      #
+      # Setting the secret picks (2); leaving it unset picks (1).
+      - name: Verify npm publish credentials
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -uo pipefail
+
+          if [ -n "${NODE_AUTH_TOKEN:-}" ]; then
+            if whoami=$(npm whoami 2>&1); then
+              echo "🔑 Publishing as npm user '$whoami' (NPM_TOKEN)"
+              # The token authenticates, but that says nothing about *write*
+              # access: a read-only or differently scoped granular token gets
+              # the same E404 on PUT. Report what it can actually write to,
+              # without failing the run — `npm access` is not available to
+              # every token type, and the publish loop reports the truth.
+              if writable=$(npm access list packages --json 2>/dev/null); then
+                echo "$writable" | node -e "
+                  let s = '';
+                  process.stdin.on('data', d => s += d).on('end', () => {
+                    let perms = {};
+                    try { perms = JSON.parse(s) || {}; } catch { return; }
+                    const rw = Object.keys(perms).filter(k => perms[k] === 'read-write');
+                    console.log(rw.length
+                      ? '🔓 Token has write access to ' + rw.length + ' package(s)'
+                      : '::warning title=npm token may be read-only::The NPM_TOKEN secret authenticates but reports no packages with read-write access. Publishes will fail with E404.');
+                  });
+                "
+              fi
+              exit 0
+            fi
+            echo "$whoami"
+            echo "::error title=npm token rejected::The NPM_TOKEN secret no longer authenticates with registry.npmjs.org — it has expired, been revoked, or was replaced. npm granular access tokens expire after at most 90 days. Mint a new token with write access to these packages at npmjs.com/settings/<user>/tokens and update the NPM_TOKEN repository secret, or remove the secret entirely and configure trusted publishing (see the comment above this step)."
+            exit 1
+          fi
+
+          # No secret: trusted publishing. Make sure npm is new enough and that
+          # nothing left a half-configured empty token in the generated .npmrc,
+          # which would make npm try (and fail) to authenticate with it.
+          npm_version=$(npm --version)
+          if ! node -e "
+            const need = [11, 5, 1];
+            const have = '$npm_version'.split('.').map(Number);
+            for (let i = 0; i < 3; i++) {
+              if ((have[i] || 0) !== need[i]) process.exit((have[i] || 0) > need[i] ? 0 : 1);
+            }
+          "; then
+            echo "⏫ npm $npm_version is older than 11.5.1 — upgrading for trusted publishing (OIDC)"
+            npm install -g npm@latest
+          fi
+
+          if [ -n "${NPM_CONFIG_USERCONFIG:-}" ] && [ -f "$NPM_CONFIG_USERCONFIG" ]; then
+            sed -i '/_authToken/d' "$NPM_CONFIG_USERCONFIG"
+          fi
+          echo "🔑 No NPM_TOKEN secret — publishing via trusted publishing (OIDC) with npm $(npm --version)"
+
       # Install the whole workspace once with bun (the repo's package manager).
       # bun understands the "workspace:*" protocol and links local packages, so
       # every package gets its devDependencies (e.g. vite) and can be built.
@@ -67,14 +146,44 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Note: intentionally no `-e`. Per-package outcomes are handled
-          # explicitly so one package's failure can't abort the whole run.
+          # GitHub runs `run:` steps with `bash -e -o pipefail`, so simply not
+          # writing `set -e` here does not disable errexit — `set -uo pipefail`
+          # leaves it on. With errexit on, the first package whose publish fails
+          # kills the whole step: once the first package in the loop started
+          # returning npm E404 on publish, every later package stopped being
+          # evaluated at all and the whole workspace went unreleased. Turn
+          # errexit off explicitly; per-package outcomes are handled through
+          # $rc below, and the run still exits non-zero at the end if anything
+          # failed.
           set -uo pipefail
+          set +e
+
+          # The per-package subshell below `cd`s into the package directory, so
+          # capture the repo root while we are still at it.
+          repo_root="$PWD"
 
           failed_packages=""
           skipped_builds=""
+          unauthorized_packages=""
+          unattempted_packages=""
+          auth_broken=""
 
-          for dir in packages/*/; do
+          # Walk the workspace in dependency order rather than in shell-glob
+          # (alphabetical) order. bun links workspace packages into node_modules
+          # as symlinks, so a sibling that has not been built yet has no dist/
+          # and the `exports` -> `types` entries in its package.json point at
+          # files that do not exist. Alphabetically, `research-agent-ui` ran its
+          # declaration build before shadcn-app-dock, trending-news-api and
+          # use-voice-control were built, and tsc reported every import of them
+          # as "Cannot find module ... or its corresponding type declarations".
+          # Dependency order also means a sibling's `workspace:*` pin below is
+          # rewritten to the version that sibling just published, not the one it
+          # had before its bump.
+          build_order=$(node .github/scripts/workspace-build-order.mjs)
+          echo "📋 Build order:"
+          echo "$build_order" | sed 's/^/   /'
+
+          for dir in $build_order; do
             pkg="${dir}package.json"
 
             if [ ! -f "$pkg" ]; then
@@ -90,6 +199,17 @@ jobs:
               continue
             fi
 
+            # One rejected PUT means the credential cannot write, and every
+            # remaining package would fail the same way — after another vite
+            # build each, and after signing a provenance statement into the
+            # public sigstore transparency log for a version that will never
+            # exist. Stop attempting them; the run still fails at the end.
+            if [ -n "$auth_broken" ]; then
+              echo "⏭ Skipping $name (npm rejected the publish credential — see above)"
+              unattempted_packages="$unattempted_packages $name"
+              continue
+            fi
+
             echo "📦 Evaluating $name from $dir"
 
             # Each package is handled in a subshell with its own `set -e` so a
@@ -98,11 +218,12 @@ jobs:
               set -e
               cd "$dir"
 
-              # npm keeps the literal "workspace:*" protocol in the tarball, which
-              # consumers cannot resolve. Replace each "workspace:*" with a real
-              # semver range ("^<version>") taken from the referenced local
-              # package so published packages keep depending on their siblings.
-              # A local package that isn't published is dropped instead.
+              # npm keeps a local dependency protocol -- bun's "workspace:*" and
+              # npm's "file:../sibling" alike -- literally in the tarball, where
+              # consumers cannot resolve it. Replace each with a real semver
+              # range ("^<version>") taken from the referenced local package so
+              # published packages keep depending on their siblings. A local
+              # package that isn't published is dropped instead.
               # (This edit is only committed back if the version gets bumped.)
               node -e "
                 const fs = require('fs');
@@ -121,13 +242,14 @@ jobs:
                 for (const s of ['dependencies', 'devDependencies', 'peerDependencies']) {
                   if (!p[s]) continue;
                   for (const [k, v] of Object.entries(p[s])) {
-                    if (typeof v !== 'string' || !v.startsWith('workspace:')) continue;
+                    if (typeof v !== 'string') continue;
+                    if (!v.startsWith('workspace:') && !v.startsWith('file:')) continue;
                     if (localVersions[k]) {
                       p[s][k] = '^' + localVersions[k];
-                      console.log('Pinned workspace dependency', k, '->', p[s][k]);
+                      console.log('Pinned local dependency', k, '->', p[s][k]);
                     } else {
                       delete p[s][k];
-                      console.log('Removed unresolved workspace dependency:', k);
+                      console.log('Removed unresolved local dependency:', k);
                     }
                   }
                 }
@@ -180,15 +302,15 @@ jobs:
                   exit 0
                 fi
 
-                # Content changed since the last release: bump a patch above
-                # whichever is higher — the local version or the latest on npm —
-                # so the new version is guaranteed to be free.
-                next=$(node -e "
-                  const bump = v => { const a = v.split('.').map(Number); a[2] += 1; return a.join('.'); };
-                  const cmp = (x, y) => { const a = x.split('.').map(Number), b = y.split('.').map(Number); for (let i = 0; i < 3; i++) { if ((a[i]||0) !== (b[i]||0)) return (a[i]||0) - (b[i]||0); } return 0; };
-                  const local = '$version', latest = '$latest' || local;
-                  console.log(bump(cmp(local, latest) >= 0 ? local : latest));
-                ")
+                # Content changed since the last release: take the next
+                # version the registry has not already spent. Bumping one patch
+                # above `latest` is not enough — the `latest` dist-tag lags any
+                # version that was staged by an interrupted publish, and npm
+                # answers a PUT for one of those with
+                # `E409 ... Cannot publish over previously staged version`.
+                # next-free-version.mjs reads the full version list *and* the
+                # release timeline, which is where those numbers show up.
+                next=$(node "$repo_root/.github/scripts/next-free-version.mjs" "$name" "$version")
                 echo "🔼 $name content changed since $version — bumping to $next"
                 # --no-workspaces prevents npm from doing workspace-aware processing
                 # when bun's workspace symlinks are present in node_modules (e.g.
@@ -198,14 +320,55 @@ jobs:
                 version="$next"
               fi
 
-              echo "Publishing $name@$version"
               # Already built above; skip prepare/prepublish hooks re-running it.
-              npm publish --provenance --access public --ignore-scripts
+              # Exit 43 for an authorization failure so the loop can stop early:
+              # npm reports "no write access" as E404 on the PUT, which reads as
+              # if the package did not exist.
+              #
+              # A version the registry has reserved but does not list is still
+              # possible (the reservation can land between the version query
+              # above and the PUT), so an E409 "cannot publish over" is retried
+              # at the next free version rather than failing the package. The
+              # attempt cap keeps a registry that rejects everything from
+              # looping: five refusals is a problem no amount of bumping fixes.
+              log="$RUNNER_TEMP/npm-publish.log"
+              attempt=1
+
+              while :; do
+                echo "Publishing $name@$version"
+                if npm publish --provenance --access public --ignore-scripts 2>&1 | tee "$log"; then
+                  exit 0
+                fi
+
+                if grep -qE "npm error code (E401|E404|ENEEDAUTH|EAUTHUNKNOWN|EOTP)" "$log"; then
+                  exit 43
+                fi
+                if grep -q "npm error code E403" "$log" && ! grep -qi "cannot publish over" "$log"; then
+                  exit 43
+                fi
+
+                if ! grep -qi "cannot publish over" "$log"; then
+                  exit 1
+                fi
+                if [ "$attempt" -ge 5 ]; then
+                  echo "⚠ npm refused $attempt versions in a row for $name — giving up"
+                  exit 1
+                fi
+
+                next=$(node "$repo_root/.github/scripts/next-free-version.mjs" "$name" "$version")
+                echo "↩ npm has $name@$version reserved — retrying as $next"
+                npm version "$next" --no-git-tag-version --no-workspaces
+                version="$next"
+                attempt=$((attempt + 1))
+              done
             )
             rc=$?
 
             if [ "$rc" = "42" ]; then
               skipped_builds="$skipped_builds $name"
+            elif [ "$rc" = "43" ]; then
+              unauthorized_packages="$unauthorized_packages $name"
+              auth_broken="1"
             elif [ "$rc" != "0" ]; then
               failed_packages="$failed_packages $name"
             fi
@@ -215,8 +378,20 @@ jobs:
             echo "::warning::Skipped (build failed, not published):$skipped_builds"
           fi
 
+          if [ -n "$unattempted_packages" ]; then
+            echo "⏭ Not attempted (the credential was already rejected):$unattempted_packages"
+          fi
+
+          if [ -n "$unauthorized_packages" ]; then
+            echo "❌ Not authorized to publish:$unauthorized_packages"
+            echo "::error title=npm rejected the publish credential::npm answers an unauthorized PUT with E404 ('could not be found or you do not have permission to access it'), so this reads as a missing package — the packages exist, the write was refused. The NPM_TOKEN secret is read-only, scoped to a different set of packages, or expired (granular tokens last 90 days at most); or, if trusted publishing is in use, this repo + workflow is not yet named as the trusted publisher for these packages on npmjs.com."
+          fi
+
           if [ -n "$failed_packages" ]; then
             echo "❌ Failed to publish:$failed_packages"
+          fi
+
+          if [ -n "$failed_packages" ] || [ -n "$unauthorized_packages" ] || [ -n "$unattempted_packages" ]; then
             exit 1
           fi
 
@@ -252,5 +427,25 @@ jobs:
           "
           git add packages/*/package.json
           git diff --staged --quiet && echo "No version changes to commit" && exit 0
+
+          # Refresh the lockfile in the same commit as the package.json edits.
+          # A bare version bump does not move it (bun neither rewrites nor
+          # checks a workspace package's own "version" field), but a bump that
+          # rides along with a dependency edit does, and a bun.lock left behind
+          # by one commit kills every deploy after it.
+          bun install --lockfile-only
+          git add bun.lock
+
+          # [skip ci] keeps every other workflow off this commit, so a
+          # Cloudflare build is the first thing that ever runs an install on
+          # it -- which is how a stale lockfile reached production as
+          #   error: lockfile had changes, but lockfile is frozen
+          # instead of as a failed check. Prove the commit installs before it
+          # is pushed.
+          if ! bun install --frozen-lockfile; then
+            echo "::error title=Version bump would leave bun.lock stale::'bun install --lockfile-only' did not converge the lockfile for this bump, so the commit was not pushed. Regenerate bun.lock by hand and commit it before publishing again."
+            exit 1
+          fi
+
           git commit -m "chore: bump published package versions [skip ci]"
           git push

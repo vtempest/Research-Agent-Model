@@ -2,8 +2,9 @@
  * Full formatting toolbar for the example editor, wiring each extension's RichText control together. Provides the top row of editing actions users interact with.
  */
 
-import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import type { Editor } from '@tiptap/core';
 import { useCurrentEditor } from '@tiptap/react';
 import { ToolbarMenuItem } from '@/components';
 import { localeActions, useLocale } from 'react-reason-editor/locale-bundle';
@@ -45,7 +46,10 @@ import { RichTextVideo } from 'react-reason-editor/video';
 import { RichTextKatex } from 'react-reason-editor/katex';
 import { RichTextMermaid } from 'react-reason-editor/mermaid';
 import { RichTextSearchAndReplace } from 'react-reason-editor/searchandreplace';
-import { RichTextWordCount } from 'react-reason-editor/wordcount';
+import {
+  getWordCountStats,
+  type WordCountStats,
+} from '@/extensions/WordCount/utils/wordCount';
 import { RichTextCodeView } from 'react-reason-editor/codeview';
 import { RichTextImportWord } from 'react-reason-editor/importword';
 import { RichTextExportWord } from 'react-reason-editor/exportword';
@@ -54,6 +58,16 @@ import { RichTextZoom } from '@/extensions/Zoom/components/RichTextZoom';
 import { RichTextPagination } from '@/extensions/Pagination/components/RichTextPagination';
 import { RichTextTableOfContentsPanel } from '@/extensions/TableOfContents';
 import { RichTextHarper } from '@/extensions/Harper';
+import { RichTextAi } from '@/extensions/Ai';
+import { RichTextDrawio } from '@/extensions/Drawio';
+import { getReadAloudText, useReadAloudState } from '@/extensions/ReadAloud';
+import {
+  TranscribeOverlay,
+  isTranscriptionSupported,
+  useTranscribeState,
+} from '@/extensions/Transcribe';
+import { selectSimilarPluginKey, type SelectSimilarMode } from '@/extensions/SelectSimilar';
+import { shouldDismissPanel, shouldKeepEditorFocus } from './toolbarOverlays';
 import {
   Check,
   SpellCheck,
@@ -63,14 +77,13 @@ import {
   X,
   Settings,
   ChevronDown,
-  Subscript,
-  Superscript,
   Clipboard,
   Scissors,
   ClipboardPaste,
   ClipboardType,
   ListTree,
   File,
+  FileText,
   Download,
   Share2,
   Copy,
@@ -79,9 +92,16 @@ import {
   Lock,
   Globe,
   Mail,
+  Palette,
+  TextCursorInput,
+  TextSelect,
+  Type,
   Users,
-  MoreVertical,
   MessageSquare,
+  MessageSquarePlus,
+  Mic,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 
 interface ToolbarProps {
@@ -94,6 +114,16 @@ interface ToolbarProps {
    * the editor being rebuilt when a plugin is toggled.
    */
   onOpenSettings?: () => void;
+  /** Wraps the current selection in a new comment mark, when comments are enabled. */
+  onAddComment?: () => void;
+  /** True while there is no text selected, so "Add Comment" can be disabled. */
+  commentDisabled?: boolean;
+  /** Whether the comments sidebar is currently open. */
+  showComments?: boolean;
+  /** Toggles the comments sidebar open/closed. */
+  onToggleComments?: () => void;
+  /** Count of open (unresolved) comment threads, shown as a badge. */
+  commentCount?: number;
 }
 
 interface CssRule {
@@ -113,6 +143,33 @@ interface StylePreset {
 const STYLE_TAG_ID = 'rte-custom-styles';
 const STYLES_STORAGE_KEY = 'rte-custom-style-presets';
 const ACTIVE_STYLE_KEY = 'rte-active-style-preset';
+
+// ─── Keeping nested surfaces alive ────────────────────────────────────────────
+
+/** Suppresses the focus move a press on a toolbar control would otherwise make. */
+function keepEditorFocus(e: React.MouseEvent) {
+  if (shouldKeepEditorFocus(e.target)) e.preventDefault();
+}
+
+/**
+ * Backdrop dismissal that only fires when the press *started* on the backdrop.
+ * Without this, any drag begun inside the modal — selecting text, sweeping a
+ * colour slider — closes it as soon as the pointer is released past its edge.
+ */
+function useBackdropDismiss(onClose: () => void) {
+  const armed = useRef(false);
+
+  return {
+    onMouseDown: (e: React.MouseEvent) => {
+      armed.current = e.target === e.currentTarget;
+    },
+    onClick: (e: React.MouseEvent) => {
+      if (!armed.current || e.target !== e.currentTarget) return;
+      armed.current = false;
+      onClose();
+    },
+  };
+}
 
 // ─── CSS Editor Modal ─────────────────────────────────────────────────────────
 
@@ -240,9 +297,11 @@ function CssEditorModal({ onClose }: { onClose: () => void }) {
   const updateRule = (id: number, field: keyof Omit<CssRule, 'id'>, val: string) =>
     setRules(prev => prev.map(r => r.id === id ? { ...r, [field]: val } : r));
 
+  const backdrop = useBackdropDismiss(onClose);
+
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" {...backdrop} />
       <div className="relative bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-2xl w-[640px] max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
           <div className="flex items-center gap-2">
@@ -471,16 +530,19 @@ function MenuAction({
   label,
   shortcut,
   onClick,
+  disabled,
 }: {
   icon?: React.ReactNode;
   label: string;
   shortcut?: string;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-3 w-full px-3 py-1.5 rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+      disabled={disabled}
+      className="flex items-center gap-3 w-full px-3 py-1.5 rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
     >
       {icon && (
         <span className="w-5 flex items-center justify-center text-gray-500 dark:text-gray-400 shrink-0">
@@ -571,7 +633,92 @@ function ToolbarIconBtn({
 const panelCls =
   'fixed bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-gray-200/60 dark:border-slate-700/60 rounded-lg shadow-xl py-1 z-50 min-w-[220px] dropdown-portal';
 
-// ─── File sharing modal ───────────────────────────────────────────────────────
+/** Gutter kept clear between an open panel and every edge of the viewport. */
+const PANEL_MARGIN = 8;
+/** At or below this viewport width panels stop tracking the trigger. */
+const PANEL_MOBILE_BREAKPOINT = 640;
+
+/**
+ * Portal shell for the toolbar dropdowns. The panels are wider than a phone
+ * screen, so anchoring them to their trigger pushes them off the side; this
+ * clamps every panel into the viewport instead. On phone-width screens the
+ * trigger position is ignored horizontally and the panel spans the full width,
+ * centred between equal margins. Height is capped to what is left below the
+ * trigger so long menus scroll rather than run off the bottom.
+ */
+function MenuPanel({
+  top,
+  left,
+  right,
+  className = '',
+  children,
+}: {
+  top: number;
+  left?: number;
+  right?: number;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  // Rendered off-screen for one layout pass so the panel can be measured
+  // before it is placed.
+  const [style, setStyle] = useState<React.CSSProperties>({
+    top,
+    left: -9999,
+    visibility: 'hidden',
+  });
+
+  useLayoutEffect(() => {
+    const place = () => {
+      const el = ref.current;
+      if (!el) return;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const maxHeight = Math.max(160, vh - top - PANEL_MARGIN);
+
+      if (vw <= PANEL_MOBILE_BREAKPOINT) {
+        setStyle({
+          top,
+          left: PANEL_MARGIN,
+          right: PANEL_MARGIN,
+          width: 'auto',
+          // The panels carry min-w-[300px]/min-w-[400px] for desktop; those
+          // would keep them wider than the screen and clip the right edge.
+          minWidth: 0,
+          maxWidth: 'none',
+          maxHeight,
+          overflowY: 'auto',
+        });
+        return;
+      }
+
+      const width = el.offsetWidth;
+      const desired = right != null ? vw - right - width : left ?? PANEL_MARGIN;
+      const clamped = Math.max(PANEL_MARGIN, Math.min(desired, vw - width - PANEL_MARGIN));
+
+      setStyle({
+        top,
+        left: clamped,
+        maxWidth: vw - PANEL_MARGIN * 2,
+        maxHeight,
+        overflowY: 'auto',
+      });
+    };
+
+    place();
+    window.addEventListener('resize', place);
+    return () => window.removeEventListener('resize', place);
+  }, [top, left, right]);
+
+  return (
+    <div className={`${panelCls} ${className}`} onMouseDown={keepEditorFocus} ref={ref} style={style}>
+      {children}
+    </div>
+  );
+}
+
+// ─── Document details modal (info + word count + sharing) ─────────────────────
 
 interface SharedUser {
   email: string;
@@ -586,7 +733,52 @@ interface SharingState {
   shareLink: string | null;
 }
 
-function FileShareModal({ onClose, documentTitle }: { onClose: () => void; documentTitle: string }) {
+type DocumentDetailsTab = 'info' | 'share';
+
+/**
+ * Single popup that merges what used to be three separate surfaces: the
+ * document info modal, the word-count popover, and the share modal. It opens
+ * on whichever tab the caller asks for.
+ */
+function DocumentDetailsModal({
+  onClose,
+  documentTitle,
+  editor,
+  initialTab = 'info',
+}: {
+  onClose: () => void;
+  documentTitle: string;
+  editor?: Editor | null;
+  initialTab?: DocumentDetailsTab;
+}) {
+  const [tab, setTab] = useState<DocumentDetailsTab>(initialTab);
+  const [stats, setStats] = useState<WordCountStats>(() => getWordCountStats(editor));
+
+  // Live counters: refresh while the modal is open so the numbers track edits
+  // made behind it.
+  useEffect(() => {
+    if (!editor) return;
+
+    const update = () => setStats(getWordCountStats(editor));
+
+    update();
+    editor.on('update', update);
+
+    return () => {
+      editor.off('update', update);
+    };
+  }, [editor]);
+
+  // Placeholder timestamps — kept stable across renders so the dates don't
+  // shuffle while the modal is open.
+  const { createdDate, modifiedDate } = useMemo(
+    () => ({
+      createdDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      modifiedDate: new Date(),
+    }),
+    [],
+  );
+
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'viewer' | 'commentor' | 'editor'>('viewer');
   const [sharing, setSharing] = useState<SharingState>({
@@ -649,16 +841,37 @@ function FileShareModal({ onClose, documentTitle }: { onClose: () => void; docum
     }
   };
 
+  const statRows: { label: string; value: number }[] = [
+    { label: 'Words', value: stats.words },
+    { label: 'Characters (with spaces)', value: stats.charactersWithSpaces },
+    { label: 'Characters (no spaces)', value: stats.charactersNoSpaces },
+    { label: 'Sentences', value: stats.sentences },
+    { label: 'Paragraphs', value: stats.paragraphs },
+    { label: 'Links', value: stats.links },
+    { label: 'Images', value: stats.images },
+  ];
+
+  const tabCls = (name: DocumentDetailsTab) =>
+    `px-3 py-1.5 text-sm rounded-md transition-colors ${
+      tab === name
+        ? 'bg-white dark:bg-slate-900 text-gray-900 dark:text-white shadow-sm font-medium'
+        : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+    }`;
+
+  const backdrop = useBackdropDismiss(onClose);
+
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" {...backdrop} />
       <div className="relative bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-2xl w-[600px] max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-slate-700">
-          <div className="flex items-center gap-3">
-            <Share2 size={18} className="text-blue-500" />
-            <div>
-              <h2 className="font-semibold text-gray-900 dark:text-white">Share "{documentTitle}"</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Manage who can access this document</p>
+          <div className="flex items-center gap-3 min-w-0">
+            <FileText size={18} className="text-blue-500 shrink-0" />
+            <div className="min-w-0">
+              <h2 className="font-semibold text-gray-900 dark:text-white truncate">{documentTitle}</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                {tab === 'info' ? 'Document details and statistics' : 'Manage who can access this document'}
+              </p>
             </div>
           </div>
           <button onClick={onClose} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800">
@@ -666,7 +879,76 @@ function FileShareModal({ onClose, documentTitle }: { onClose: () => void; docum
           </button>
         </div>
 
-        <div className="overflow-y-auto flex-1 p-6 space-y-6">
+        {/* Tabs */}
+        <div className="px-6 pt-3">
+          <div className="inline-flex gap-1 p-1 rounded-lg bg-gray-100 dark:bg-slate-800">
+            <button className={tabCls('info')} onClick={() => setTab('info')} type="button">
+              Info &amp; word count
+            </button>
+            <button className={tabCls('share')} onClick={() => setTab('share')} type="button">
+              Sharing
+            </button>
+          </div>
+        </div>
+
+        <div className={`overflow-y-auto flex-1 p-6 space-y-6 ${tab === 'info' ? '' : 'hidden'}`}>
+          {/* Document metadata */}
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Document Name</p>
+              <p className="text-sm text-gray-900 dark:text-white break-words">{documentTitle}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Created</p>
+                <p className="text-sm text-gray-900 dark:text-white">{createdDate.toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Last Modified</p>
+                <p className="text-sm text-gray-900 dark:text-white">{modifiedDate.toLocaleDateString()}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Access</p>
+                <p className="text-sm text-gray-900 dark:text-white">{sharing.isPublic ? 'Public' : 'Private'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Shared with</p>
+                <p className="text-sm text-gray-900 dark:text-white">
+                  {sharing.sharedWith.length === 1 ? '1 person' : `${sharing.sharedWith.length} people`}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Word count */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Word Count</h3>
+            <table className="w-full text-sm">
+              <tbody>
+                {statRows.map(row => (
+                  <tr key={row.label} className="border-b border-gray-100 dark:border-slate-700 last:border-b-0">
+                    <td className="py-1.5 pr-2 text-gray-500 dark:text-gray-400">{row.label}</td>
+                    <td className="py-1.5 text-right font-semibold tabular-nums text-gray-900 dark:text-white">
+                      {row.value.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <button
+            onClick={() => setTab('share')}
+            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200"
+          >
+            <Share2 size={14} />
+            Manage sharing
+          </button>
+        </div>
+
+        <div className={`overflow-y-auto flex-1 p-6 space-y-6 ${tab === 'share' ? '' : 'hidden'}`}>
           {/* Public access toggle */}
           <div className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
             <div className="flex items-center gap-3">
@@ -754,6 +1036,7 @@ function FileShareModal({ onClose, documentTitle }: { onClose: () => void; docum
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      <span className="text-gray-400 dark:text-gray-500">{getRoleIcon(user.role)}</span>
                       <select
                         value={user.role}
                         onChange={e => handleUpdateRole(user.email, e.target.value as 'viewer' | 'commentor' | 'editor')}
@@ -799,9 +1082,11 @@ function FileRenameModal({ onClose, currentName }: { onClose: () => void; curren
     onClose();
   };
 
+  const backdrop = useBackdropDismiss(onClose);
+
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" {...backdrop} />
       <div className="relative bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-2xl w-[400px]" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-slate-700">
           <h2 className="font-semibold text-gray-900 dark:text-white">Rename document</h2>
@@ -833,67 +1118,26 @@ function FileRenameModal({ onClose, currentName }: { onClose: () => void; curren
   );
 }
 
-// ─── File info modal ───────────────────────────────────────────────────────────
-
-function FileInfoModal({ onClose, documentTitle }: { onClose: () => void; documentTitle: string }) {
-  const createdDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
-  const modifiedDate = new Date();
-  const wordCount = Math.floor(Math.random() * 5000) + 100;
-  const charCount = Math.floor(Math.random() * 30000) + 1000;
-
-  return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-2xl w-[450px]" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-slate-700">
-          <h2 className="font-semibold text-gray-900 dark:text-white">Document info</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-slate-800">
-            <X size={16} />
-          </button>
-        </div>
-        <div className="p-6 space-y-4">
-          <div>
-            <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Document Name</p>
-            <p className="text-sm text-gray-900 dark:text-white break-words">{documentTitle}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Created</p>
-              <p className="text-sm text-gray-900 dark:text-white">{createdDate.toLocaleDateString()}</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Last Modified</p>
-              <p className="text-sm text-gray-900 dark:text-white">{modifiedDate.toLocaleDateString()}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Words</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">{wordCount.toLocaleString()}</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Characters</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">{charCount.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>,
-    document.body
-  );
-}
-
 // ─── Main toolbar ─────────────────────────────────────────────────────────────
 
-export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProps) => {
+export const RichTextToolbar = ({
+  theme,
+  setTheme,
+  onOpenSettings,
+  onAddComment,
+  commentDisabled,
+  showComments,
+  onToggleComments,
+  commentCount,
+}: ToolbarProps) => {
   const [open, setOpen] = useState<string | null>(null);
   const [pos, setPos] = useState<{ top: number; left: number; right?: number } | null>(null);
   const [showCss, setShowCss] = useState(false);
   const [showToc, setShowToc] = useState(false);
   const [harperOn, setHarperOn] = useState(false);
-  const [showShare, setShowShare] = useState(false);
   const [showRename, setShowRename] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
+  // Which tab the combined document modal should open on — null keeps it closed.
+  const [detailsTab, setDetailsTab] = useState<DocumentDetailsTab | null>(null);
 
   // When an open-settings handler is supplied the Settings button opens the
   // parent-owned config modal; otherwise it falls back to the quick dropdown.
@@ -919,6 +1163,16 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
       editor.commands.clearProofing();
     }
   }, [harperOn, editor, hasHarper]);
+
+  // Voice tools: both are optional extensions, so surface each entry only when
+  // its extension is registered. Their live state (speaking / listening) comes
+  // from the extension storage rather than the transaction stream, since neither
+  // changes the document while it runs.
+  const readAloud = useReadAloudState(editor ?? null);
+  const transcribe = useTranscribeState(editor ?? null);
+  // Recomputed per render so the label follows the selection as it changes.
+  const readAloudScope = editor && !editor.state.selection.empty ? 'selection' : 'document';
+  const canReadAloud = !!editor && getReadAloudText(editor).length > 0;
 
   // Page layout: only surface the Web ↔ A4 switch when the Pagination
   // extension is registered on the current editor.
@@ -985,6 +1239,46 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
     editor?.commands.deleteSelection();
   }, [editor]);
 
+  // ─── Selection actions ──────────────────────────────────────────────────────
+
+  const handleSelectAll = useCallback(() => {
+    editor?.chain().focus().selectAll().run();
+  }, [editor]);
+
+  // Multi-selection: only offered when the extension is registered, since the
+  // plugin manager can switch it off.
+  const hasSelectSimilar = !!editor?.extensionManager.extensions.some(
+    (e) => e.name === 'selectSimilar',
+  );
+
+  // How many extra ranges the multi-selection currently holds, so the menu can
+  // report and clear them.
+  const [similarCount, setSimilarCount] = useState(0);
+  useEffect(() => {
+    if (!editor || !hasSelectSimilar) return;
+
+    const update = () =>
+      setSimilarCount(selectSimilarPluginKey.getState(editor.state)?.ranges.length ?? 0);
+
+    update();
+    editor.on('transaction', update);
+
+    return () => {
+      editor.off('transaction', update);
+    };
+  }, [editor, hasSelectSimilar]);
+
+  const handleSelectSimilar = useCallback(
+    (mode: SelectSimilarMode) => {
+      editor?.chain().focus().selectSimilar(mode).run();
+    },
+    [editor],
+  );
+
+  const handleClearSimilar = useCallback(() => {
+    editor?.chain().focus().clearSimilarSelection().run();
+  }, [editor]);
+
   // Re-apply saved CSS on mount
   useEffect(() => {
     try {
@@ -1026,97 +1320,42 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
   const close = () => { setOpen(null); setPos(null); };
 
   useEffect(() => {
+    if (!open) return;
+
     const handler = (e: MouseEvent) => {
-      const t = e.target as HTMLElement;
-      if (
-        open &&
-        !t.closest('.dropdown-container') &&
-        !t.closest('.dropdown-portal') &&
-        !t.closest('[data-radix-popper-content-wrapper]') &&
-        !t.closest('[data-radix-portal]')
-      ) close();
+      if (shouldDismissPanel(e.target)) close();
     };
+
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const panelStyle = (rightAligned?: boolean) =>
-    rightAligned && pos?.right != null
-      ? { top: `${pos!.top}px`, right: `${pos!.right}px` }
-      : { top: `${pos!.top}px`, left: `${pos!.left}px` };
-
   return (
     <>
-      <div className="flex items-center gap-0.5 border-b border-gray-200 dark:border-slate-700 px-2 py-1 flex-wrap">
+      <div
+        className="flex items-center gap-0.5 border-b border-gray-200 dark:border-slate-700 px-2 py-1 flex-wrap"
+        onMouseDown={keepEditorFocus}
+      >
 
-        {/* File menu */}
-        <div className="dropdown-container">
-          <ToolbarIconBtn name="file" label="File" active={open === 'file'} onClick={openMenu}>
-            <File size={16} />
-          </ToolbarIconBtn>
-          {open === 'file' && pos && createPortal(
-            <div className={panelCls} style={panelStyle()}>
-              <div className="px-2 py-1 text-[10px] font-semibold uppercase text-gray-400 tracking-wide">File</div>
-              <MenuAction
-                icon={<Copy size={14} />}
-                label="Make a copy"
-                onClick={() => { close(); alert('Document copied to your drive'); }}
-              />
-              <MenuAction
-                icon={<Download size={14} />}
-                label="Download"
-                onClick={() => { close(); alert('Downloading document...'); }}
-              />
-              <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
-              <MenuAction
-                icon={<Edit3 size={14} />}
-                label="Rename"
-                onClick={() => { close(); setShowRename(true); }}
-              />
-              <MenuAction
-                icon={<Share2 size={14} />}
-                label="Share"
-                onClick={() => { close(); setShowShare(true); }}
-              />
-              <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
-              <MenuAction
-                icon={<MoreVertical size={14} />}
-                label="Document info"
-                onClick={() => { close(); setShowInfo(true); }}
-              />
-            </div>,
-            document.body
-          )}
-        </div>
-
-        {/* Undo / Redo */}
-        <RichTextUndo />
-        <RichTextRedo />
+        {/* Undo / Redo — only rendered while the command is actually available */}
+        <RichTextUndo hideWhenDisabled />
+        <RichTextRedo hideWhenDisabled />
 
         {/* Zoom controls */}
         <div className="border-l border-gray-200 dark:border-slate-700 mx-0.5 px-0.5">
           <RichTextZoom />
         </div>
 
-        {/* Edit — clipboard actions (Cut / Copy / Paste / Delete) */}
-        <div className="dropdown-container">
-          <ToolbarIconBtn name="edit" label="Edit" active={open === 'edit'} onClick={openMenu}>
-            <Clipboard size={16} />
-          </ToolbarIconBtn>
-          {open === 'edit' && pos && createPortal(
-            <div className={panelCls} style={panelStyle()}>
-              <div className="px-2 py-1 text-[10px] font-semibold uppercase text-gray-400 tracking-wide">Edit</div>
-              <MenuAction icon={<Scissors size={14} />} label="Cut" shortcut="Ctrl+X" onClick={() => { close(); handleCut(); }} />
-              <MenuAction icon={<Clipboard size={14} />} label="Copy" shortcut="Ctrl+C" onClick={() => { close(); handleCopy(); }} />
-              <MenuAction icon={<ClipboardPaste size={14} />} label="Paste" shortcut="Ctrl+V" onClick={() => { close(); handlePaste(); }} />
-              <MenuAction icon={<ClipboardType size={14} />} label="Paste Plain" shortcut="Ctrl+Shift+V" onClick={() => { close(); handlePastePlain(); }} />
-              <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
-              <MenuAction icon={<Trash2 size={14} />} label="Delete" shortcut="Del" onClick={() => { close(); handleDelete(); }} />
-            </div>,
-            document.body
-          )}
-        </div>
+        {/* Font family and size, then bold / italic / underline directly */}
+        <RichTextFontFamily />
+        <RichTextFontSize />
+        <RichTextBold />
+        <RichTextItalic />
+        <RichTextUnderline />
+        <RichTextHighlight />
 
+        {/* AI writing assistant — renders nothing when the Ai extension is off */}
+        <RichTextAi />
 
         {/* ≡ — Block format */}
         <div className="dropdown-container">
@@ -1128,25 +1367,25 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
             </svg>
           </ToolbarIconBtn>
           {open === 'block' && pos && createPortal(
-            <div className={`${panelCls} min-w-[400px]`} style={panelStyle()}>
+            <MenuPanel className="min-w-[400px]" left={pos.left} top={pos.top}>
               <div className="grid grid-cols-2 gap-0.5 px-1 py-1">
-                <div><HiddenControl icon="H1" label="Heading 1"><RichTextHeading level={1} /></HiddenControl></div>
-                <div><HiddenControl icon="H2" label="Heading 2"><RichTextHeading level={2} /></HiddenControl></div>
-                <div><HiddenControl icon="H3" label="Heading 3"><RichTextHeading level={3} /></HiddenControl></div>
-                <div><HiddenControl icon="H4" label="Heading 4"><RichTextHeading level={4} /></HiddenControl></div>
-                <div><HiddenControl icon="H5" label="Heading 5"><RichTextHeading level={5} /></HiddenControl></div>
-                <div><HiddenControl icon="H6" label="Heading 6"><RichTextHeading level={6} /></HiddenControl></div>
+                <div><HiddenControl icon="H1" label="Heading 1" shortcut="Ctrl+Alt+1"><RichTextHeading level={1} /></HiddenControl></div>
+                <div><HiddenControl icon="H2" label="Heading 2" shortcut="Ctrl+Alt+2"><RichTextHeading level={2} /></HiddenControl></div>
+                <div><HiddenControl icon="H3" label="Heading 3" shortcut="Ctrl+Alt+3"><RichTextHeading level={3} /></HiddenControl></div>
+                <div><HiddenControl icon="H4" label="Heading 4" shortcut="Ctrl+Alt+4"><RichTextHeading level={4} /></HiddenControl></div>
+                <div><HiddenControl icon="H5" label="Heading 5" shortcut="Ctrl+Alt+5"><RichTextHeading level={5} /></HiddenControl></div>
+                <div><HiddenControl icon="H6" label="Heading 6" shortcut="Ctrl+Alt+6"><RichTextHeading level={6} /></HiddenControl></div>
               </div>
               <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
               <div className="grid grid-cols-2 gap-0.5 px-1">
-                <div><ToolbarMenuItem label="Bullet List"><RichTextBulletList /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Ordered List"><RichTextOrderedList /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Check List"><RichTextTaskList /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Bullet List" shortcut="Ctrl+Shift+8"><RichTextBulletList /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Ordered List" shortcut="Ctrl+Shift+7"><RichTextOrderedList /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Check List" shortcut="Ctrl+Shift+9"><RichTextTaskList /></ToolbarMenuItem></div>
               </div>
               <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
               <div className="grid grid-cols-2 gap-0.5 px-1">
-                <div><ToolbarMenuItem label="Blockquote"><RichTextBlockquote /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Code Block"><RichTextCodeBlock /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Blockquote" shortcut="Ctrl+Shift+B"><RichTextBlockquote /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Code Block" shortcut="Ctrl+Alt+C"><RichTextCodeBlock /></ToolbarMenuItem></div>
               </div>
               <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
               <div className="px-1">
@@ -1159,17 +1398,10 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
                 <Paintbrush size={14} className="text-gray-400 shrink-0" />
                 Customize default styles…
               </button>
-            </div>,
+            </MenuPanel>,
             document.body
           )}
         </div>
-
-        {/* Text styles — bold, italic, underline directly */}
-        <RichTextBold />
-        <RichTextItalic />
-        <RichTextUnderline />
-        <RichTextFontSize />
-        <RichTextHighlight />
 
         {/* Text styles overflow */}
         <div className="dropdown-container">
@@ -1177,20 +1409,19 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
             <span className="text-sm font-mono">Tt</span>
           </ToolbarIconBtn>
           {open === 'textstyles' && pos && createPortal(
-            <div className={`${panelCls} min-w-[400px]`} style={panelStyle()}>
+            <MenuPanel className="min-w-[400px]" left={pos.left} top={pos.top}>
               <div className="px-2 py-1 text-[10px] font-semibold uppercase text-gray-400 tracking-wide">Text Styles</div>
               <div className="grid grid-cols-2 gap-0.5 px-1 py-1">
-                <div><ToolbarMenuItem label="Font Family"><RichTextFontFamily /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Strikethrough"><RichTextStrike /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Inline Code"><RichTextCode /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Text Color"><RichTextColor /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Superscript" icon={<Superscript size={16} />}><RichTextSuperscript /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Subscript" icon={<Subscript size={16} />}><RichTextSubscript /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Strikethrough" shortcut="Ctrl+Shift+S"><RichTextStrike /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Inline Code" shortcut="Ctrl+E"><RichTextCode /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Text Color" shortcut="Alt+Shift+C"><RichTextColor /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Superscript" shortcut="Ctrl+."><RichTextSuperscript /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Subscript" shortcut="Ctrl+,"><RichTextSubscript /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Indent"><RichTextIndent /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Line Spacing"><RichTextLineHeight /></ToolbarMenuItem></div>
                 <div className="col-span-2"><ToolbarMenuItem label="Alignment"><RichTextAlign /></ToolbarMenuItem></div>
               </div>
-            </div>,
+            </MenuPanel>,
             document.body
           )}
         </div>
@@ -1201,7 +1432,7 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
             <Plus size={16} />
           </ToolbarIconBtn>
           {open === 'insert' && pos && createPortal(
-            <div className={`${panelCls} min-w-[300px] max-h-[360px] overflow-y-auto`} style={panelStyle()}>
+            <MenuPanel className="min-w-[300px]" left={pos.left} top={pos.top}>
               <div className="px-2 py-1 text-[10px] font-semibold uppercase text-gray-400 tracking-wide">Insert</div>
               <div className="grid grid-cols-2 gap-0.5 px-1">
                 <div><ToolbarMenuItem label="Link"><RichTextLink /></ToolbarMenuItem></div>
@@ -1210,15 +1441,86 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
                 <div><ToolbarMenuItem label="Image"><RichTextImage /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Meme"><RichTextImageGif /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Document"><RichTextAttachment /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Columns"><RichTextColumn /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Columns" shortcut="Ctrl+Alt+G"><RichTextColumn /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Callout"><RichTextCallout /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Twitter"><RichTextTwitter /></ToolbarMenuItem></div>
-                <div><ToolbarMenuItem label="Divider"><RichTextHorizontalRule /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Divider" shortcut="Ctrl+Alt+S"><RichTextHorizontalRule /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Video"><RichTextVideo /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Math"><RichTextKatex /></ToolbarMenuItem></div>
                 <div><ToolbarMenuItem label="Flowchart"><RichTextMermaid /></ToolbarMenuItem></div>
+                <div><ToolbarMenuItem label="Drawio"><RichTextDrawio /></ToolbarMenuItem></div>
+                {onAddComment && (
+                  <div>
+                    <button
+                      type="button"
+                      disabled={commentDisabled}
+                      onClick={() => { close(); onAddComment(); }}
+                      className="flex items-center gap-2 px-2 py-0.5 rounded cursor-pointer w-full text-left hover:bg-gray-100/80 dark:hover:bg-slate-800/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <span className="w-5 flex items-center justify-center text-gray-500 dark:text-gray-400 shrink-0">
+                        <MessageSquarePlus size={14} />
+                      </span>
+                      <span className="text-xs whitespace-nowrap truncate">Comment</span>
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>,
+            </MenuPanel>,
+            document.body
+          )}
+        </div>
+
+        {/* Edit — clipboard and selection, split out of Tools so neither menu runs long */}
+        <div className="dropdown-container">
+          <ToolbarIconBtn name="edit" label="Edit" active={open === 'edit'} onClick={openMenu}>
+            <Clipboard size={16} />
+          </ToolbarIconBtn>
+          {open === 'edit' && pos && createPortal(
+            <MenuPanel left={pos.left} top={pos.top}>
+              <div className="px-2 py-1 text-[10px] font-semibold uppercase text-gray-400 tracking-wide">Clipboard</div>
+              <MenuAction icon={<Scissors size={14} />} label="Cut" shortcut="Ctrl+X" onClick={() => { close(); handleCut(); }} />
+              <MenuAction icon={<Clipboard size={14} />} label="Copy" shortcut="Ctrl+C" onClick={() => { close(); handleCopy(); }} />
+              <MenuAction icon={<ClipboardPaste size={14} />} label="Paste" shortcut="Ctrl+V" onClick={() => { close(); handlePaste(); }} />
+              <MenuAction icon={<ClipboardType size={14} />} label="Paste Plain" shortcut="Ctrl+Shift+V" onClick={() => { close(); handlePastePlain(); }} />
+              <MenuAction icon={<Trash2 size={14} />} label="Delete" shortcut="Del" onClick={() => { close(); handleDelete(); }} />
+              <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
+              <div className="px-2 py-1 text-[10px] font-semibold uppercase text-gray-400 tracking-wide">Selection</div>
+              <MenuAction
+                icon={<TextCursorInput size={14} />}
+                label="Select All"
+                shortcut="Ctrl+A"
+                onClick={() => { close(); handleSelectAll(); }}
+              />
+              {hasSelectSimilar && (
+                <>
+                  <MenuAction
+                    icon={<Type size={14} />}
+                    label="Select All Similar Fonts"
+                    onClick={() => { close(); handleSelectSimilar('font'); }}
+                  />
+                  <MenuAction
+                    icon={<Palette size={14} />}
+                    label="Select All Similar Styles"
+                    onClick={() => { close(); handleSelectSimilar('style'); }}
+                  />
+                  <MenuAction
+                    icon={<TextSelect size={14} />}
+                    label="Select All Similar Formatting"
+                    onClick={() => { close(); handleSelectSimilar('formatting'); }}
+                  />
+                  <MenuAction
+                    disabled={similarCount === 0}
+                    icon={<X size={14} />}
+                    label={similarCount ? `Clear Multi-Selection (${similarCount})` : 'Clear Multi-Selection'}
+                    shortcut="Esc"
+                    onClick={() => { close(); handleClearSimilar(); }}
+                  />
+                  <div className="px-3 pb-1.5 pt-0.5 text-[10px] leading-snug text-gray-400 dark:text-gray-500">
+                    Formatting applied afterwards lands on every highlighted run at once.
+                  </div>
+                </>
+              )}
+            </MenuPanel>,
             document.body
           )}
         </div>
@@ -1232,10 +1534,47 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
             </svg>
           </ToolbarIconBtn>
           {open === 'tools' && pos && createPortal(
-            <div className={panelCls} style={panelStyle()}>
+            <MenuPanel left={pos.left} top={pos.top}>
+              <div className="px-2 py-1 text-[10px] font-semibold uppercase text-gray-400 tracking-wide">Document</div>
+              <MenuAction
+                icon={<FileText size={14} />}
+                label="Document info & word count"
+                onClick={() => { close(); setDetailsTab('info'); }}
+              />
+              <MenuAction
+                icon={<Share2 size={14} />}
+                label="Share"
+                onClick={() => { close(); setDetailsTab('share'); }}
+              />
+              <MenuAction
+                icon={<Edit3 size={14} />}
+                label="Rename"
+                onClick={() => { close(); setShowRename(true); }}
+              />
+              <MenuAction
+                icon={<Copy size={14} />}
+                label="Make a copy"
+                onClick={() => { close(); alert('Document copied to your drive'); }}
+              />
+              <MenuAction
+                icon={<Download size={14} />}
+                label="Download"
+                onClick={() => { close(); alert('Downloading document...'); }}
+              />
+              <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
               <div className="px-2 py-1 text-[10px] font-semibold uppercase text-gray-400 tracking-wide">Tools</div>
+              {onToggleComments && (
+                <MenuToggle
+                  icon={<MessageSquare size={14} />}
+                  label={commentCount ? `Comments Panel (${commentCount})` : 'Comments Panel'}
+                  checked={!!showComments}
+                  onChange={() => onToggleComments()}
+                />
+              )}
+              {onToggleComments && (
+                <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
+              )}
               <ToolbarMenuItem label="Find / Replace"><RichTextSearchAndReplace /></ToolbarMenuItem>
-              <ToolbarMenuItem label="Word Count"><RichTextWordCount /></ToolbarMenuItem>
               <ToolbarMenuItem label="View Source"><RichTextCodeView /></ToolbarMenuItem>
               <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
               <MenuToggle
@@ -1252,6 +1591,44 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
                   onChange={setHarperOn}
                 />
               )}
+              {(readAloud.available || transcribe.available) && (
+                <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
+              )}
+              {readAloud.available && (
+                <MenuAction
+                  disabled={!readAloud.isActive && !canReadAloud}
+                  icon={readAloud.isActive ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                  label={
+                    readAloud.isActive
+                      ? 'Stop reading'
+                      : readAloudScope === 'selection'
+                        ? 'Read selection aloud'
+                        : 'Read document aloud'
+                  }
+                  shortcut="Ctrl+Shift+S"
+                  onClick={() => {
+                    close();
+                    editor?.commands.toggleReadAloud();
+                  }}
+                />
+              )}
+              {transcribe.available && (
+                <MenuToggle
+                  icon={<Mic size={14} />}
+                  label={
+                    isTranscriptionSupported()
+                      ? transcribe.isListening
+                        ? 'Dictating — click to stop'
+                        : 'Dictate into the document'
+                      : 'Dictation unavailable in this browser'
+                  }
+                  checked={transcribe.isListening}
+                  onChange={() => {
+                    if (!isTranscriptionSupported()) return;
+                    editor?.commands.toggleTranscribe();
+                  }}
+                />
+              )}
               <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
               {hasPagination && (
                 <MenuToggle
@@ -1261,12 +1638,12 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
                   onChange={handleTogglePageLayout}
                 />
               )}
-              <ToolbarMenuItem label="Page Settings"><RichTextPagination /></ToolbarMenuItem>
+              <ToolbarMenuItem label="Page Settings" shortcut="Ctrl+Shift+P"><RichTextPagination /></ToolbarMenuItem>
               <div className="my-1 border-t border-gray-100 dark:border-slate-700" />
               <ToolbarMenuItem label="Import Word"><RichTextImportWord /></ToolbarMenuItem>
               <ToolbarMenuItem label="Export Word"><RichTextExportWord /></ToolbarMenuItem>
               <ToolbarMenuItem label="Export PDF"><RichTextExportPdf /></ToolbarMenuItem>
-            </div>,
+            </MenuPanel>,
             document.body
           )}
         </div>
@@ -1294,9 +1671,10 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
             <Settings size={16} />
           </button>
           {!configDriven && open === 'settings' && pos && createPortal(
-            <div
-              className="fixed bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-gray-200/60 dark:border-slate-700/60 rounded-lg shadow-2xl p-2 z-50 w-[260px] dropdown-portal"
-              style={panelStyle(true)}
+            <MenuPanel
+              className="w-[260px] px-2 py-2 shadow-2xl"
+              right={pos.right}
+              top={pos.top}
             >
               <div className="text-[10px] font-semibold mb-1 text-gray-500 dark:text-gray-400 uppercase px-1">Theme</div>
               <div className="flex gap-1 mb-2 px-1">
@@ -1357,7 +1735,7 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
                   </button>
                 ))}
               </div>
-            </div>,
+            </MenuPanel>,
             document.body
           )}
         </div>
@@ -1368,9 +1746,17 @@ export const RichTextToolbar = ({ theme, setTheme, onOpenSettings }: ToolbarProp
         <RichTextTableOfContentsPanel editor={editor} onClose={() => setShowToc(false)} />
       )}
       {hasHarper && harperOn && editor && <RichTextHarper editor={editor} />}
-      {showShare && <FileShareModal onClose={() => setShowShare(false)} documentTitle={documentTitle} />}
+      {/* Echoes each dictated phrase in the middle of the screen while listening. */}
+      {transcribe.available && <TranscribeOverlay editor={editor ?? null} />}
       {showRename && <FileRenameModal onClose={() => setShowRename(false)} currentName={documentTitle} />}
-      {showInfo && <FileInfoModal onClose={() => setShowInfo(false)} documentTitle={documentTitle} />}
+      {detailsTab && (
+        <DocumentDetailsModal
+          documentTitle={documentTitle}
+          editor={editor}
+          initialTab={detailsTab}
+          onClose={() => setDetailsTab(null)}
+        />
+      )}
     </>
   );
 };

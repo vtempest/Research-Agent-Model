@@ -1,0 +1,35 @@
+{
+  "name": "qwksearch-mcp-server",
+  "version": "1.0.205",
+  "description": "MCP server exposing web search and content extraction tools via stdio transport",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSourceAGI/qwksearch-research-agent.git",
+    "directory": "packages/qwksearch-mcp-server"
+  },
+  "type": "module",
+  "bin": {
+    "qwksearch-mcp": "./bin/qwksearch-mcp.ts"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "start": "bun run bin/qwksearch-mcp.ts",
+    "dev": "bun --watch run bin/qwksearch-mcp.ts",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "search-web-api": "workspace:*",
+    "extract-webpage": "workspace:*",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.0",
+    "vitest": "^5.0.0"
+  }
+}

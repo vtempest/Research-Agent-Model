@@ -1,0 +1,38 @@
+name: Lockfile
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: lockfile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frozen:
+    name: bun install --frozen-lockfile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Cloudflare installs with the bun pinned in `packageManager`, so this
+      # check has to run the same one: a lockfile that converges under one bun
+      # can still be rejected by another.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      # The deploy runs exactly this command and nothing else gets that far --
+      # `bun install` (unfrozen, which is what the other workflows run) silently
+      # rewrites bun.lock instead of failing, so drift only ever surfaced in the
+      # Cloudflare build log as
+      #   error: lockfile had changes, but lockfile is frozen
+      - name: Install with the lockfile frozen
+        run: bun install --frozen-lockfile
+
+      - name: Report the drift
+        if: failure()
+        run: |
+          echo "::error title=bun.lock does not match the package.json files::Run 'bun install' and commit the resulting bun.lock. Until then every Cloudflare build fails with 'lockfile had changes, but lockfile is frozen' before it compiles a line."

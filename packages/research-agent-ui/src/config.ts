@@ -1,3 +1,6 @@
+/**
+ * @fileoverview Package-wide configuration: app branding, defaults, and the auth client contract, overridable via configureResearchAgentUI.
+ */
 export interface FooterLink {
   url: string;
   text: string;
@@ -35,8 +38,31 @@ export interface ResearchAgentUIConfig {
   footerLinks: FooterLink[];
   /** Google API key used by the Google Drive file picker. */
   googleApiKey: string;
+  /**
+   * Google Cloud project number, passed to the Drive picker as its app ID.
+   * The connector holds the per-file `drive.file` scope rather than blanket
+   * Drive access, and Google only grants the app a picked file when the
+   * picker knows which app is asking — so leaving this empty means picked
+   * files come back but downloading them 403s.
+   */
+  googleAppId: string;
   /** Whether to auto-trigger image/video media search after a response completes. */
   getAutoMediaSearch: () => boolean;
+  /**
+   * URL of the app's own icon, shown as the "Research" entry in the app dock.
+   * Served by the consuming app (it is a static asset, not a bundled one) so
+   * that a host with different branding can point at its own file.
+   */
+  appIconUrl: string;
+  /**
+   * Endpoint serving the trending-news wire format (Wikipedia's daily ranking
+   * joined to headlines) for the homepage widget. Defaults to this app's own
+   * `/api/news/trending` route, which keeps the News API key server-side; a
+   * host without that route — the desktop app, the extension — should point
+   * this at an absolute URL, and the user's `trendingNewsApiUrl` setting
+   * overrides it either way.
+   */
+  trendingNewsApiUrl: string;
   /**
    * Requests that the settings UI be opened. Lets the consuming app render
    * settings in a modal (e.g. on large desktop screens) instead of navigating
@@ -46,6 +72,15 @@ export interface ResearchAgentUIConfig {
    * optionally deep-links to a specific settings tab.
    */
   onOpenSettings?: (section?: string) => boolean;
+  /**
+   * Requests that a chat from history be opened in place. Lets the consuming
+   * app switch to the chat as a tab within its current workspace (e.g. on
+   * the homepage) instead of navigating to the `/c/<chatId>` route. Return
+   * `true` when handled — the caller then skips route navigation; return
+   * `false`/`undefined` (or leave unset) to fall back to navigating to
+   * `/c/<chatId>`.
+   */
+  onOpenChat?: (chatId: string) => boolean;
 }
 
 export const researchAgentUIConfig: ResearchAgentUIConfig = {
@@ -57,7 +92,10 @@ export const researchAgentUIConfig: ResearchAgentUIConfig = {
   downloadWindowsStoreId: '9PCGF9GNK460',
   footerLinks: [],
   googleApiKey: '',
+  googleAppId: '',
   getAutoMediaSearch: () => true,
+  appIconUrl: '/apple-touch-icon.png',
+  trendingNewsApiUrl: '/api/news/trending',
 };
 
 /**

@@ -1,0 +1,166 @@
+{
+  "name": "investing",
+  "version": "0.1.56",
+  "description": "Reusable investment utilities, trading agents, prediction-market analysis (PredictOS core) and financial data tools",
+  "license": "rights.institute/prosper",
+  "author": "vtempest",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSourceAGI/qwksearch-research-agent.git",
+    "directory": "packages/investing"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./data/*": "./data/*",
+    "./alpaca": {
+      "types": "./dist/alpaca/index.d.ts",
+      "import": "./dist/alpaca/index.mjs",
+      "require": "./dist/alpaca/index.js"
+    },
+    "./stocks": {
+      "types": "./dist/stocks/index.d.ts",
+      "import": "./dist/stocks/index.mjs",
+      "require": "./dist/stocks/index.js"
+    },
+    "./prediction": {
+      "types": "./dist/prediction/index.d.ts",
+      "import": "./dist/prediction/index.mjs",
+      "require": "./dist/prediction/index.js"
+    },
+    "./predictos": {
+      "types": "./dist/predictos/index.d.ts",
+      "import": "./dist/predictos/index.mjs",
+      "require": "./dist/predictos/index.js"
+    },
+    "./predictos/ai": {
+      "types": "./dist/predictos/ai/index.d.ts",
+      "import": "./dist/predictos/ai/index.mjs",
+      "require": "./dist/predictos/ai/index.js"
+    },
+    "./predictos/agents": {
+      "types": "./dist/predictos/agents/index.d.ts",
+      "import": "./dist/predictos/agents/index.mjs",
+      "require": "./dist/predictos/agents/index.js"
+    },
+    "./predictos/data/kalshi": {
+      "types": "./dist/predictos/data/kalshi.d.ts",
+      "import": "./dist/predictos/data/kalshi.mjs",
+      "require": "./dist/predictos/data/kalshi.js"
+    },
+    "./predictos/data/polymarket": {
+      "types": "./dist/predictos/data/polymarket.d.ts",
+      "import": "./dist/predictos/data/polymarket.mjs",
+      "require": "./dist/predictos/data/polymarket.js"
+    },
+    "./predictos/arbitrage": {
+      "types": "./dist/predictos/arbitrage.d.ts",
+      "import": "./dist/predictos/arbitrage.mjs",
+      "require": "./dist/predictos/arbitrage.js"
+    },
+    "./trading-agents": {
+      "types": "./dist/trading-agents/index.d.ts",
+      "import": "./dist/trading-agents/index.mjs",
+      "require": "./dist/trading-agents/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants/index.d.ts",
+      "import": "./dist/constants/index.mjs",
+      "require": "./dist/constants/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.mjs",
+      "require": "./dist/utils.js"
+    }
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "data",
+    "README.md",
+    "NOTICE",
+    "LICENSE-PredictOS-MIT"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:debate": "vitest run src/trading-agents/__tests__/debate-agents.test.ts",
+    "test:debate:watch": "vitest src/trading-agents/__tests__/debate-agents.test.ts",
+    "ship": "npm run build && npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
+    "import:leaders": "bun lib/leaders/nvsty-leaders.ts",
+    "import:stategies": "bun lib/algo-stategies/tv-scraper.ts --pages=10",
+    "import:stocks": "bun lib/stocks/import-stock-names.ts",
+    "sync:high-volume-markets": "tsx scripts/sync-high-volume-markets.ts",
+    "sync:trade-history": "tsx scripts/sync-trade-history.ts",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "investing",
+    "trading",
+    "stocks",
+    "alpaca",
+    "prediction-markets",
+    "financial-data",
+    "yahoo-finance",
+    "sec-filings",
+    "trading-agents",
+    "polymarket",
+    "kalshi",
+    "arbitrage",
+    "predictos"
+  ],
+  "dependencies": {
+    "@alpacahq/alpaca-trade-api": "^3.1.3",
+    "@langchain/core": "^1.1.8",
+    "@langchain/google-genai": "2.1.3",
+    "@langchain/groq": "^1.0.2",
+    "@langchain/langgraph": "^0.2.0",
+    "@langchain/openai": "^1.2.0",
+    "@polymarket/clob-client": "5.1.3",
+    "axios": "^1.13.2",
+    "csv-parse": "6.1.0",
+    "date-fns": "4.1.0",
+    "dotenv": "^17.2.3",
+    "dukascopy-node": "^1.46.3",
+    "ethers": "^6.16.0",
+    "grab-url": "^1.0.20",
+    "indicatorts": "^2.2.2",
+    "langchain": "^1.2.3",
+    "nanoid": "5.1.6",
+    "node-fetch": "^3.3.2",
+    "pinets": "^0.8.3",
+    "qwksearch-api-client": "^0.0.12",
+    "sec-edgar-toolkit": "^0.1.1",
+    "tavily": "^1.0.2",
+    "xgboost_node": "^0.4.2",
+    "yahoo-finance2": "^3.10.2",
+    "zod": "4.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@vitest/coverage-v8": "^3.2.7",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.0.0"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "^0.45.1"
+  },
+  "optionalDependencies": {
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.98.4",
+    "bs58": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

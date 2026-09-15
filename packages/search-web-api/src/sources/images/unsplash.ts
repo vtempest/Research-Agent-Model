@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the Unsplash API for photo search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const unsplash: EngineFunction = async (
   query: string,

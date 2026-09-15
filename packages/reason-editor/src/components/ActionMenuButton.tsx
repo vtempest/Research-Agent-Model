@@ -6,7 +6,7 @@ import { Slot } from '@radix-ui/react-slot';
 import React from 'react';
 
 import { Button, Tooltip, TooltipContent, TooltipTrigger, icons } from '@/components';
-import { getShortcutKeys } from '@/utils/plateform';
+import { TooltipShortcutKeys } from '@/components/TooltipShortcutKeys';
 
 import type { ButtonViewReturnComponentProps } from '@/types';
 import type { TooltipContentProps } from '@radix-ui/react-tooltip';
@@ -40,6 +40,12 @@ const ActionMenuButton = React.forwardRef<HTMLButtonElement, ActionMenuButtonPro
     const Icon = icons[props.icon];
     const Comp = asChild ? Slot : Button;
 
+    // `title` is the button's visible label, rendered below. It must not reach
+    // the DOM as the `title` attribute: the browser would then draw its own
+    // native tooltip on hover on top of — and offset from — the styled Radix
+    // one, so every toolbar control showed two overlapping tooltips.
+    const { title, ...buttonProps } = props;
+
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -49,12 +55,12 @@ const ActionMenuButton = React.forwardRef<HTMLButtonElement, ActionMenuButtonPro
             disabled={props?.disabled}
             ref={ref}
             variant='ghost'
-            {...props}
+            {...buttonProps}
           >
             <div className='richtext-flex richtext-h-full richtext-items-center richtext-font-normal'>
-              {props?.title && (
+              {title && (
                 <div className='richtext-grow richtext-truncate richtext-text-left richtext-text-sm'>
-                  {props?.title}
+                  {title}
                 </div>
               )}
 
@@ -66,15 +72,12 @@ const ActionMenuButton = React.forwardRef<HTMLButtonElement, ActionMenuButtonPro
         </TooltipTrigger>
 
         {tooltip && (
-          <TooltipContent>
-            <div className='richtext-flex richtext-max-w-24 richtext-flex-col richtext-items-center richtext-text-center'>
+          <TooltipContent {...props?.tooltipOptions} className='richtext-max-w-[18rem]'>
+            <div className='richtext-flex richtext-flex-col richtext-items-center richtext-text-center'>
               {tooltip && <div>{tooltip}</div>}
 
-              <div className='richtext-flex'>
-                {!!props?.shortcutKeys?.length && (
-                  <span>{getShortcutKeys(props?.shortcutKeys)}</span>
-                )}
-              </div>
+              <TooltipShortcutKeys shortcutKeys={props?.shortcutKeys} />
+
             </div>
           </TooltipContent>
         )}

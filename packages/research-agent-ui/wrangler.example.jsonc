@@ -3,6 +3,9 @@
 
 {
   "name": "research-agent-ui",
+  // Wrangler deletes plaintext Variables set in the Cloudflare dashboard on every
+  // deploy unless keep_vars is set. Secrets are never deleted either way.
+  "keep_vars": true,
   "type": "service",
   "main": "dist/cloudflare/worker.js",
 

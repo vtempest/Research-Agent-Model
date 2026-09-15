@@ -1,5 +1,6 @@
 {
   "name": "train-next-word-prediction-webui",
+  "keep_vars": true,
   "type": "javascript",
   "main": "dist/index.js",
   "site": {

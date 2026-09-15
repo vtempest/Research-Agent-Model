@@ -1,0 +1,6446 @@
+{
+  "bonds": [
+    [
+      "bundtreur",
+      "Euro Bund"
+    ],
+    [
+      "ukgilttrgbp",
+      "UK Long Gilt"
+    ],
+    [
+      "ustbondtrusd",
+      "US T-Bond"
+    ]
+  ],
+  "commodities": [
+    [
+      "cocoacmdusd",
+      "NY Cocoa"
+    ],
+    [
+      "coffeecmdusx",
+      "Coffee Arabica"
+    ],
+    [
+      "cottoncmdusx",
+      "Cotton"
+    ],
+    [
+      "ojuicecmdusx",
+      "Orange Juice"
+    ],
+    [
+      "soybeancmdusx",
+      "Soybean"
+    ],
+    [
+      "sugarcmdusd",
+      "London Sugar No.5"
+    ],
+    [
+      "dieselcmdusd",
+      "Gas oil"
+    ],
+    [
+      "brentcmdusd",
+      "US Brent Crude Oil"
+    ],
+    [
+      "lightcmdusd",
+      "US Light Crude Oil"
+    ],
+    [
+      "gascmdusd",
+      "Natural Gas"
+    ],
+    [
+      "coppercmdusd",
+      "High Grade Copper"
+    ],
+    [
+      "xpdcmdusd",
+      "Palladium"
+    ],
+    [
+      "xptcmdusd",
+      "Platinum"
+    ]
+  ],
+  "crypto": [
+    [
+      "adausd",
+      "Cardano vs US Dollar"
+    ],
+    [
+      "aveusd",
+      "Aave vs US Dollar"
+    ],
+    [
+      "batusd",
+      "Basic Attention Token vs US Dollar"
+    ],
+    [
+      "bchchf",
+      "Bitcoin Cash vs. Swiss franc"
+    ],
+    [
+      "bcheur",
+      "Bitcoin Cash vs. Euro"
+    ],
+    [
+      "bchgbp",
+      "Bitcoin Cash vs. Pound sterling"
+    ],
+    [
+      "bchusd",
+      "Bitcoin Cash vs US dollar"
+    ],
+    [
+      "btcchf",
+      "Bitcoin vs. Swiss franc"
+    ],
+    [
+      "btceur",
+      "Bitcoin vs. Euro"
+    ],
+    [
+      "btcgbp",
+      "Bitcoin vs. Pound sterling"
+    ],
+    [
+      "btcusd",
+      "Bitcoin vs US Dollar"
+    ],
+    [
+      "cmpusd",
+      "Compound vs US Dollar"
+    ],
+    [
+      "dshusd",
+      "Dashcoin vs US Dollar"
+    ],
+    [
+      "enjusd",
+      "Enjin vs US Dollar"
+    ],
+    [
+      "eosusd",
+      "EOS vs US Dollar"
+    ],
+    [
+      "ethchf",
+      "Ethereum vs. Swiss franc"
+    ],
+    [
+      "etheur",
+      "Ethereum vs. Euro"
+    ],
+    [
+      "ethgbp",
+      "Ethereum vs. Pound sterling"
+    ],
+    [
+      "ethusd",
+      "Ether vs US Dollar"
+    ],
+    [
+      "lnkusd",
+      "Chainlink vs US Dollar"
+    ],
+    [
+      "ltcchf",
+      "Litecoin vs. Swiss franc"
+    ],
+    [
+      "ltceur",
+      "Litecoin vs. Euro"
+    ],
+    [
+      "ltcgbp",
+      "Litecoin vs. Pound sterling"
+    ],
+    [
+      "ltcusd",
+      "Litecoin vs US Dollar"
+    ],
+    [
+      "matusd",
+      "Polygon vs US Dollar"
+    ],
+    [
+      "mkrusd",
+      "Maker vs US Dollar"
+    ],
+    [
+      "trxusd",
+      "TRON vs US Dollar"
+    ],
+    [
+      "uniusd",
+      "Uniswap vs US Dollar"
+    ],
+    [
+      "xlmchf",
+      "Stellar vs. Swiss franc"
+    ],
+    [
+      "xlmeur",
+      "Stellar vs. Euro"
+    ],
+    [
+      "xlmgbp",
+      "Stellar vs. Pound sterling"
+    ],
+    [
+      "xlmusd",
+      "Stellar vs US Dollar"
+    ],
+    [
+      "yfiusd",
+      "Yearn.finance vs US Dollar"
+    ]
+  ],
+  "etf": [
+    [
+      "tecdaxedeeur",
+      "iShares TecDAX UCITS DE ETF"
+    ],
+    [
+      "dsbfreur",
+      "LYXOR ETF Daily X2 Short Bund"
+    ],
+    [
+      "lvcfreur",
+      "Lyxor ETF Leverage CAC 40"
+    ],
+    [
+      "lyxbnkfreur",
+      "Lyxor UCITS ETF STOXX EUROPE 600 Banks"
+    ],
+    [
+      "2822hkhkd",
+      "CSOP FTSE China A50 ETF"
+    ],
+    [
+      "2828hkhkd",
+      "Hang Seng H-Share Index ETF"
+    ],
+    [
+      "2836hkhkd",
+      "iShares Core S&P BSE SENSEX India ETF"
+    ],
+    [
+      "3188hkhkd",
+      "ChinaAMC CSI 300 Index ETF"
+    ],
+    [
+      "DIA",
+      "SPDR Dow Jones® Industrial Average ETF"
+    ],
+    [
+      "DVY",
+      "iShares Select Dividend ETF"
+    ],
+    [
+      "EEM",
+      "iShares MSCI Emerging Markets ETF"
+    ],
+    [
+      "EFA",
+      "iShares MSCI EAFE ETF"
+    ],
+    [
+      "EMB",
+      "iShares J.P. Morgan USD Emerging Markets Bond ETF"
+    ],
+    [
+      "EWH",
+      "iShares MSCI Hong Kong ETF"
+    ],
+    [
+      "EWJ",
+      "iShares MSCI Japan ETF"
+    ],
+    [
+      "EWW",
+      "iShares MSCI Mexico Capped"
+    ],
+    [
+      "EWZ",
+      "iShares MSCI Brazil Capped"
+    ],
+    [
+      "EZU",
+      "iShares MSCI EMU ETF"
+    ],
+    [
+      "FXI",
+      "iShares China Large-Cap ETF"
+    ],
+    [
+      "GDX",
+      "VanEck Vectors Gold Miners ETF"
+    ],
+    [
+      "GDXJ",
+      "VanEck Vectors Junior Gold Miners ETF"
+    ],
+    [
+      "GLD",
+      "SPDR Gold Shares ETF"
+    ],
+    [
+      "IBB",
+      "iShares Nasdaq Biotechnology ETF"
+    ],
+    [
+      "IEF",
+      "iShares 7-10 Year Treasury Bond ETF"
+    ],
+    [
+      "IJH",
+      "iShares Core S&P Mid-Cap ETF"
+    ],
+    [
+      "IJR",
+      "iShares Core S&P Small-Cap ETF"
+    ],
+    [
+      "IVE",
+      "iShares S&P 500 Value ETF"
+    ],
+    [
+      "IVW",
+      "iShares S&P 500 Growth ETF"
+    ],
+    [
+      "IWD",
+      "iShares Russell 1000 Value ETF"
+    ],
+    [
+      "IWF",
+      "iShares Russell 1000 Growth ETF"
+    ],
+    [
+      "IWM",
+      "iShares Russell 2000 ETF"
+    ],
+    [
+      "IYR",
+      "iShares U.S. Real Estate ETF"
+    ],
+    [
+      "JNK",
+      "SPDR Barclays Capital High Yield Bond ETF"
+    ],
+    [
+      "QQQ",
+      "PowerShares QQQ ETF"
+    ],
+    [
+      "SLV",
+      "iShares Silver Trust ETF"
+    ],
+    [
+      "SPY",
+      "SPDR S&P 500 ETF"
+    ],
+    [
+      "TLT",
+      "iShares 20+ Year Treasury Bond ETF"
+    ],
+    [
+      "USO",
+      "United States Oil Fund"
+    ],
+    [
+      "VEA",
+      "Vanguard FTSE Developed Markets ETF"
+    ],
+    [
+      "VGK",
+      "Vanguard FTSE Europe ETF"
+    ],
+    [
+      "VNQ",
+      "Vanguard REIT ETF"
+    ],
+    [
+      "VXX",
+      "iPath S&P 500 VIX ST Futures ETN"
+    ],
+    [
+      "XLE",
+      "Energy Select Sector SPDR Fund"
+    ],
+    [
+      "XLF",
+      "Financial Select Sector SPDR Fund"
+    ],
+    [
+      "XLI",
+      "Industrial Select Sector SPDR Fund"
+    ],
+    [
+      "XLK",
+      "Technology Select Sector SPDR Fund"
+    ],
+    [
+      "XLP",
+      "Consumer Staples Select Sector SPDR Fund"
+    ],
+    [
+      "XLU",
+      "Utilities Select Sector SPDR Fund"
+    ],
+    [
+      "XLV",
+      "Health Care Select Sector SPDR Fund"
+    ],
+    [
+      "XLY",
+      "Consumer Discretionary Select Sector SPDR Fund"
+    ],
+    [
+      "XOP",
+      "SPDR S&P Oil & Gas Explor & Prodtn ETF"
+    ],
+    [
+      "ARKQ",
+      "ARK Autonomous Technology & Robotics ETF"
+    ],
+    [
+      "ARKX",
+      "ARK Space Exporation & Innovation ETF"
+    ],
+    [
+      "AWAY",
+      "Amplify Travel Tech ETF"
+    ],
+    [
+      "BITO",
+      "ProShares Bitcoin ETF"
+    ],
+    [
+      "BTF",
+      "Valkyrie Bitcoin and Ether Strategy ETF"
+    ],
+    [
+      "ESPO",
+      "VanEck Video Gaming and eSports ETF"
+    ],
+    [
+      "FINX",
+      "Global X FinTech ETF"
+    ],
+    [
+      "FTXG",
+      "First Trust Nasdaq Food & Beverage ETF"
+    ],
+    [
+      "IAK",
+      "iShares US Insurance ETF"
+    ],
+    [
+      "ITA",
+      "iShares US Aerospace & Defense ETF"
+    ],
+    [
+      "JETS",
+      "US Global Jets ETF"
+    ],
+    [
+      "KIE",
+      "SPDR S&P Insurance ETF"
+    ],
+    [
+      "KRE",
+      "SPDR S&P Regional Banking ETF"
+    ],
+    [
+      "PBJ",
+      "Invesco Food & Beverage ETF"
+    ],
+    [
+      "PEJ",
+      "Invesco Leisure & Entertainment ETF"
+    ],
+    [
+      "PPA",
+      "Invesco Aerospace & Defense ETF"
+    ],
+    [
+      "ROBO",
+      "ROBO Global Robotics & Automation Index ETF"
+    ],
+    [
+      "VDE",
+      "Vanguard Energy ETF"
+    ],
+    [
+      "XRES",
+      "Invesco Real Estate S&P US Select Sector UCITS ETF Acc"
+    ],
+    [
+      "ARKI",
+      "ARK 21Shares Active Bitcoin Ethereum Strategy ETF Fund"
+    ],
+    [
+      "bugggbgbx",
+      "Global X Cybersecurity UCITS ETF Fund"
+    ],
+    [
+      "csh2gbgbx",
+      "Lyxor Smart Overnight Return - UCITS ETF C-GBP"
+    ],
+    [
+      "cysegbgbx",
+      "WisdomTree Cybersecurity UCITS ETF Fund"
+    ],
+    [
+      "esihgbgbx",
+      "iShares MSCI Europe Health Care Sector UCITS ETF Fund"
+    ],
+    [
+      "IGLN",
+      "iShares Physical Gold ETC Fund"
+    ],
+    [
+      "IUFS",
+      "iShares S&P 500 Financials Sector UCITS ETF"
+    ],
+    [
+      "semigbgbx",
+      "iShares MSCI Global Semiconductors UCITS ETF"
+    ],
+    [
+      "SGLD",
+      "Invesco Physical Gold ETC Fund"
+    ],
+    [
+      "SMH",
+      "VanEck Semiconductor ETF Fund"
+    ],
+    [
+      "SMTC",
+      "Lyxor Smart Overnight Return - UCITS ETF C-USD"
+    ],
+    [
+      "WTAI",
+      "Wisdomtree Artificial Intelligence And Innovation Fund"
+    ],
+    [
+      "xdergbgbx",
+      "Xtrackers FTSE Developed Europe Real Estate UCITS ETF"
+    ],
+    [
+      "XDWH",
+      "Xtrackers MSCI World Health Care UCITS ETF Fund"
+    ],
+    [
+      "XDWT",
+      "Xtrackers MSCI World Information Technology UCITS ETF"
+    ],
+    [
+      "XRES",
+      "Invesco Real Estate S&P US Select Sector UCITS ETF Acc"
+    ],
+    [
+      "csh2freur",
+      "Lyxor Smart Overnight Return - UCITS ETF C-EUR"
+    ],
+    [
+      "agesgbgbx",
+      "iShares Ageing Population UCITS ETF USD (Acc)"
+    ],
+    [
+      "aiaigbusd",
+      "L&G Artificial Intelligence UCITS ETF"
+    ],
+    [
+      "cndxgbusd",
+      "iShares NASDAQ 100 UCITS ETF USD (Acc)"
+    ],
+    [
+      "dfnggbgbp",
+      "VanEck Defense ETF A USD Acc (GBP)"
+    ],
+    [
+      "ecargbusd",
+      "iShares Electric Vehicles and Driving Technology UCITS ETF USD (Acc)"
+    ],
+    [
+      "glgggbgbx",
+      "L&G Clean Water UCITS ETF"
+    ],
+    [
+      "intlgbgbx",
+      "WisdomTree Artificial Intelligence UCITS ETF - USD Acc"
+    ],
+    [
+      "ispygbgbx",
+      "L&G Cyber Security UCITS ETF"
+    ],
+    [
+      "suasgbusd",
+      "iShares MSCI USA SRI UCITS ETF"
+    ],
+    [
+      "susmgbusd",
+      "iShares MSCI EM SRI UCITS ETF USD (Acc)"
+    ],
+    [
+      "suusgbgbx",
+      "iShares MSCI USA SRI UCITS ETF USD (Acc)"
+    ],
+    [
+      "sxlugbusd",
+      "SPDR S&P U.S. Utilities Select Sector UCITS ETF"
+    ],
+    [
+      "vukggbgbp",
+      "Vanguard FTSE 100 UCITS ETF GBP Acc"
+    ],
+    [
+      "vwrpgbgbp",
+      "VWRP VANGUARD FTSE ALL-WORLD UCITS ETF"
+    ],
+    [
+      "wsmlgbusd",
+      "iShares MSCI World Small Cap UCITS ETF USD (Acc)"
+    ],
+    [
+      "xnaqgbgbp",
+      "Xtrackers NASDAQ 100 UCITS ETF 1C (GBP)"
+    ],
+    [
+      "xs6rgbgbx",
+      "Xtrackers MSCI Europe Utilities Screened UCITS ETF 1C"
+    ]
+  ],
+  "forex": [
+    [
+      "audcad",
+      "Australian Dollar vs Canadian Dollar"
+    ],
+    [
+      "audchf",
+      "Australian Dollar vs Swiss Franc"
+    ],
+    [
+      "audjpy",
+      "Australian Dollar vs Japanese Yen"
+    ],
+    [
+      "audnzd",
+      "Australian Dollar vs New Zealand Dollar"
+    ],
+    [
+      "audsgd",
+      "Australian Dollar vs Singapore Dollar"
+    ],
+    [
+      "cadchf",
+      "Canadian Dollar vs Swiss Franc"
+    ],
+    [
+      "cadhkd",
+      "Canadian Dollar vs Hong Kong Dollar"
+    ],
+    [
+      "cadjpy",
+      "Canadian Dollar vs Japanese Yen"
+    ],
+    [
+      "chfjpy",
+      "Swiss Franc vs Japanese Yen"
+    ],
+    [
+      "chfsgd",
+      "Swiss Franc vs Singapore Dollar"
+    ],
+    [
+      "euraud",
+      "Euro vs Australian Dollar"
+    ],
+    [
+      "eurcad",
+      "Euro vs Canadian Dollar"
+    ],
+    [
+      "eurchf",
+      "Euro vs Swiss Franc"
+    ],
+    [
+      "eurczk",
+      "Euro vs Czech Koruna"
+    ],
+    [
+      "eurdkk",
+      "Euro vs Danish Krone"
+    ],
+    [
+      "eurgbp",
+      "Euro vs Pound Sterling"
+    ],
+    [
+      "eurhkd",
+      "Euro vs Hong Kong Dollar"
+    ],
+    [
+      "eurhuf",
+      "Euro vs Hungarian Forint"
+    ],
+    [
+      "eurjpy",
+      "Euro vs Japanese Yen"
+    ],
+    [
+      "eurnok",
+      "Euro vs Norwegian Krone"
+    ],
+    [
+      "eurnzd",
+      "Euro vs New Zealand Dollar"
+    ],
+    [
+      "eurpln",
+      "Euro vs Polish Zloty"
+    ],
+    [
+      "eursek",
+      "Euro vs Swedish Krona"
+    ],
+    [
+      "eursgd",
+      "Euro vs Singapore Dollar"
+    ],
+    [
+      "eurtry",
+      "Euro vs Turkish Lira"
+    ],
+    [
+      "gbpaud",
+      "Pound Sterling vs Australian Dollar"
+    ],
+    [
+      "gbpcad",
+      "Pound Sterling vs Canadian Dollar"
+    ],
+    [
+      "gbpchf",
+      "Pound Sterling vs Swiss Franc"
+    ],
+    [
+      "gbpjpy",
+      "Pound Sterling vs Japanese Yen"
+    ],
+    [
+      "gbpnzd",
+      "Pound Sterling vs New Zealand Dollar"
+    ],
+    [
+      "hkdjpy",
+      "Hong Kong Dollar vs Japanese Yen"
+    ],
+    [
+      "nzdcad",
+      "New Zealand Dollar vs Canadian Dollar"
+    ],
+    [
+      "nzdchf",
+      "New Zealand Dollar vs Swiss Franc"
+    ],
+    [
+      "nzdjpy",
+      "New Zealand Dollar vs Japanese Yen"
+    ],
+    [
+      "sgdjpy",
+      "Singapore Dollar vs Japanese Yen"
+    ],
+    [
+      "tryjpy",
+      "Turkish Lira vs Japanese Yen"
+    ],
+    [
+      "usdaed",
+      "US Dollar vs United Arab Emirates Dirham"
+    ],
+    [
+      "usdcnh",
+      "US Dollar vs Offshore Chinese Renminbi"
+    ],
+    [
+      "usdczk",
+      "US Dollar vs Czech Koruna"
+    ],
+    [
+      "usddkk",
+      "US Dollar vs Danish Krone"
+    ],
+    [
+      "usdhkd",
+      "US Dollar vs Hong Kong Dollar"
+    ],
+    [
+      "usdhuf",
+      "US Dollar vs Hungarian Forint"
+    ],
+    [
+      "usdils",
+      "US Dollar vs Israeli Shekel"
+    ],
+    [
+      "usdmxn",
+      "US Dollar vs Mexican Peso"
+    ],
+    [
+      "usdnok",
+      "US Dollar vs Norwegian Krone"
+    ],
+    [
+      "usdpln",
+      "US Dollar vs Polish Zloty"
+    ],
+    [
+      "usdron",
+      "US Dollar vs Romanian Leu"
+    ],
+    [
+      "usdsar",
+      "US Dollar vs Saudi Riyal"
+    ],
+    [
+      "usdsek",
+      "US Dollar vs Swedish Krona"
+    ],
+    [
+      "usdsgd",
+      "US Dollar vs Singapore Dollar"
+    ],
+    [
+      "usdthb",
+      "US Dollar vs Thai Baht"
+    ],
+    [
+      "usdtry",
+      "US Dollar vs Turkish Lira"
+    ],
+    [
+      "usdzar",
+      "US Dollar vs South African Rand"
+    ],
+    [
+      "zarjpy",
+      "South African Rand vs Japanese Yen"
+    ],
+    [
+      "aedcnh",
+      "United Arab Emirates dirham vs. Renminbi (offshore)"
+    ],
+    [
+      "aedczk",
+      "United Arab Emirates dirham vs. Czech koruna"
+    ],
+    [
+      "aedhkd",
+      "United Arab Emirates dirham vs. Hong Kong dollar"
+    ],
+    [
+      "aedhuf",
+      "United Arab Emirates dirham vs. Hungarian forint"
+    ],
+    [
+      "aedjpy",
+      "United Arab Emirates dirham vs. Japanese yen"
+    ],
+    [
+      "aedmxn",
+      "United Arab Emirates dirham vs. Mexican peso"
+    ],
+    [
+      "aedron",
+      "United Arab Emirates dirham vs. Romanian leu"
+    ],
+    [
+      "aedsar",
+      "United Arab Emirates dirham vs. Saudi riyal"
+    ],
+    [
+      "aedthb",
+      "United Arab Emirates dirham vs. Thai baht"
+    ],
+    [
+      "aedtry",
+      "United Arab Emirates dirham vs. Turkish lira"
+    ],
+    [
+      "aedzar",
+      "United Arab Emirates dirham vs. South African rand"
+    ],
+    [
+      "audaed",
+      "Australian dollar vs. United Arab Emirates dirham"
+    ],
+    [
+      "audcnh",
+      "Australian dollar vs. Renminbi (offshore)"
+    ],
+    [
+      "audczk",
+      "Australian dollar vs. Czech koruna"
+    ],
+    [
+      "auddkk",
+      "Australian dollar vs. Danish krone"
+    ],
+    [
+      "audhkd",
+      "Australian dollar vs. Hong Kong dollar"
+    ],
+    [
+      "audhuf",
+      "Australian dollar vs. Hungarian forint"
+    ],
+    [
+      "audils",
+      "Australian dollar vs. Israeli new shekel"
+    ],
+    [
+      "audmxn",
+      "Australian dollar vs. Mexican peso"
+    ],
+    [
+      "audnok",
+      "Australian dollar vs. Norwegian krone"
+    ],
+    [
+      "audpln",
+      "Australian dollar vs. Polish zÅ‚oty"
+    ],
+    [
+      "audron",
+      "Australian dollar vs. Romanian leu"
+    ],
+    [
+      "audsar",
+      "Australian dollar vs. Saudi riyal"
+    ],
+    [
+      "audsek",
+      "Australian dollar vs. Swedish krona"
+    ],
+    [
+      "audthb",
+      "Australian dollar vs. Thai baht"
+    ],
+    [
+      "audtry",
+      "Australian dollar vs. Turkish lira"
+    ],
+    [
+      "audzar",
+      "Australian dollar vs. South African rand"
+    ],
+    [
+      "cadaed",
+      "Canadian dollar vs. United Arab Emirates dirham"
+    ],
+    [
+      "cadcnh",
+      "Canadian dollar vs. Renminbi (offshore)"
+    ],
+    [
+      "cadczk",
+      "Canadian dollar vs. Czech koruna"
+    ],
+    [
+      "caddkk",
+      "Canadian dollar vs. Danish krone"
+    ],
+    [
+      "cadhuf",
+      "Canadian dollar vs. Hungarian forint"
+    ],
+    [
+      "cadils",
+      "Canadian dollar vs. Israeli new shekel"
+    ],
+    [
+      "cadmxn",
+      "Canadian dollar vs. Mexican peso"
+    ],
+    [
+      "cadnok",
+      "Canadian dollar vs. Norwegian krone"
+    ],
+    [
+      "cadpln",
+      "Canadian dollar vs. Polish zÅ‚oty"
+    ],
+    [
+      "cadron",
+      "Canadian dollar vs. Romanian leu"
+    ],
+    [
+      "cadsar",
+      "Canadian dollar vs. Saudi riyal"
+    ],
+    [
+      "cadsek",
+      "Canadian dollar vs. Swedish krona"
+    ],
+    [
+      "cadsgd",
+      "Canadian dollar vs. Singapore dollar"
+    ],
+    [
+      "cadthb",
+      "Canadian dollar vs. Thai baht"
+    ],
+    [
+      "cadtry",
+      "Canadian dollar vs. Turkish lira"
+    ],
+    [
+      "cadzar",
+      "Canadian dollar vs. South African rand"
+    ],
+    [
+      "chfaed",
+      "Swiss franc vs. United Arab Emirates dirham"
+    ],
+    [
+      "chfcnh",
+      "Swiss franc vs. Renminbi (offshore)"
+    ],
+    [
+      "chfczk",
+      "Swiss franc vs. Czech koruna"
+    ],
+    [
+      "chfdkk",
+      "Swiss franc vs. Danish krone"
+    ],
+    [
+      "chfhkd",
+      "Swiss franc vs. Hong Kong dollar"
+    ],
+    [
+      "chfhuf",
+      "Swiss franc vs. Hungarian forint"
+    ],
+    [
+      "chfils",
+      "Swiss franc vs. Israeli new shekel"
+    ],
+    [
+      "chfmxn",
+      "Swiss franc vs. Mexican peso"
+    ],
+    [
+      "chfnok",
+      "Swiss franc vs. Norwegian krone"
+    ],
+    [
+      "chfpln",
+      "Swiss franc vs. Polish zÅ‚oty"
+    ],
+    [
+      "chfron",
+      "Swiss franc vs. Romanian leu"
+    ],
+    [
+      "chfsar",
+      "Swiss franc vs. Saudi riyal"
+    ],
+    [
+      "chfsek",
+      "Swiss franc vs. Swedish krona"
+    ],
+    [
+      "chfthb",
+      "Swiss franc vs. Thai baht"
+    ],
+    [
+      "chftry",
+      "Swiss franc vs. Turkish lira"
+    ],
+    [
+      "chfzar",
+      "Swiss franc vs. South African rand"
+    ],
+    [
+      "cnhczk",
+      "Renminbi (offshore) vs. Czech koruna"
+    ],
+    [
+      "cnhhkd",
+      "Renminbi (offshore) vs. Hong Kong dollar"
+    ],
+    [
+      "cnhhuf",
+      "Renminbi (offshore) vs. Hungarian forint"
+    ],
+    [
+      "cnhjpy",
+      "Renminbi (offshore) vs. Japanese yen"
+    ],
+    [
+      "cnhmxn",
+      "Renminbi (offshore) vs. Mexican peso"
+    ],
+    [
+      "cnhthb",
+      "Renminbi (offshore) vs. Thai baht"
+    ],
+    [
+      "cnhtry",
+      "Renminbi (offshore) vs. Turkish lira"
+    ],
+    [
+      "cnhzar",
+      "Renminbi (offshore) vs. South African rand"
+    ],
+    [
+      "czkhuf",
+      "Czech koruna vs. Hungarian forint"
+    ],
+    [
+      "czkjpy",
+      "Czech koruna vs. Japanese yen"
+    ],
+    [
+      "czkthb",
+      "Czech koruna vs. Thai baht"
+    ],
+    [
+      "czktry",
+      "Czech koruna vs. Turkish lira"
+    ],
+    [
+      "dkkaed",
+      "Danish krone vs. United Arab Emirates dirham"
+    ],
+    [
+      "dkkcnh",
+      "Danish krone vs. Renminbi (offshore)"
+    ],
+    [
+      "dkkczk",
+      "Danish krone vs. Czech koruna"
+    ],
+    [
+      "dkkhkd",
+      "Danish krone vs. Hong Kong dollar"
+    ],
+    [
+      "dkkhuf",
+      "Danish krone vs. Hungarian forint"
+    ],
+    [
+      "dkkils",
+      "Danish krone vs. Israeli new shekel"
+    ],
+    [
+      "dkkjpy",
+      "Danish krone vs. Japanese yen"
+    ],
+    [
+      "dkkmxn",
+      "Danish krone vs. Mexican peso"
+    ],
+    [
+      "dkkron",
+      "Danish krone vs. Romanian leu"
+    ],
+    [
+      "dkksar",
+      "Danish krone vs. Saudi riyal"
+    ],
+    [
+      "dkkthb",
+      "Danish krone vs. Thai baht"
+    ],
+    [
+      "dkktry",
+      "Danish krone vs. Turkish lira"
+    ],
+    [
+      "dkkzar",
+      "Danish krone vs. South African rand"
+    ],
+    [
+      "euraed",
+      "Euro vs. United Arab Emirates dirham"
+    ],
+    [
+      "eurcnh",
+      "Euro vs. Renminbi (offshore)"
+    ],
+    [
+      "eurils",
+      "Euro vs. Israeli new shekel"
+    ],
+    [
+      "eurmxn",
+      "Euro vs. Mexican peso"
+    ],
+    [
+      "eurron",
+      "Euro vs. Romanian leu"
+    ],
+    [
+      "eursar",
+      "Euro vs. Saudi riyal"
+    ],
+    [
+      "eurthb",
+      "Euro vs. Thai baht"
+    ],
+    [
+      "eurzar",
+      "Euro vs. South African rand"
+    ],
+    [
+      "gbpaed",
+      "Pound sterling vs. United Arab Emirates dirham"
+    ],
+    [
+      "gbpcnh",
+      "Pound sterling vs. Renminbi (offshore)"
+    ],
+    [
+      "gbpczk",
+      "Pound sterling vs. Czech koruna"
+    ],
+    [
+      "gbpdkk",
+      "Pound sterling vs. Danish krone"
+    ],
+    [
+      "gbphkd",
+      "Pound sterling vs. Hong Kong dollar"
+    ],
+    [
+      "gbphuf",
+      "Pound sterling vs. Hungarian forint"
+    ],
+    [
+      "gbpils",
+      "Pound sterling vs. Israeli new shekel"
+    ],
+    [
+      "gbpmxn",
+      "Pound sterling vs. Mexican peso"
+    ],
+    [
+      "gbpnok",
+      "Pound sterling vs. Norwegian krone"
+    ],
+    [
+      "gbppln",
+      "Pound sterling vs. Polish zÅ‚oty"
+    ],
+    [
+      "gbpron",
+      "Pound sterling vs. Romanian leu"
+    ],
+    [
+      "gbpsar",
+      "Pound sterling vs. Saudi riyal"
+    ],
+    [
+      "gbpsek",
+      "Pound sterling vs. Swedish krona"
+    ],
+    [
+      "gbpsgd",
+      "Pound sterling vs. Singapore dollar"
+    ],
+    [
+      "gbpthb",
+      "Pound sterling vs. Thai baht"
+    ],
+    [
+      "gbptry",
+      "Pound sterling vs. Turkish lira"
+    ],
+    [
+      "gbpzar",
+      "Pound sterling vs. South African rand"
+    ],
+    [
+      "hkdczk",
+      "Hong Kong dollar vs. Czech koruna"
+    ],
+    [
+      "hkdhuf",
+      "Hong Kong dollar vs. Hungarian forint"
+    ],
+    [
+      "hkdmxn",
+      "Hong Kong dollar vs. Mexican peso"
+    ],
+    [
+      "hkdthb",
+      "Hong Kong dollar vs. Thai baht"
+    ],
+    [
+      "hkdtry",
+      "Hong Kong dollar vs. Turkish lira"
+    ],
+    [
+      "hkdzar",
+      "Hong Kong dollar vs. South African rand"
+    ],
+    [
+      "ilsaed",
+      "Israeli new shekel vs. United Arab Emirates dirham"
+    ],
+    [
+      "ilscnh",
+      "Israeli new shekel vs. Renminbi (offshore)"
+    ],
+    [
+      "ilsczk",
+      "Israeli new shekel vs. Czech koruna"
+    ],
+    [
+      "ilshkd",
+      "Israeli new shekel vs. Hong Kong dollar"
+    ],
+    [
+      "ilshuf",
+      "Israeli new shekel vs. Hungarian forint"
+    ],
+    [
+      "ilsjpy",
+      "Israeli new shekel vs. Japanese yen"
+    ],
+    [
+      "ilsmxn",
+      "Israeli new shekel vs. Mexican peso"
+    ],
+    [
+      "ilsron",
+      "Israeli new shekel vs. Romanian leu"
+    ],
+    [
+      "ilssar",
+      "Israeli new shekel vs. Saudi riyal"
+    ],
+    [
+      "ilsthb",
+      "Israeli new shekel vs. Thai baht"
+    ],
+    [
+      "ilstry",
+      "Israeli new shekel vs. Turkish lira"
+    ],
+    [
+      "ilszar",
+      "Israeli new shekel vs. South African rand"
+    ],
+    [
+      "jpyhuf",
+      "Japanese yen vs. Hungarian forint"
+    ],
+    [
+      "mxnczk",
+      "Mexican peso vs. Czech koruna"
+    ],
+    [
+      "mxnhuf",
+      "Mexican peso vs. Hungarian forint"
+    ],
+    [
+      "mxnjpy",
+      "Mexican peso vs. Japanese yen"
+    ],
+    [
+      "mxnthb",
+      "Mexican peso vs. Thai baht"
+    ],
+    [
+      "mxntry",
+      "Mexican peso vs. Turkish lira"
+    ],
+    [
+      "nokaed",
+      "Norwegian krone vs. United Arab Emirates dirham"
+    ],
+    [
+      "nokcnh",
+      "Norwegian krone vs. Renminbi (offshore)"
+    ],
+    [
+      "nokczk",
+      "Norwegian krone vs. Czech koruna"
+    ],
+    [
+      "nokdkk",
+      "Norwegian krone vs. Danish krone"
+    ],
+    [
+      "nokhkd",
+      "Norwegian krone vs. Hong Kong dollar"
+    ],
+    [
+      "nokhuf",
+      "Norwegian krone vs. Hungarian forint"
+    ],
+    [
+      "nokils",
+      "Norwegian krone vs. Israeli new shekel"
+    ],
+    [
+      "nokjpy",
+      "Norwegian krone vs. Japanese yen"
+    ],
+    [
+      "nokmxn",
+      "Norwegian krone vs. Mexican peso"
+    ],
+    [
+      "nokron",
+      "Norwegian krone vs. Romanian leu"
+    ],
+    [
+      "noksar",
+      "Norwegian krone vs. Saudi riyal"
+    ],
+    [
+      "noksek",
+      "Norwegian krone vs. Swedish krona"
+    ],
+    [
+      "nokthb",
+      "Norwegian krone vs. Thai baht"
+    ],
+    [
+      "noktry",
+      "Norwegian krone vs. Turkish lira"
+    ],
+    [
+      "nokzar",
+      "Norwegian krone vs. South African rand"
+    ],
+    [
+      "nzdaed",
+      "New Zealand dollar vs. United Arab Emirates dirham"
+    ],
+    [
+      "nzdcnh",
+      "New Zealand dollar vs. Renminbi (offshore)"
+    ],
+    [
+      "nzdczk",
+      "New Zealand dollar vs. Czech koruna"
+    ],
+    [
+      "nzddkk",
+      "New Zealand dollar vs. Danish krone"
+    ],
+    [
+      "nzdhkd",
+      "New Zealand dollar vs. Hong Kong dollar"
+    ],
+    [
+      "nzdhuf",
+      "New Zealand dollar vs. Hungarian forint"
+    ],
+    [
+      "nzdils",
+      "New Zealand dollar vs. Israeli new shekel"
+    ],
+    [
+      "nzdmxn",
+      "New Zealand dollar vs. Mexican peso"
+    ],
+    [
+      "nzdnok",
+      "New Zealand dollar vs. Norwegian krone"
+    ],
+    [
+      "nzdpln",
+      "New Zealand dollar vs. Polish zÅ‚oty"
+    ],
+    [
+      "nzdron",
+      "New Zealand dollar vs. Romanian leu"
+    ],
+    [
+      "nzdsar",
+      "New Zealand dollar vs. Saudi riyal"
+    ],
+    [
+      "nzdsek",
+      "New Zealand dollar vs. Swedish krona"
+    ],
+    [
+      "nzdsgd",
+      "New Zealand dollar vs. Singapore dollar"
+    ],
+    [
+      "nzdthb",
+      "New Zealand dollar vs. Thai baht"
+    ],
+    [
+      "nzdtry",
+      "New Zealand dollar vs. Turkish lira"
+    ],
+    [
+      "nzdzar",
+      "New Zealand dollar vs. South African rand"
+    ],
+    [
+      "plnaed",
+      "Polish zÅ‚oty vs. United Arab Emirates dirham"
+    ],
+    [
+      "plncnh",
+      "Polish zÅ‚oty vs. Renminbi (offshore)"
+    ],
+    [
+      "plnczk",
+      "Polish zÅ‚oty vs. Czech koruna"
+    ],
+    [
+      "plndkk",
+      "Polish zÅ‚oty vs. Danish krone"
+    ],
+    [
+      "plnhkd",
+      "Polish zÅ‚oty vs. Hong Kong dollar"
+    ],
+    [
+      "plnhuf",
+      "Polish zÅ‚oty vs. Hungarian forint"
+    ],
+    [
+      "plnils",
+      "Polish zÅ‚oty vs. Israeli new shekel"
+    ],
+    [
+      "plnjpy",
+      "Polish zÅ‚oty vs. Japanese yen"
+    ],
+    [
+      "plnmxn",
+      "Polish zÅ‚oty vs. Mexican peso"
+    ],
+    [
+      "plnnok",
+      "Polish zÅ‚oty vs. Norwegian krone"
+    ],
+    [
+      "plnron",
+      "Polish zÅ‚oty vs. Romanian leu"
+    ],
+    [
+      "plnsar",
+      "Polish zÅ‚oty vs. Saudi riyal"
+    ],
+    [
+      "plnsek",
+      "Polish zÅ‚oty vs. Swedish krona"
+    ],
+    [
+      "plnthb",
+      "Polish zÅ‚oty vs. Thai baht"
+    ],
+    [
+      "plntry",
+      "Polish zÅ‚oty vs. Turkish lira"
+    ],
+    [
+      "plnzar",
+      "Polish zÅ‚oty vs. South African rand"
+    ],
+    [
+      "roncnh",
+      "Romanian leu vs. Renminbi (offshore)"
+    ],
+    [
+      "ronczk",
+      "Romanian leu vs. Czech koruna"
+    ],
+    [
+      "ronhkd",
+      "Romanian leu vs. Hong Kong dollar"
+    ],
+    [
+      "ronhuf",
+      "Romanian leu vs. Hungarian forint"
+    ],
+    [
+      "ronjpy",
+      "Romanian leu vs. Japanese yen"
+    ],
+    [
+      "ronmxn",
+      "Romanian leu vs. Mexican peso"
+    ],
+    [
+      "ronthb",
+      "Romanian leu vs. Thai baht"
+    ],
+    [
+      "rontry",
+      "Romanian leu vs. Turkish lira"
+    ],
+    [
+      "ronzar",
+      "Romanian leu vs. South African rand"
+    ],
+    [
+      "sarcnh",
+      "Saudi riyal vs. Renminbi (offshore)"
+    ],
+    [
+      "sarczk",
+      "Saudi riyal vs. Czech koruna"
+    ],
+    [
+      "sarhkd",
+      "Saudi riyal vs. Hong Kong dollar"
+    ],
+    [
+      "sarhuf",
+      "Saudi riyal vs. Hungarian forint"
+    ],
+    [
+      "sarjpy",
+      "Saudi riyal vs. Japanese yen"
+    ],
+    [
+      "sarmxn",
+      "Saudi riyal vs. Mexican peso"
+    ],
+    [
+      "sarron",
+      "Saudi riyal vs. Romanian leu"
+    ],
+    [
+      "sarthb",
+      "Saudi riyal vs. Thai baht"
+    ],
+    [
+      "sartry",
+      "Saudi riyal vs. Turkish lira"
+    ],
+    [
+      "sarzar",
+      "Saudi riyal vs. South African rand"
+    ],
+    [
+      "sekaed",
+      "Swedish krona vs. United Arab Emirates dirham"
+    ],
+    [
+      "sekcnh",
+      "Swedish krona vs. Renminbi (offshore)"
+    ],
+    [
+      "sekczk",
+      "Swedish krona vs. Czech koruna"
+    ],
+    [
+      "sekdkk",
+      "Swedish krona vs. Danish krone"
+    ],
+    [
+      "sekhkd",
+      "Swedish krona vs. Hong Kong dollar"
+    ],
+    [
+      "sekhuf",
+      "Swedish krona vs. Hungarian forint"
+    ],
+    [
+      "sekils",
+      "Swedish krona vs. Israeli new shekel"
+    ],
+    [
+      "sekjpy",
+      "Swedish krona vs. Japanese yen"
+    ],
+    [
+      "sekmxn",
+      "Swedish krona vs. Mexican peso"
+    ],
+    [
+      "sekron",
+      "Swedish krona vs. Romanian leu"
+    ],
+    [
+      "seksar",
+      "Swedish krona vs. Saudi riyal"
+    ],
+    [
+      "sekthb",
+      "Swedish krona vs. Thai baht"
+    ],
+    [
+      "sektry",
+      "Swedish krona vs. Turkish lira"
+    ],
+    [
+      "sekzar",
+      "Swedish krona vs. South African rand"
+    ],
+    [
+      "sgdaed",
+      "Singapore dollar vs. United Arab Emirates dirham"
+    ],
+    [
+      "sgdcnh",
+      "Singapore dollar vs. Renminbi (offshore)"
+    ],
+    [
+      "sgdczk",
+      "Singapore dollar vs. Czech koruna"
+    ],
+    [
+      "sgddkk",
+      "Singapore dollar vs. Danish krone"
+    ],
+    [
+      "sgdhkd",
+      "Singapore dollar vs. Hong Kong dollar"
+    ],
+    [
+      "sgdhuf",
+      "Singapore dollar vs. Hungarian forint"
+    ],
+    [
+      "sgdils",
+      "Singapore dollar vs. Israeli new shekel"
+    ],
+    [
+      "sgdmxn",
+      "Singapore dollar vs. Mexican peso"
+    ],
+    [
+      "sgdnok",
+      "Singapore dollar vs. Norwegian krone"
+    ],
+    [
+      "sgdpln",
+      "Singapore dollar vs. Polish zÅ‚oty"
+    ],
+    [
+      "sgdron",
+      "Singapore dollar vs. Romanian leu"
+    ],
+    [
+      "sgdsar",
+      "Singapore dollar vs. Saudi riyal"
+    ],
+    [
+      "sgdsek",
+      "Singapore dollar vs. Swedish krona"
+    ],
+    [
+      "sgdthb",
+      "Singapore dollar vs. Thai baht"
+    ],
+    [
+      "sgdtry",
+      "Singapore dollar vs. Turkish lira"
+    ],
+    [
+      "sgdzar",
+      "Singapore dollar vs. South African rand"
+    ],
+    [
+      "thbhuf",
+      "Thai baht vs. Hungarian forint"
+    ],
+    [
+      "thbjpy",
+      "Thai baht vs. Japanese yen"
+    ],
+    [
+      "tryhuf",
+      "Turkish lira vs. Hungarian forint"
+    ],
+    [
+      "trythb",
+      "Turkish lira vs. Thai baht"
+    ],
+    [
+      "zarczk",
+      "South African rand vs. Czech koruna"
+    ],
+    [
+      "zarhuf",
+      "South African rand vs. Hungarian forint"
+    ],
+    [
+      "zarmxn",
+      "South African rand vs. Mexican peso"
+    ],
+    [
+      "zarthb",
+      "South African rand vs. Thai baht"
+    ],
+    [
+      "zartry",
+      "South African rand vs. Turkish lira"
+    ],
+    [
+      "audusd",
+      "Australian Dollar vs US Dollar"
+    ],
+    [
+      "eurusd",
+      "Euro vs US Dollar"
+    ],
+    [
+      "gbpusd",
+      "Pound Sterling vs US Dollar"
+    ],
+    [
+      "nzdusd",
+      "New Zealand Dollar vs US Dollar"
+    ],
+    [
+      "usdcad",
+      "US Dollar vs Canadian Dollar"
+    ],
+    [
+      "usdchf",
+      "US Dollar vs Swiss Franc"
+    ],
+    [
+      "usdjpy",
+      "US Dollar vs Japanese Yen"
+    ],
+    [
+      "xagusd",
+      "Spot silver"
+    ],
+    [
+      "xauusd",
+      "Spot gold"
+    ],
+    [
+      "xagaed",
+      "Silver (troy oz) vs. United Arab Emirates dirham"
+    ],
+    [
+      "xagaud",
+      "Silver (troy oz) vs. Australian dollar"
+    ],
+    [
+      "xagcad",
+      "Silver (troy oz) vs. Canadian dollar"
+    ],
+    [
+      "xagchf",
+      "Silver (troy oz) vs. Swiss franc"
+    ],
+    [
+      "xagcnh",
+      "Silver (troy oz) vs. Renminbi (offshore)"
+    ],
+    [
+      "xagczk",
+      "Silver (troy oz) vs. Czech koruna"
+    ],
+    [
+      "xagdkk",
+      "Silver (troy oz) vs. Danish krone"
+    ],
+    [
+      "xageur",
+      "Silver (troy oz) vs. Euro"
+    ],
+    [
+      "xaggbp",
+      "Silver (troy oz) vs. Pound sterling"
+    ],
+    [
+      "xaghkd",
+      "Silver (troy oz) vs. Hong Kong dollar"
+    ],
+    [
+      "xaghuf",
+      "Silver (troy oz) vs. Hungarian forint"
+    ],
+    [
+      "xagils",
+      "Silver (troy oz) vs. Israeli new shekel"
+    ],
+    [
+      "xagjpy",
+      "Silver (troy oz) vs. Japanese yen"
+    ],
+    [
+      "xagmxn",
+      "Silver (troy oz) vs. Mexican peso"
+    ],
+    [
+      "xagnok",
+      "Silver (troy oz) vs. Norwegian krone"
+    ],
+    [
+      "xagnzd",
+      "Silver (troy oz) vs. New Zealand dollar"
+    ],
+    [
+      "xagpln",
+      "Silver (troy oz) vs. Polish zÅ‚oty"
+    ],
+    [
+      "xagron",
+      "Silver (troy oz) vs. Romanian leu"
+    ],
+    [
+      "xagsar",
+      "Silver (troy oz) vs. Saudi riyal"
+    ],
+    [
+      "xagsek",
+      "Silver (troy oz) vs. Swedish krona"
+    ],
+    [
+      "xagsgd",
+      "Silver (troy oz) vs. Singapore dollar"
+    ],
+    [
+      "xagthb",
+      "Silver (troy oz) vs. Thai baht"
+    ],
+    [
+      "xagtry",
+      "Silver (troy oz) vs. Turkish lira"
+    ],
+    [
+      "xagzar",
+      "Silver(troy oz) vs. South African rand"
+    ],
+    [
+      "xauaed",
+      "Gold (troy oz) vs. United Arab Emirates dirham"
+    ],
+    [
+      "xauaud",
+      "Gold (troy oz) vs. Australian dollar"
+    ],
+    [
+      "xaucad",
+      "Gold (troy oz) vs. Canadian dollar"
+    ],
+    [
+      "xauchf",
+      "Gold (troy oz) vs. Swiss franc"
+    ],
+    [
+      "xaucnh",
+      "Gold (troy oz) vs. Renminbi (offshore)"
+    ],
+    [
+      "xauczk",
+      "Gold (troy oz) vs. Czech koruna"
+    ],
+    [
+      "xaudkk",
+      "Gold (troy oz) vs. Danish krone"
+    ],
+    [
+      "xaueur",
+      "Gold (troy oz) vs. Euro"
+    ],
+    [
+      "xaugbp",
+      "Gold (troy oz) vs. Pound sterling"
+    ],
+    [
+      "xauhkd",
+      "Gold (troy oz) vs. Hong Kong dollar"
+    ],
+    [
+      "xauhuf",
+      "Gold (troy oz) vs. Hungarian forint"
+    ],
+    [
+      "xauils",
+      "Gold (troy oz) vs. Israeli new shekel"
+    ],
+    [
+      "xaujpy",
+      "Gold (troy oz) vs. Japanese yen"
+    ],
+    [
+      "xaumxn",
+      "Gold (troy oz) vs. Mexican peso"
+    ],
+    [
+      "xaunok",
+      "Gold (troy oz) vs. Norwegian krone"
+    ],
+    [
+      "xaunzd",
+      "Gold (troy oz) vs. New Zealand dollar"
+    ],
+    [
+      "xaupln",
+      "Gold (troy oz) vs. Polish zÅ‚oty"
+    ],
+    [
+      "xauron",
+      "Gold (troy oz) vs. Romanian leu"
+    ],
+    [
+      "xausar",
+      "Gold (troy oz) vs. Saudi riyal"
+    ],
+    [
+      "xausek",
+      "Gold (troy oz) vs. Swedish krona"
+    ],
+    [
+      "xausgd",
+      "Gold (troy oz) vs. Singapore dollar"
+    ],
+    [
+      "xauthb",
+      "Gold (troy oz) vs. Thai baht"
+    ],
+    [
+      "xautry",
+      "Gold (troy oz) vs. Turkish lira"
+    ],
+    [
+      "xauxag",
+      "Gold (troy oz) vs. Silver (troy oz)"
+    ],
+    [
+      "xauzar",
+      "Gold (troy oz) vs. South African rand"
+    ]
+  ],
+  "indices": [
+    [
+      "dollaridxusd",
+      "US Dollar Index"
+    ],
+    [
+      "usa30idxusd",
+      "USA 30 Index"
+    ],
+    [
+      "usatechidxusd",
+      "USA 100 Technical Index"
+    ],
+    [
+      "usa500idxusd",
+      "USA 500 Index"
+    ],
+    [
+      "ussc2000idxusd",
+      "US Small Cap 2000"
+    ],
+    [
+      "volidxusd",
+      "Volatility Index"
+    ],
+    [
+      "chiidxusd",
+      "China A50 Index"
+    ],
+    [
+      "hkgidxhkd",
+      "Hong Kong 40 Index"
+    ],
+    [
+      "jpnidxjpy",
+      "Japan 225"
+    ],
+    [
+      "ausidxaud",
+      "Australia 200 Index"
+    ],
+    [
+      "indidxusd",
+      "India 50 Index"
+    ],
+    [
+      "sgdidxsgd",
+      "Singapore Blue Chip Cash Index"
+    ],
+    [
+      "fraidxeur",
+      "France 40 Index"
+    ],
+    [
+      "deuidxeur",
+      "Germany 40 Index"
+    ],
+    [
+      "eusidxeur",
+      "Europe 50 Index"
+    ],
+    [
+      "gbridxgbp",
+      "UK 100 Index"
+    ],
+    [
+      "espidxeur",
+      "Spain 35 Index"
+    ],
+    [
+      "cheidxchf",
+      "Switzerland 20 Index"
+    ],
+    [
+      "itaidxeur",
+      "Italy 40 Index"
+    ],
+    [
+      "nldidxeur",
+      "Netherlands 25 Index"
+    ],
+    [
+      "plnidxpln",
+      "Poland 20 Index"
+    ],
+    [
+      "soaidxzar",
+      "South Africa 40 Index"
+    ]
+  ],
+  "usstocks": [
+    [
+      "A",
+      "AGILENT TECHNOLOGIES INC"
+    ],
+    [
+      "AA",
+      "ALCOA INC"
+    ],
+    [
+      "AABV",
+      "AbbVie Inc"
+    ],
+    [
+      "AAL",
+      "AMERICAN AIRLINES GROUP INC"
+    ],
+    [
+      "AAP",
+      "ADVANCE AUTO PARTS INC"
+    ],
+    [
+      "AAPL",
+      "APPLE INC"
+    ],
+    [
+      "ABC",
+      "AMERISOURCEBERGEN CORP"
+    ],
+    [
+      "ABEV",
+      "Ambev S.A."
+    ],
+    [
+      "ABMD",
+      "ABIOMED INC"
+    ],
+    [
+      "ABT",
+      "ABBOTT LABORATORIES"
+    ],
+    [
+      "ACGL",
+      "ARCH CAPITAL GROUP LTD"
+    ],
+    [
+      "ACM",
+      "AECOM"
+    ],
+    [
+      "ACN",
+      "ACCENTURE PLC-CL A"
+    ],
+    [
+      "ADBE",
+      "ADOBE SYSTEMS INC"
+    ],
+    [
+      "ADI",
+      "ANALOG DEVICES INC"
+    ],
+    [
+      "ADP",
+      "AUTOMATIC DATA PROCESSING"
+    ],
+    [
+      "ADSK",
+      "AUTODESK INC"
+    ],
+    [
+      "AEP",
+      "AMERICAN ELECTRIC POWER"
+    ],
+    [
+      "AFG",
+      "AMERICAN FINANCIAL GROUP INC"
+    ],
+    [
+      "AGNC",
+      "AGNC INVESTMENT CORP"
+    ],
+    [
+      "AIG",
+      "AMERICAN INTERNATIONAL GROUP"
+    ],
+    [
+      "AJG",
+      "ARTHUR J GALLAGHER & CO"
+    ],
+    [
+      "ALB",
+      "ALBEMARLE CORP"
+    ],
+    [
+      "ALGN",
+      "ALIGN TECHNOLOGY INC"
+    ],
+    [
+      "ALK",
+      "ALASKA AIR GROUP INC"
+    ],
+    [
+      "ALKS",
+      "ALKERMES PLC"
+    ],
+    [
+      "ALL",
+      "ALLSTATE CORP"
+    ],
+    [
+      "ALLE",
+      "ALLEGION PLC"
+    ],
+    [
+      "ALLY",
+      "ALLY FINANCIAL INC"
+    ],
+    [
+      "ALNY",
+      "ALNYLAM PHARMACEUTICALS INC"
+    ],
+    [
+      "ALXN",
+      "ALEXION PHARMACEUTICALS INC"
+    ],
+    [
+      "AMAT",
+      "APPLIED MATERIALS INC"
+    ],
+    [
+      "AMCR",
+      "AMCOR PLC"
+    ],
+    [
+      "AMD",
+      "ADVANCED MICRO DEVICES"
+    ],
+    [
+      "AMGN",
+      "AMGEN INC"
+    ],
+    [
+      "AMH",
+      "AMERICAN HOMES 4 RENT- A"
+    ],
+    [
+      "AMP",
+      "AMERIPRISE FINANCIAL INC"
+    ],
+    [
+      "AMT",
+      "AMERICAN TOWER CORP"
+    ],
+    [
+      "AMWL",
+      "American Well Corp Class A"
+    ],
+    [
+      "AMZN",
+      "AMAZON.COM INC"
+    ],
+    [
+      "ANET",
+      "ARISTA NETWORKS INC"
+    ],
+    [
+      "ANSS",
+      "ANSYS INC"
+    ],
+    [
+      "ANTM",
+      "ANTHEM INC"
+    ],
+    [
+      "AON",
+      "AON PLC-CLASS A"
+    ],
+    [
+      "AOS",
+      "SMITH (A.O.) CORP"
+    ],
+    [
+      "APA",
+      "APACHE CORP"
+    ],
+    [
+      "APD",
+      "AIR PRODUCTS & CHEMICALS INC"
+    ],
+    [
+      "APTV",
+      "APTIV PLC"
+    ],
+    [
+      "AR",
+      "ANTERO RESOURCES CORP"
+    ],
+    [
+      "ARE",
+      "ALEXANDRIA REAL ESTATE EQUIT"
+    ],
+    [
+      "ARMK",
+      "ARAMARK"
+    ],
+    [
+      "ARW",
+      "ARROW ELECTRONICS INC"
+    ],
+    [
+      "ATO",
+      "ATMOS ENERGY CORP"
+    ],
+    [
+      "ATVI",
+      "ACTIVISION BLIZZARD INC"
+    ],
+    [
+      "AVB",
+      "AVALONBAY COMMUNITIES INC"
+    ],
+    [
+      "AVGO",
+      "Broadcom Limited"
+    ],
+    [
+      "AVLR",
+      "AVALARA INC"
+    ],
+    [
+      "AVTR",
+      "AVANTOR INC"
+    ],
+    [
+      "AWK",
+      "AMERICAN WATER WORKS CO INC"
+    ],
+    [
+      "AXP",
+      "AMERICAN EXPRESS CO"
+    ],
+    [
+      "AXTA",
+      "AXALTA COATING SYSTEMS LTD"
+    ],
+    [
+      "AYX",
+      "ALTERYX INC - CLASS A"
+    ],
+    [
+      "AZN",
+      "AstraZeneca PLC"
+    ],
+    [
+      "AZO",
+      "AUTOZONE INC"
+    ],
+    [
+      "AZPN",
+      "ASPEN TECHNOLOGY INC"
+    ],
+    [
+      "BA",
+      "Boeing Co"
+    ],
+    [
+      "BABA",
+      "ALIBABA GROUP HOLDING-SP ADR"
+    ],
+    [
+      "BAC",
+      "BANK OF AMERICA CORP"
+    ],
+    [
+      "BAH",
+      "BOOZ ALLEN HAMILTON HOLDINGS"
+    ],
+    [
+      "BBD",
+      "Banco Bradesco S.A."
+    ],
+    [
+      "BBWI",
+      "BATH & BODY WORKS INC"
+    ],
+    [
+      "BBY",
+      "BEST BUY CO INC"
+    ],
+    [
+      "BDX",
+      "BECTON DICKINSON AND CO"
+    ],
+    [
+      "BERY",
+      "BERRY GLOBAL GROUP INC"
+    ],
+    [
+      "BG",
+      "BUNGE LTD"
+    ],
+    [
+      "BIDU",
+      "BAIDU INC"
+    ],
+    [
+      "BIIB",
+      "BIOGEN INC"
+    ],
+    [
+      "BIO",
+      "BIO-RAD LABORATORIES-A"
+    ],
+    [
+      "BK",
+      "BANK OF NEW YORK MELLON CORP"
+    ],
+    [
+      "BKI",
+      "BLACK KNIGHT INC"
+    ],
+    [
+      "BKR",
+      "BAKER HUGHES CO"
+    ],
+    [
+      "BLK",
+      "BLACKROCK INC"
+    ],
+    [
+      "BMRN",
+      "BIOMARIN PHARMACEUTICAL INC"
+    ],
+    [
+      "BMY",
+      "BRISTOL-MYERS SQUIBB CO"
+    ],
+    [
+      "BP",
+      "BP p.l.c."
+    ],
+    [
+      "BPOP",
+      "POPULAR INC"
+    ],
+    [
+      "BR",
+      "BROADRIDGE FINANCIAL SOLUTIO"
+    ],
+    [
+      "BRKB",
+      "BERKSHIRE HATHAWAY INC-CL B"
+    ],
+    [
+      "BRKR",
+      "BRUKER CORP"
+    ],
+    [
+      "BRO",
+      "BROWN & BROWN INC"
+    ],
+    [
+      "BRX",
+      "BRIXMOR PROPERTY GROUP INC"
+    ],
+    [
+      "BSX",
+      "BOSTON SCIENTIFIC CORP"
+    ],
+    [
+      "BURL",
+      "BURLINGTON STORES INC"
+    ],
+    [
+      "BWA",
+      "BORGWARNER INC"
+    ],
+    [
+      "BYND",
+      "BEYOND MEAT INC"
+    ],
+    [
+      "C",
+      "CITIGROUP INC"
+    ],
+    [
+      "CACC",
+      "CREDIT ACCEPTANCE CORP"
+    ],
+    [
+      "CACI",
+      "CACI INTERNATIONAL INC -CL A"
+    ],
+    [
+      "CAG",
+      "CONAGRA FOODS INC"
+    ],
+    [
+      "CAH",
+      "CARDINAL HEALTH INC"
+    ],
+    [
+      "CARR",
+      "CARRIER GLOBAL CORP"
+    ],
+    [
+      "CASY",
+      "CASEY'S GENERAL STORES INC"
+    ],
+    [
+      "CAT",
+      "CATERPILLAR INC"
+    ],
+    [
+      "CB",
+      "CHUBB LTD"
+    ],
+    [
+      "CBOE",
+      "CBOE GLOBAL MARKETS INC"
+    ],
+    [
+      "CCI",
+      "CROWN CASTLE INTL CORP"
+    ],
+    [
+      "CCK",
+      "CROWN HOLDINGS INC"
+    ],
+    [
+      "CCL",
+      "CARNIVAL CORP"
+    ],
+    [
+      "CDAY",
+      "CERIDIAN HCM HOLDING INC"
+    ],
+    [
+      "CDEV",
+      "CENTENNIAL RESOURCE DEVELO-A"
+    ],
+    [
+      "CDK",
+      "CDK GLOBAL INC"
+    ],
+    [
+      "CDNS",
+      "CADENCE DESIGN SYS INC"
+    ],
+    [
+      "CDW",
+      "CDW CORP/DE"
+    ],
+    [
+      "CE",
+      "CELANESE CORP"
+    ],
+    [
+      "CERN",
+      "CERNER CORP"
+    ],
+    [
+      "CF",
+      "CF INDUSTRIES HOLDINGS INC"
+    ],
+    [
+      "CFG",
+      "CITIZENS FINANCIAL GROUP"
+    ],
+    [
+      "CFR",
+      "CULLEN/FROST BANKERS INC"
+    ],
+    [
+      "CGNX",
+      "COGNEX CORP"
+    ],
+    [
+      "CHD",
+      "CHURCH & DWIGHT CO INC"
+    ],
+    [
+      "CHNG",
+      "CHANGE HEALTHCARE INC"
+    ],
+    [
+      "CI",
+      "CIGNA CORP"
+    ],
+    [
+      "CL",
+      "COLGATE-PALMOLIVE CO"
+    ],
+    [
+      "CLR",
+      "CONTINENTAL RESOURCES INC/OK"
+    ],
+    [
+      "CMCSA",
+      "COMCAST CORP-CLASS A"
+    ],
+    [
+      "CME",
+      "CME GROUP INC"
+    ],
+    [
+      "CMG",
+      "CHIPOTLE MEXICAN GRILL INC"
+    ],
+    [
+      "CMI",
+      "CUMMINS INC"
+    ],
+    [
+      "CNC",
+      "CENTENE CORP"
+    ],
+    [
+      "COF",
+      "CAPITAL ONE FINANCIAL CORP"
+    ],
+    [
+      "COHR",
+      "COHERENT INC"
+    ],
+    [
+      "COLD",
+      "AMERICOLD REALTY TRUST"
+    ],
+    [
+      "COO",
+      "COOPER COS INC/THE"
+    ],
+    [
+      "COP",
+      "CONOCOPHILLIPS"
+    ],
+    [
+      "COST",
+      "COSTCO WHOLESALE CORP"
+    ],
+    [
+      "COUP",
+      "COUPA SOFTWARE INC"
+    ],
+    [
+      "CPRI",
+      "CAPRI HOLDINGS LTD"
+    ],
+    [
+      "CPRT",
+      "COPART INC"
+    ],
+    [
+      "CPT",
+      "CAMDEN PROPERTY TRUST"
+    ],
+    [
+      "CRL",
+      "CHARLES RIVER LABORATORIES"
+    ],
+    [
+      "CRM",
+      "SALESFORCE.COM INC"
+    ],
+    [
+      "CS",
+      "Credit Suisse Group AG"
+    ],
+    [
+      "CSCO",
+      "CISCO SYSTEMS INC"
+    ],
+    [
+      "CSGP",
+      "COSTAR GROUP INC"
+    ],
+    [
+      "CSL",
+      "CARLISLE COS INC"
+    ],
+    [
+      "CSX",
+      "CSX CORP"
+    ],
+    [
+      "CTL",
+      "CENTURYLINK INC"
+    ],
+    [
+      "CTLT",
+      "CATALENT INC"
+    ],
+    [
+      "CTSH",
+      "COGNIZANT TECH SOLUTIONS-A"
+    ],
+    [
+      "CTVA",
+      "CORTEVA INC"
+    ],
+    [
+      "CTXS",
+      "CITRIX SYSTEMS INC"
+    ],
+    [
+      "CUBE",
+      "CUBESMART"
+    ],
+    [
+      "CVNA",
+      "CARVANA CO"
+    ],
+    [
+      "CVS",
+      "CVS HEALTH CORP"
+    ],
+    [
+      "CVX",
+      "CHEVRON CORP"
+    ],
+    [
+      "CZR",
+      "CAESARS ENTERTAINMENT INC"
+    ],
+    [
+      "D",
+      "DOMINION RESOURCES INC/VA"
+    ],
+    [
+      "DAL",
+      "DELTA AIR LINES INC"
+    ],
+    [
+      "DBX",
+      "DROPBOX INC-CLASS A"
+    ],
+    [
+      "DE",
+      "DEERE & CO"
+    ],
+    [
+      "DELL",
+      "DELL TECHNOLOGIES -C"
+    ],
+    [
+      "DFS",
+      "DISCOVER FINANCIAL SERVICES"
+    ],
+    [
+      "DG",
+      "DOLLAR GENERAL CORP"
+    ],
+    [
+      "DHI",
+      "DR HORTON INC"
+    ],
+    [
+      "DHR",
+      "DANAHER CORP"
+    ],
+    [
+      "DIS",
+      "WALT DISNEY CO/THE"
+    ],
+    [
+      "DKS",
+      "DICK'S SPORTING GOODS INC"
+    ],
+    [
+      "DLR",
+      "DIGITAL REALTY TRUST INC"
+    ],
+    [
+      "DLTR",
+      "DOLLAR TREE INC"
+    ],
+    [
+      "DOCU",
+      "DOCUSIGN INC"
+    ],
+    [
+      "DOX",
+      "AMDOCS LTD"
+    ],
+    [
+      "DPZ",
+      "DOMINO'S PIZZA INC"
+    ],
+    [
+      "DRE",
+      "DUKE REALTY CORP"
+    ],
+    [
+      "DT",
+      "DYNATRACE INC"
+    ],
+    [
+      "DUK",
+      "DUKE ENERGY CORP"
+    ],
+    [
+      "DVA",
+      "DAVITA HEALTHCARE PARTNERS I"
+    ],
+    [
+      "DVN",
+      "DEVON ENERGY CORP"
+    ],
+    [
+      "DXC",
+      "DXC TECHNOLOGY CO"
+    ],
+    [
+      "DXCM",
+      "DEXCOM INC"
+    ],
+    [
+      "EA",
+      "ELECTRONIC ARTS INC"
+    ],
+    [
+      "EBAY",
+      "EBAY INC"
+    ],
+    [
+      "EEFT",
+      "EURONET WORLDWIDE INC"
+    ],
+    [
+      "EFX",
+      "EQUIFAX INC"
+    ],
+    [
+      "EHC",
+      "ENCOMPASS HEALTH CORP"
+    ],
+    [
+      "EIX",
+      "EDISON INTERNATIONAL"
+    ],
+    [
+      "EL",
+      "ESTEE LAUDER COMPANIES-CL A"
+    ],
+    [
+      "ELAN",
+      "ELANCO ANIMAL HEALTH INC"
+    ],
+    [
+      "ELS",
+      "EQUITY LIFESTYLE PROPERTIES"
+    ],
+    [
+      "EMR",
+      "EMERSON ELECTRIC CO"
+    ],
+    [
+      "ENPH",
+      "ENPHASE ENERGY INC"
+    ],
+    [
+      "ENTG",
+      "ENTEGRIS INC"
+    ],
+    [
+      "EOG",
+      "EOG RESOURCES INC"
+    ],
+    [
+      "EPAM",
+      "EPAM SYSTEMS INC"
+    ],
+    [
+      "EQH",
+      "EQUITABLE HOLDINGS INC"
+    ],
+    [
+      "EQT",
+      "EQT CORP"
+    ],
+    [
+      "ES",
+      "EVERSOURCE ENERGY"
+    ],
+    [
+      "ESS",
+      "ESSEX PROPERTY TRUST INC"
+    ],
+    [
+      "ESTC",
+      "ELASTIC NV"
+    ],
+    [
+      "ETN",
+      "EATON CORP PLC"
+    ],
+    [
+      "ETSY",
+      "ETSY INC"
+    ],
+    [
+      "EVRG",
+      "EVERGY INC"
+    ],
+    [
+      "EW",
+      "EDWARDS LIFESCIENCES CORP"
+    ],
+    [
+      "EWBC",
+      "EAST WEST BANCORP INC"
+    ],
+    [
+      "EXC",
+      "EXELON CORP"
+    ],
+    [
+      "EXEL",
+      "EXELIXIS INC"
+    ],
+    [
+      "EXPE",
+      "EXPEDIA INC"
+    ],
+    [
+      "EXR",
+      "EXTRA SPACE STORAGE INC"
+    ],
+    [
+      "F",
+      "FORD MOTOR CO"
+    ],
+    [
+      "FANG",
+      "DIAMONDBACK ENERGY INC"
+    ],
+    [
+      "FB",
+      "FACEBOOK INC-A / META"
+    ],
+    [
+      "FBHS",
+      "FORTUNE BRANDS HOME & SECURI"
+    ],
+    [
+      "FCNCA",
+      "FIRST CITIZENS BCSHS -CL A"
+    ],
+    [
+      "FCX",
+      "FREEPORT-MCMORAN INC"
+    ],
+    [
+      "FDS",
+      "FACTSET RESEARCH SYSTEMS INC"
+    ],
+    [
+      "FDX",
+      "FEDEX CORP"
+    ],
+    [
+      "FE",
+      "FIRSTENERGY CORP"
+    ],
+    [
+      "FICO",
+      "FAIR ISAAC CORP"
+    ],
+    [
+      "FITB",
+      "FIFTH THIRD BANCORP"
+    ],
+    [
+      "FIVE",
+      "FIVE BELOW"
+    ],
+    [
+      "FL",
+      "FOOT LOCKER INC"
+    ],
+    [
+      "FLT",
+      "FLEETCOR TECHNOLOGIES INC"
+    ],
+    [
+      "FND",
+      "FLOOR & DECOR HOLDINGS INC-A"
+    ],
+    [
+      "FNF",
+      "FIDELITY NATIONAL FINANCIAL"
+    ],
+    [
+      "FOXA",
+      "TWENTY-FIRST CENTURY FOX-A"
+    ],
+    [
+      "FRC",
+      "FIRST REPUBLIC BANK/CA"
+    ],
+    [
+      "FTI",
+      "FMC TECHNOLOGIES INC"
+    ],
+    [
+      "FTNT",
+      "FORTINET INC"
+    ],
+    [
+      "FTV",
+      "FORTIVE CORP"
+    ],
+    [
+      "G",
+      "GENPACT LTD"
+    ],
+    [
+      "GD",
+      "GENERAL DYNAMICS CORP"
+    ],
+    [
+      "GDDY",
+      "GODADDY INC - CLASS A"
+    ],
+    [
+      "GE",
+      "GENERAL ELECTRIC CO"
+    ],
+    [
+      "GGG",
+      "GRACO INC"
+    ],
+    [
+      "GH",
+      "GUARDANT HEALTH INC"
+    ],
+    [
+      "GILD",
+      "GILEAD SCIENCES INC"
+    ],
+    [
+      "GIS",
+      "GENERAL MILLS INC"
+    ],
+    [
+      "GL",
+      "GLOBE LIFE INC"
+    ],
+    [
+      "GLPI",
+      "GAMING AND LEISURE PROPERTIE"
+    ],
+    [
+      "GLW",
+      "CORNING INC"
+    ],
+    [
+      "GM",
+      "GENERAL MOTORS CO"
+    ],
+    [
+      "GNRC",
+      "GENERAC HOLDINGS INC"
+    ],
+    [
+      "GOOG",
+      "ALPHABET INC-CL C"
+    ],
+    [
+      "GOOGL",
+      "ALPHABET INC-CL A"
+    ],
+    [
+      "GPN",
+      "GLOBAL PAYMENTS INC"
+    ],
+    [
+      "GPS",
+      "GAP INC/THE"
+    ],
+    [
+      "GS",
+      "GOLDMAN SACHS GROUP INC"
+    ],
+    [
+      "GWW",
+      "WW GRAINGER INC"
+    ],
+    [
+      "H",
+      "HYATT HOTELS CORP - CL A"
+    ],
+    [
+      "HAL",
+      "HALLIBURTON CO"
+    ],
+    [
+      "HBI",
+      "HANESBRANDS INC"
+    ],
+    [
+      "HCA",
+      "HCA HEALTHCARE INC"
+    ],
+    [
+      "HCN",
+      "WELLTOWER INC"
+    ],
+    [
+      "HD",
+      "HOME DEPOT INC"
+    ],
+    [
+      "HEI",
+      "HEICO CORP"
+    ],
+    [
+      "HES",
+      "HESS CORP"
+    ],
+    [
+      "HII",
+      "HUNTINGTON INGALLS INDUSTRIE"
+    ],
+    [
+      "HLT",
+      "HILTON WORLDWIDE HOLDINGS IN"
+    ],
+    [
+      "HOG",
+      "HARLEY-DAVIDSON INC"
+    ],
+    [
+      "HON",
+      "HONEYWELL INTERNATIONAL INC"
+    ],
+    [
+      "HPE",
+      "HEWLETT PACKARD ENTERPRISE"
+    ],
+    [
+      "HPQ",
+      "HP INC"
+    ],
+    [
+      "HTA",
+      "HEALTHCARE TRUST OF AME-CL A"
+    ],
+    [
+      "HUBB",
+      "HUBBELL INC"
+    ],
+    [
+      "HUBS",
+      "HUBSPOT INC"
+    ],
+    [
+      "HUM",
+      "HUMANA INC"
+    ],
+    [
+      "HWM",
+      "HOWMET AEROSPACE INC"
+    ],
+    [
+      "HZNP",
+      "HORIZON THERAPEUTICS PLC"
+    ],
+    [
+      "IBKR",
+      "INTERACTIVE BROKERS GRO-CL A"
+    ],
+    [
+      "IBM",
+      "INTL BUSINESS MACHINES CORP"
+    ],
+    [
+      "ICE",
+      "INTERCONTINENTAL EXCHANGE IN"
+    ],
+    [
+      "IDXX",
+      "IDEXX LABORATORIES INC"
+    ],
+    [
+      "IEX",
+      "IDEX CORP"
+    ],
+    [
+      "ILMN",
+      "ILLUMINA INC"
+    ],
+    [
+      "INCY",
+      "INCYTE CORP"
+    ],
+    [
+      "INTC",
+      "INTEL CORP"
+    ],
+    [
+      "INTU",
+      "INTUIT INC"
+    ],
+    [
+      "INVH",
+      "INVITATION HOMES INC"
+    ],
+    [
+      "IONS",
+      "IONIS PHARMACEUTICALS INC"
+    ],
+    [
+      "IPG",
+      "INTERPUBLIC GROUP OF COS INC"
+    ],
+    [
+      "IPGP",
+      "IPG PHOTONICS CORP"
+    ],
+    [
+      "IQV",
+      "IQVIA HOLDINGS INC"
+    ],
+    [
+      "IR",
+      "INGERSOLL-RAND INC"
+    ],
+    [
+      "ISRG",
+      "INTUITIVE SURGICAL INC"
+    ],
+    [
+      "IT",
+      "GARTNER INC"
+    ],
+    [
+      "ITUB",
+      "Itau Unibanco Holding S.A."
+    ],
+    [
+      "ITW",
+      "ILLINOIS TOOL WORKS"
+    ],
+    [
+      "IVZ",
+      "INVESCO LTD"
+    ],
+    [
+      "JAZZ",
+      "JAZZ PHARMACEUTICALS PLC"
+    ],
+    [
+      "JBLU",
+      "JETBLUE AIRWAYS CORP"
+    ],
+    [
+      "JCI",
+      "JOHNSON CONTROLS INC"
+    ],
+    [
+      "JEF",
+      "JEFFERIES FINANCIAL GROUP IN"
+    ],
+    [
+      "JKHY",
+      "JACK HENRY & ASSOCIATES INC"
+    ],
+    [
+      "JLL",
+      "JONES LANG LASALLE INC"
+    ],
+    [
+      "JNJ",
+      "JOHNSON & JOHNSON"
+    ],
+    [
+      "JPM",
+      "JPMORGAN CHASE & CO"
+    ],
+    [
+      "JWN",
+      "NORDSTROM INC"
+    ],
+    [
+      "K",
+      "KELLOGG CO"
+    ],
+    [
+      "KEY",
+      "KEYCORP"
+    ],
+    [
+      "KEYS",
+      "KEYSIGHT TECHNOLOGIES IN"
+    ],
+    [
+      "KHC",
+      "KRAFT HEINZ CO/THE"
+    ],
+    [
+      "KMB",
+      "KIMBERLY-CLARK CORP"
+    ],
+    [
+      "KMI",
+      "KINDER MORGAN INC"
+    ],
+    [
+      "KMX",
+      "CARMAX INC"
+    ],
+    [
+      "KNX",
+      "KNIGHT-SWIFT TRANSPORTATION"
+    ],
+    [
+      "KO",
+      "COCA-COLA CO/THE"
+    ],
+    [
+      "KR",
+      "KROGER CO"
+    ],
+    [
+      "KRC",
+      "KILROY REALTY CORP"
+    ],
+    [
+      "KSS",
+      "KOHLS CORP"
+    ],
+    [
+      "L",
+      "LOEWS CORP"
+    ],
+    [
+      "LAMR",
+      "LAMAR ADVERTISING CO-A"
+    ],
+    [
+      "LDOS",
+      "LEIDOS HOLDINGS INC"
+    ],
+    [
+      "LEA",
+      "LEAR CORP"
+    ],
+    [
+      "LEN",
+      "LENNAR CORP-A"
+    ],
+    [
+      "LHX",
+      "L3HARRIS TECHNOLOGIES INC"
+    ],
+    [
+      "LKQ",
+      "LKQ CORP"
+    ],
+    [
+      "LLY",
+      "ELI LILLY & CO"
+    ],
+    [
+      "LMT",
+      "LOCKHEED MARTIN CORP"
+    ],
+    [
+      "LNC",
+      "LINCOLN NATIONAL CORP"
+    ],
+    [
+      "LNG",
+      "CHENIERE ENERGY INC"
+    ],
+    [
+      "LNT",
+      "ALLIANT ENERGY CORP"
+    ],
+    [
+      "LOW",
+      "LOWE'S COS INC"
+    ],
+    [
+      "LPLA",
+      "LPL FINANCIAL HOLDINGS INC"
+    ],
+    [
+      "LRCX",
+      "LAM RESEARCH CORP"
+    ],
+    [
+      "LSI",
+      "LIFE STORAGE INC"
+    ],
+    [
+      "LSTR",
+      "LANDSTAR SYSTEM INC"
+    ],
+    [
+      "LULU",
+      "LULULEMON ATHLETICA INC"
+    ],
+    [
+      "LUV",
+      "SOUTHWEST AIRLINES CO"
+    ],
+    [
+      "LVS",
+      "Las Vegas Sands Corp."
+    ],
+    [
+      "LW",
+      "LAMB WESTON HOLDINGS INC"
+    ],
+    [
+      "LYB",
+      "LYONDELLBASELL INDU-CL A"
+    ],
+    [
+      "LYFT",
+      "LYFT INC-A"
+    ],
+    [
+      "LYV",
+      "LIVE NATION ENTERTAINMENT IN"
+    ],
+    [
+      "M",
+      "MACY'S INC"
+    ],
+    [
+      "MA",
+      "MASTERCARD INC-CLASS A"
+    ],
+    [
+      "MAA",
+      "MID-AMERICA APARTMENT COMM"
+    ],
+    [
+      "MANH",
+      "MANHATTAN ASSOCIATES INC"
+    ],
+    [
+      "MAR",
+      "MARRIOTT INTERNATIONAL -CL A"
+    ],
+    [
+      "MASI",
+      "MASIMO CORP"
+    ],
+    [
+      "MAT",
+      "MATTEL INC"
+    ],
+    [
+      "MCD",
+      "MCDONALD'S CORP"
+    ],
+    [
+      "MCHP",
+      "MICROCHIP TECHNOLOGY INC"
+    ],
+    [
+      "MCK",
+      "MCKESSON CORP"
+    ],
+    [
+      "MDB",
+      "MONGODB INC"
+    ],
+    [
+      "MDLZ",
+      "MONDELEZ INTERNATIONAL INC-A"
+    ],
+    [
+      "MDT",
+      "MEDTRONIC PLC"
+    ],
+    [
+      "MET",
+      "METLIFE INC"
+    ],
+    [
+      "MGM",
+      "MGM RESORTS INTERNATIONAL"
+    ],
+    [
+      "MHK",
+      "MOHAWK INDUSTRIES INC"
+    ],
+    [
+      "MIDD",
+      "MIDDLEBY CORP"
+    ],
+    [
+      "MKL",
+      "MARKEL CORP"
+    ],
+    [
+      "MKSI",
+      "MKS INSTRUMENTS INC"
+    ],
+    [
+      "MKTX",
+      "MARKETAXESS HOLDINGS INC"
+    ],
+    [
+      "MLM",
+      "MARTIN MARIETTA MATERIALS"
+    ],
+    [
+      "MMM",
+      "3M CO"
+    ],
+    [
+      "MNDT",
+      "MANDIANT INC"
+    ],
+    [
+      "MO",
+      "ALTRIA GROUP INC"
+    ],
+    [
+      "MOH",
+      "MOLINA HEALTHCARE INC"
+    ],
+    [
+      "MPC",
+      "MARATHON PETROLEUM CORP"
+    ],
+    [
+      "MPW",
+      "MEDICAL PROPERTIES TRUST INC"
+    ],
+    [
+      "MPWR",
+      "MONOLITHIC POWER SYSTEMS INC"
+    ],
+    [
+      "MRK",
+      "MERCK & CO. INC."
+    ],
+    [
+      "MRNA",
+      "Moderna"
+    ],
+    [
+      "MRO",
+      "MARATHON OIL CORP"
+    ],
+    [
+      "MRVL",
+      "MARVELL TECHNOLOGY INC"
+    ],
+    [
+      "MS",
+      "MORGAN STANLEY"
+    ],
+    [
+      "MSCI",
+      "MSCI INC"
+    ],
+    [
+      "MSFT",
+      "MICROSOFT CORP"
+    ],
+    [
+      "MTCH",
+      "MATCH GROUP INC"
+    ],
+    [
+      "MTD",
+      "METTLER-TOLEDO INTERNATIONAL"
+    ],
+    [
+      "MTN",
+      "VAIL RESORTS INC"
+    ],
+    [
+      "MU",
+      "MICRON TECHNOLOGY INC"
+    ],
+    [
+      "NBIX",
+      "NEUROCRINE BIOSCIENCES INC"
+    ],
+    [
+      "NCLH",
+      "NORWEGIAN CRUISE LINE HOLDIN"
+    ],
+    [
+      "NDSN",
+      "NORDSON CORP"
+    ],
+    [
+      "NEE",
+      "NEXTERA ENERGY INC"
+    ],
+    [
+      "NEM",
+      "NEWMONT MINING CORP"
+    ],
+    [
+      "NFLX",
+      "NETFLIX INC"
+    ],
+    [
+      "NIO",
+      "Nio INC"
+    ],
+    [
+      "NKE",
+      "NIKE INC"
+    ],
+    [
+      "NLOK",
+      "NORTONLIFELOCK INC"
+    ],
+    [
+      "NLSN",
+      "NIELSEN HOLDINGS PLC"
+    ],
+    [
+      "NLY",
+      "ANNALY CAPITAL MANAGEMENT IN"
+    ],
+    [
+      "NOC",
+      "NORTHROP GRUMMAN CORP"
+    ],
+    [
+      "NOW",
+      "SERVICENOW INC"
+    ],
+    [
+      "NRG",
+      "NRG ENERGY INC"
+    ],
+    [
+      "NSC",
+      "NORFOLK SOUTHERN CORP"
+    ],
+    [
+      "NTNX",
+      "NUTANIX INC - A"
+    ],
+    [
+      "NVDA",
+      "NVIDIA CORP"
+    ],
+    [
+      "NVR",
+      "NVR INC"
+    ],
+    [
+      "NWL",
+      "NEWELL BRANDS INC"
+    ],
+    [
+      "NWS",
+      "NEWS CORP - CLASS B"
+    ],
+    [
+      "NXST",
+      "NEXSTAR MEDIA GROUP INC-CL A"
+    ],
+    [
+      "NYT",
+      "NEW YORK TIMES CO-A"
+    ],
+    [
+      "O",
+      "REALTY INCOME CORP"
+    ],
+    [
+      "OC",
+      "OWENS CORNING"
+    ],
+    [
+      "ODFL",
+      "OLD DOMINION FREIGHT LINE"
+    ],
+    [
+      "OGE",
+      "OGE ENERGY CORP"
+    ],
+    [
+      "OGN",
+      "ORGANON & CO"
+    ],
+    [
+      "OHI",
+      "OMEGA HEALTHCARE INVESTORS"
+    ],
+    [
+      "OKE",
+      "ONEOK INC"
+    ],
+    [
+      "OKTA",
+      "OKTA INC"
+    ],
+    [
+      "OLED",
+      "UNIVERSAL DISPLAY CORP"
+    ],
+    [
+      "OLLI",
+      "OLLIE'S BARGAIN OUTLET HOLDI"
+    ],
+    [
+      "OLN",
+      "OLIN CORP"
+    ],
+    [
+      "OMC",
+      "OMNICOM GROUP"
+    ],
+    [
+      "OMF",
+      "ONEMAIN HOLDINGS INC"
+    ],
+    [
+      "ON",
+      "ON SEMICONDUCTOR"
+    ],
+    [
+      "ORCL",
+      "ORACLE CORP"
+    ],
+    [
+      "ORLY",
+      "O'REILLY AUTOMOTIVE INC"
+    ],
+    [
+      "OTIS",
+      "OTIS WORLDWIDE CORP"
+    ],
+    [
+      "OXY",
+      "OCCIDENTAL PETROLEUM CORP"
+    ],
+    [
+      "PANW",
+      "PALO ALTO NETWORKS INC"
+    ],
+    [
+      "PARA",
+      "PARAMOUNT GLOBAL-CLASS B"
+    ],
+    [
+      "PAYC",
+      "PAYCOM SOFTWARE INC"
+    ],
+    [
+      "PAYX",
+      "PAYCHEX INC"
+    ],
+    [
+      "PBF",
+      "PBF ENERGY INC-CLASS A"
+    ],
+    [
+      "PBR",
+      "Petroleo Brasileiro S.A."
+    ],
+    [
+      "PCAR",
+      "PACCAR INC"
+    ],
+    [
+      "PCG",
+      "P G & E CORP"
+    ],
+    [
+      "PCLN",
+      "PRICELINE GROUP INC/THE"
+    ],
+    [
+      "PCTY",
+      "PAYLOCITY HOLDING CORP"
+    ],
+    [
+      "PEAK",
+      "HEALTHPEAK PROPERTIES INC"
+    ],
+    [
+      "PENN",
+      "PENN NATIONAL GAMING INC"
+    ],
+    [
+      "PEP",
+      "PEPSICO INC"
+    ],
+    [
+      "PFE",
+      "PFIZER INC"
+    ],
+    [
+      "PG",
+      "PROCTER & GAMBLE CO/THE"
+    ],
+    [
+      "PGR",
+      "PROGRESSIVE CORP"
+    ],
+    [
+      "PH",
+      "PARKER HANNIFIN CORP"
+    ],
+    [
+      "PII",
+      "POLARIS INC"
+    ],
+    [
+      "PKG",
+      "PACKAGING CORP OF AMERICA"
+    ],
+    [
+      "PLAN",
+      "ANAPLAN INC"
+    ],
+    [
+      "PLNT",
+      "PLANET FITNESS INC - CL A"
+    ],
+    [
+      "PLTR",
+      "Palantir Tech Inc A"
+    ],
+    [
+      "PLUG",
+      "Plug Power Inc"
+    ],
+    [
+      "PM",
+      "PHILIP MORRIS INTERNATIONAL"
+    ],
+    [
+      "PNC",
+      "PNC FINANCIAL SERVICES GROUP"
+    ],
+    [
+      "PNR",
+      "PENTAIR PLC"
+    ],
+    [
+      "PODD",
+      "INSULET CORP"
+    ],
+    [
+      "POOL",
+      "POOL CORP"
+    ],
+    [
+      "PPG",
+      "PPG INDUSTRIES INC"
+    ],
+    [
+      "PRGO",
+      "PERRIGO CO PLC"
+    ],
+    [
+      "PRU",
+      "PRUDENTIAL FINANCIAL INC"
+    ],
+    [
+      "PSA",
+      "PUBLIC STORAGE"
+    ],
+    [
+      "PSTG",
+      "PURE STORAGE INC - CLASS A"
+    ],
+    [
+      "PSX",
+      "PHILLIPS 66"
+    ],
+    [
+      "PTC",
+      "PTC INC"
+    ],
+    [
+      "PTEN",
+      "PATTERSON-UTI ENERGY INC"
+    ],
+    [
+      "PTON",
+      "Peloton Interactive Inc"
+    ],
+    [
+      "PVH",
+      "PVH CORP"
+    ],
+    [
+      "PXD",
+      "PIONEER NATURAL RESOURCES CO"
+    ],
+    [
+      "PYPL",
+      "PAYPAL HOLDINGS INC"
+    ],
+    [
+      "QCOM",
+      "QUALCOMM INC"
+    ],
+    [
+      "QRVO",
+      "QORVO INC"
+    ],
+    [
+      "RCL",
+      "ROYAL CARIBBEAN CRUISES LTD"
+    ],
+    [
+      "RE",
+      "EVEREST RE GROUP LTD"
+    ],
+    [
+      "REG",
+      "REGENCY CENTERS CORP"
+    ],
+    [
+      "REGN",
+      "REGENERON PHARMACEUTICALS"
+    ],
+    [
+      "RF",
+      "REGIONS FINANCIAL CORP"
+    ],
+    [
+      "RGA",
+      "REINSURANCE GROUP OF AMERICA"
+    ],
+    [
+      "RGLD",
+      "ROYAL GOLD INC"
+    ],
+    [
+      "RJF",
+      "RAYMOND JAMES FINANCIAL INC"
+    ],
+    [
+      "RMD",
+      "RESMED INC"
+    ],
+    [
+      "RNG",
+      "RINGCENTRAL INC-CLASS A"
+    ],
+    [
+      "RNR",
+      "RENAISSANCERE HOLDINGS LTD"
+    ],
+    [
+      "ROKU",
+      "Roku Inc"
+    ],
+    [
+      "ROL",
+      "ROLLINS INC"
+    ],
+    [
+      "ROST",
+      "ROSS STORES INC"
+    ],
+    [
+      "RPM",
+      "RPM INTERNATIONAL INC"
+    ],
+    [
+      "RRC",
+      "RANGE RESOURCES CORP"
+    ],
+    [
+      "RRX",
+      "REGAL REXNORD CORP"
+    ],
+    [
+      "RS",
+      "RELIANCE STEEL & ALUMINUM"
+    ],
+    [
+      "RTX",
+      "RAYTHEON TECHNOLOGIES CORP"
+    ],
+    [
+      "SABR",
+      "SABRE CORP"
+    ],
+    [
+      "SBNY",
+      "SIGNATURE BANK"
+    ],
+    [
+      "SBUX",
+      "STARBUCKS CORP"
+    ],
+    [
+      "SCCO",
+      "SOUTHERN COPPER CORP"
+    ],
+    [
+      "SCHW",
+      "SCHWAB (CHARLES) CORP"
+    ],
+    [
+      "SCI",
+      "SERVICE CORP INTERNATIONAL"
+    ],
+    [
+      "SEDG",
+      "SOLAREDGE TECHNOLOGIES INC"
+    ],
+    [
+      "SEIC",
+      "SEI INVESTMENTS COMPANY"
+    ],
+    [
+      "SFM",
+      "SPROUTS FARMERS MARKET INC"
+    ],
+    [
+      "SGEN",
+      "SEAGEN INC"
+    ],
+    [
+      "SHW",
+      "SHERWIN-WILLIAMS COMPANY"
+    ],
+    [
+      "SIVB",
+      "SVB FINANCIAL GROUP"
+    ],
+    [
+      "SJM",
+      "JM SMUCKER COMPANY"
+    ],
+    [
+      "SLB",
+      "SCHLUMBERGER LTD"
+    ],
+    [
+      "SLM",
+      "SLM CORP"
+    ],
+    [
+      "SNAP",
+      "SNAP Inc"
+    ],
+    [
+      "SNOW",
+      "Snowflake Inc Class A"
+    ],
+    [
+      "SNPS",
+      "SYNOPSYS INC"
+    ],
+    [
+      "SO",
+      "SOUTHERN CO/THE"
+    ],
+    [
+      "SPG",
+      "SIMON PROPERTY GROUP INC"
+    ],
+    [
+      "SPGI",
+      "S&P GLOBAL INC"
+    ],
+    [
+      "SPLK",
+      "SPLUNK INC"
+    ],
+    [
+      "SPOT",
+      "SPOTIFY TECHNOLOGY SA"
+    ],
+    [
+      "SPR",
+      "SPIRIT AEROSYSTEMS HOLD-CL A"
+    ],
+    [
+      "SQ",
+      "Square Inc"
+    ],
+    [
+      "SRPT",
+      "SAREPTA THERAPEUTICS INC"
+    ],
+    [
+      "SSNC",
+      "SS&C TECHNOLOGIES HOLDINGS"
+    ],
+    [
+      "STE",
+      "STERIS PLC"
+    ],
+    [
+      "STT",
+      "STATE STREET CORP"
+    ],
+    [
+      "STZ",
+      "CONSTELLATION BRANDS INC-A"
+    ],
+    [
+      "SUI",
+      "SUN COMMUNITIES INC"
+    ],
+    [
+      "SWK",
+      "STANLEY BLACK & DECKER INC"
+    ],
+    [
+      "SWKS",
+      "SKYWORKS SOLUTIONS INC"
+    ],
+    [
+      "SYF",
+      "SYNCHRONY FINANCIAL"
+    ],
+    [
+      "SYK",
+      "STRYKER CORP"
+    ],
+    [
+      "SYY",
+      "SYSCO CORP"
+    ],
+    [
+      "T",
+      "AT&T INC"
+    ],
+    [
+      "TAP",
+      "MOLSON COORS BREWING CO -B"
+    ],
+    [
+      "TDG",
+      "TRANSDIGM GROUP INC"
+    ],
+    [
+      "TDY",
+      "TELEDYNE TECHNOLOGIES INC"
+    ],
+    [
+      "TEAM",
+      "ATLASSIAN CORP PLC-CLASS A"
+    ],
+    [
+      "TECH",
+      "BIO-TECHNE CORP"
+    ],
+    [
+      "TEL",
+      "TE CONNECTIVITY LTD"
+    ],
+    [
+      "TEVA",
+      "TEVA PHARMACEUTICAL-SP ADR"
+    ],
+    [
+      "TFC",
+      "TRUIST FINANCIAL CORP"
+    ],
+    [
+      "TFX",
+      "TELEFLEX INC"
+    ],
+    [
+      "TGT",
+      "TARGET CORP"
+    ],
+    [
+      "TJX",
+      "TJX COMPANIES INC"
+    ],
+    [
+      "TMO",
+      "THERMO FISHER SCIENTIFIC INC"
+    ],
+    [
+      "TMUS",
+      "T-MOBILE US INC"
+    ],
+    [
+      "TOL",
+      "TOLL BROTHERS INC"
+    ],
+    [
+      "TPR",
+      "TAPESTRY INC"
+    ],
+    [
+      "TPX",
+      "TEMPUR SEALY INTERNATIONAL I"
+    ],
+    [
+      "TRGP",
+      "TARGA RESOURCES CORP"
+    ],
+    [
+      "TRMB",
+      "TRIMBLE INC"
+    ],
+    [
+      "TROW",
+      "T ROWE PRICE GROUP INC"
+    ],
+    [
+      "TRU",
+      "TRANSUNION"
+    ],
+    [
+      "TRV",
+      "TRAVELERS COS INC/THE"
+    ],
+    [
+      "TSLA",
+      "TESLA MOTORS INC"
+    ],
+    [
+      "TSM",
+      "Taiwan Semiconductor Manufacturing Company Limited"
+    ],
+    [
+      "TSN",
+      "TYSON FOODS INC-CL A"
+    ],
+    [
+      "TT",
+      "TRANE TECHNOLOGIES PLC"
+    ],
+    [
+      "TTD",
+      "TRADE DESK INC/THE -CLASS A"
+    ],
+    [
+      "TTWO",
+      "TAKE-TWO INTERACTIVE SOFTWRE"
+    ],
+    [
+      "TWLO",
+      "TWILIO INC - A"
+    ],
+    [
+      "TWTR",
+      "TWITTER INC"
+    ],
+    [
+      "TXN",
+      "TEXAS INSTRUMENTS INC"
+    ],
+    [
+      "TYL",
+      "TYLER TECHNOLOGIES INC"
+    ],
+    [
+      "UA",
+      "UNDER ARMOUR INC-CLASS C"
+    ],
+    [
+      "UAA",
+      "UNDER ARMOUR INC-CLASS A"
+    ],
+    [
+      "UBER",
+      "Uber Inc"
+    ],
+    [
+      "UDR",
+      "UDR INC"
+    ],
+    [
+      "UGI",
+      "UGI CORP"
+    ],
+    [
+      "UHS",
+      "UNIVERSAL HEALTH SERVICES-B"
+    ],
+    [
+      "ULTA",
+      "ULTA SALON COSMETICS & FRAGR"
+    ],
+    [
+      "UNH",
+      "UNITEDHEALTH GROUP INC"
+    ],
+    [
+      "UNP",
+      "UNION PACIFIC CORP"
+    ],
+    [
+      "UPS",
+      "UNITED PARCEL SERVICE-CL B"
+    ],
+    [
+      "URI",
+      "UNITED RENTALS INC"
+    ],
+    [
+      "USB",
+      "US BANCORP"
+    ],
+    [
+      "USFD",
+      "US FOODS HOLDING CORP"
+    ],
+    [
+      "UTHR",
+      "UNITED THERAPEUTICS CORP"
+    ],
+    [
+      "V",
+      "VISA INC-CLASS A SHARES"
+    ],
+    [
+      "VALE",
+      "Vale S.A."
+    ],
+    [
+      "VEEV",
+      "VEEVA SYSTEMS INC-CLASS A"
+    ],
+    [
+      "VFC",
+      "VF CORP"
+    ],
+    [
+      "VICI",
+      "VICI PROPERTIES INC"
+    ],
+    [
+      "VIRT",
+      "VIRTU FINANCIAL INC-CLASS A"
+    ],
+    [
+      "VLO",
+      "VALERO ENERGY CORP"
+    ],
+    [
+      "VMC",
+      "VULCAN MATERIALS CO"
+    ],
+    [
+      "VMW",
+      "VMWARE INC-CLASS A"
+    ],
+    [
+      "VOYA",
+      "VOYA FINANCIAL INC"
+    ],
+    [
+      "VRTX",
+      "VERTEX PHARMACEUTICALS INC"
+    ],
+    [
+      "VST",
+      "VISTRA CORP"
+    ],
+    [
+      "UAL",
+      "VIATRIS INC"
+    ],
+    [
+      "VZ",
+      "VERIZON COMMUNICATIONS INC"
+    ],
+    [
+      "W",
+      "WAYFAIR INC- CLASS A"
+    ],
+    [
+      "WAB",
+      "WABTEC CORP"
+    ],
+    [
+      "WAL",
+      "WESTERN ALLIANCE BANCORP"
+    ],
+    [
+      "WBA",
+      "WALGREENS BOOTS ALLIANCE INC"
+    ],
+    [
+      "WBS",
+      "WEBSTER FINANCIAL CORP"
+    ],
+    [
+      "WDAY",
+      "WORKDAY INC-CLASS A"
+    ],
+    [
+      "WDC",
+      "WESTERN DIGITAL CORP"
+    ],
+    [
+      "WEN",
+      "WENDY'S CO/THE"
+    ],
+    [
+      "WEX",
+      "WEX INC"
+    ],
+    [
+      "WFC",
+      "WELLS FARGO & CO"
+    ],
+    [
+      "WH",
+      "WYNDHAM HOTELS & RESORTS INC"
+    ],
+    [
+      "WHR",
+      "WHIRLPOOL CORP"
+    ],
+    [
+      "WLK",
+      "WESTLAKE CORP"
+    ],
+    [
+      "WMT",
+      "WAL-MART STORES INC"
+    ],
+    [
+      "WPC",
+      "WP CAREY INC"
+    ],
+    [
+      "WRB",
+      "WR BERKLEY CORP"
+    ],
+    [
+      "WRK",
+      "WESTROCK CO"
+    ],
+    [
+      "WSM",
+      "WILLIAMS-SONOMA INC"
+    ],
+    [
+      "WSO",
+      "WATSCO INC"
+    ],
+    [
+      "WST",
+      "WEST PHARMACEUTICAL SERVICES"
+    ],
+    [
+      "WTRG",
+      "ESSENTIAL UTILITIES INC"
+    ],
+    [
+      "WTW",
+      "WILLIS TOWERS WATSON PLC"
+    ],
+    [
+      "WWD",
+      "WOODWARD INC"
+    ],
+    [
+      "WYNN",
+      "WYNN RESORTS LTD"
+    ],
+    [
+      "X",
+      "UNITED STATES STEEL CORP"
+    ],
+    [
+      "XLNX",
+      "XILINX INC"
+    ],
+    [
+      "XOM",
+      "EXXON MOBIL CORP"
+    ],
+    [
+      "XPEV",
+      "Xpeng Inc ADR"
+    ],
+    [
+      "XPO",
+      "XPO LOGISTICS INC"
+    ],
+    [
+      "XYL",
+      "XYLEM INC"
+    ],
+    [
+      "Y",
+      "ALLEGHANY CORP"
+    ],
+    [
+      "YUM",
+      "YUM! BRANDS INC"
+    ],
+    [
+      "YUMC",
+      "YUM CHINA HOLDINGS INC"
+    ],
+    [
+      "Z",
+      "ZILLOW GROUP INC - C"
+    ],
+    [
+      "ZBH",
+      "ZIMMER BIOMET HOLDINGS INC"
+    ],
+    [
+      "ZBRA",
+      "ZEBRA TECHNOLOGIES CORP-CL A"
+    ],
+    [
+      "ZEN",
+      "ZEN.US/USD"
+    ],
+    [
+      "ZM",
+      "Zoom Video Communications (A Class)"
+    ],
+    [
+      "ZS",
+      "ZSCALER INC"
+    ],
+    [
+      "ZTS",
+      "ZOETIS INC"
+    ]
+  ],
+  "worldstocks": [
+    [
+      "ebsateur",
+      "Erste Group Bank AG"
+    ],
+    [
+      "rbiateur",
+      "Raiffeisen Bank International AG"
+    ],
+    [
+      "voeateur",
+      "Voestalpine AG"
+    ],
+    [
+      "abibeeur",
+      "Anheuser-Busch InBev NV"
+    ],
+    [
+      "agsbeeur",
+      "Ageas"
+    ],
+    [
+      "belgbeeur",
+      "Proximus"
+    ],
+    [
+      "kbcbeeur",
+      "KBC Groep NV"
+    ],
+    [
+      "solbbeeur",
+      "Solvay SA"
+    ],
+    [
+      "ucbbeeur",
+      "UCB SA"
+    ],
+    [
+      "umibeeur",
+      "Umicore SA"
+    ],
+    [
+      "carlbdkdkk",
+      "Carlsberg A/S"
+    ],
+    [
+      "colobdkdkk",
+      "Coloplast A/S"
+    ],
+    [
+      "danskedkdkk",
+      "Danske Bank A/S"
+    ],
+    [
+      "maerskbdkdkk",
+      "AP Moeller - Maersk A/S"
+    ],
+    [
+      "novobdkdkk",
+      "Novo Nordisk A/S"
+    ],
+    [
+      "nzymbdkdkk",
+      "Novozymes A/S"
+    ],
+    [
+      "pndoradkdkk",
+      "Pandora A/S"
+    ],
+    [
+      "vwsdkdkk",
+      "Vestas Wind Systems A/S"
+    ],
+    [
+      "eli1vfieur",
+      "Elisa OYJ"
+    ],
+    [
+      "nes1vfieur",
+      "Neste OYJ"
+    ],
+    [
+      "nre1vfieur",
+      "Nokian Renkaat OYJ"
+    ],
+    [
+      "ote1vfieur",
+      "Outotec OYJ"
+    ],
+    [
+      "out1vfieur",
+      "Outokumpu OYJ"
+    ],
+    [
+      "stervfieur",
+      "Stora Enso OYJ"
+    ],
+    [
+      "tls1vfieur",
+      "Telia Company AB"
+    ],
+    [
+      "acfreur",
+      "Accor SA"
+    ],
+    [
+      "acafreur",
+      "Credit Agricole SA"
+    ],
+    [
+      "affreur",
+      "Air France-KLM"
+    ],
+    [
+      "aifreur",
+      "Air Liquide SA"
+    ],
+    [
+      "airfreur",
+      "Airbus Group SE"
+    ],
+    [
+      "alofreur",
+      "Alstom SA"
+    ],
+    [
+      "atofreur",
+      "ATOS SE"
+    ],
+    [
+      "bnfreur",
+      "Danone SA"
+    ],
+    [
+      "bnpfreur",
+      "BNP Paribas SA"
+    ],
+    [
+      "cafreur",
+      "Carrefour SA"
+    ],
+    [
+      "capfreur",
+      "Cap Gemini SA"
+    ],
+    [
+      "csfreur",
+      "AXA SA"
+    ],
+    [
+      "dgfreur",
+      "Vinci SA"
+    ],
+    [
+      "dsyfreur",
+      "DASSAULT SYSTEMES SE"
+    ],
+    [
+      "edffreur",
+      "Electricite de France SA"
+    ],
+    [
+      "enfreur",
+      "Bouygues SA"
+    ],
+    [
+      "engifreur",
+      "Engie"
+    ],
+    [
+      "fpfreur",
+      "Total SA"
+    ],
+    [
+      "frfreur",
+      "Valeo SA"
+    ],
+    [
+      "glefreur",
+      "Societe Generale SA"
+    ],
+    [
+      "hofreur",
+      "THALES SA"
+    ],
+    [
+      "kerfreur",
+      "Kering"
+    ],
+    [
+      "lifreur",
+      "Klepierre"
+    ],
+    [
+      "lrfreur",
+      "Legrand SA"
+    ],
+    [
+      "mcfreur",
+      "LVMH Moet Hennessy Louis Vuitton SA"
+    ],
+    [
+      "mlfreur",
+      "Michelin SA"
+    ],
+    [
+      "orfreur",
+      "L'Oreal SA"
+    ],
+    [
+      "orafreur",
+      "Orange SA"
+    ],
+    [
+      "pubfreur",
+      "Publicis Groupe SA"
+    ],
+    [
+      "rifreur",
+      "Pernod-Ricard SA"
+    ],
+    [
+      "rmsfreur",
+      "HERMES INTERNATIONAL"
+    ],
+    [
+      "rnofreur",
+      "Renault SA"
+    ],
+    [
+      "saffreur",
+      "Safran SA"
+    ],
+    [
+      "sanfreur",
+      "Sanofi"
+    ],
+    [
+      "sgofreur",
+      "Cie de St-Gobain"
+    ],
+    [
+      "sufreur",
+      "Schneider Electric SA"
+    ],
+    [
+      "swfreur",
+      "SODEXO SA"
+    ],
+    [
+      "ugfreur",
+      "Peugeot SA"
+    ],
+    [
+      "viefreur",
+      "Veolia Environnement SA"
+    ],
+    [
+      "vivfreur",
+      "Vivendi SA"
+    ],
+    [
+      "vkfreur",
+      "Vallourec SA"
+    ],
+    [
+      "adsdeeur",
+      "Adidas AG"
+    ],
+    [
+      "alvdeeur",
+      "Allianz SE"
+    ],
+    [
+      "basdeeur",
+      "BASF SE"
+    ],
+    [
+      "bayndeeur",
+      "Bayer AG"
+    ],
+    [
+      "beideeur",
+      "Beiersdorf AG"
+    ],
+    [
+      "bmwdeeur",
+      "Bayerische Motoren Werke AG"
+    ],
+    [
+      "bnrdeeur",
+      "BRENNTAG SE"
+    ],
+    [
+      "bossdeeur",
+      "HUGO BOSS AG"
+    ],
+    [
+      "cbkdeeur",
+      "Commerzbank AG"
+    ],
+    [
+      "condeeur",
+      "Continental AG"
+    ],
+    [
+      "covdeeur",
+      "Covestro AG"
+    ],
+    [
+      "daideeur",
+      "Daimler AG"
+    ],
+    [
+      "db1deeur",
+      "Deutsche Boerse AG"
+    ],
+    [
+      "dbkdeeur",
+      "Deutsche Bank AG"
+    ],
+    [
+      "dhrdeeur",
+      "Delivery Hero AG"
+    ],
+    [
+      "dpwdeeur",
+      "Deutsche Post AG"
+    ],
+    [
+      "dtedeeur",
+      "Deutsche Telekom AG"
+    ],
+    [
+      "eoandeeur",
+      "E.ON SE"
+    ],
+    [
+      "fmedeeur",
+      "Fresenius Medical Care AG & Co KGaA"
+    ],
+    [
+      "fredeeur",
+      "Fresenius SE & Co KGaA"
+    ],
+    [
+      "heideeur",
+      "HeidelbergCement AG"
+    ],
+    [
+      "hen3deeur",
+      "Henkel AG & Co KGaA"
+    ],
+    [
+      "hfgdeeur",
+      "HELLOFRESH SE"
+    ],
+    [
+      "hnrdeeur",
+      "Hannover Rueckversicheru-Reg"
+    ],
+    [
+      "ifxdeeur",
+      "Infineon Technologies AG"
+    ],
+    [
+      "lhadeeur",
+      "Deutsche Lufthansa AG"
+    ],
+    [
+      "lindeeur",
+      "Linde AG"
+    ],
+    [
+      "lxsdeeur",
+      "Lanxess AG"
+    ],
+    [
+      "mrkdeeur",
+      "Merck KGaA"
+    ],
+    [
+      "mtxdeeur",
+      "MTU AERO ENGINES AG"
+    ],
+    [
+      "muv2deeur",
+      "Muenchener Rueckversicherungs AG"
+    ],
+    [
+      "pah3deeur",
+      "Porsche Automobil Holding SE"
+    ],
+    [
+      "psmdeeur",
+      "ProSiebenSat.1 Media AG"
+    ],
+    [
+      "pumdeeur",
+      "PUMA SE"
+    ],
+    [
+      "rwedeeur",
+      "RWE AG"
+    ],
+    [
+      "sapdeeur",
+      "SAP AG"
+    ],
+    [
+      "sdfdeeur",
+      "K+S AG"
+    ],
+    [
+      "siedeeur",
+      "Siemens AG"
+    ],
+    [
+      "srtdeeur",
+      "Sartorius AG - Vorzug"
+    ],
+    [
+      "sy1deeur",
+      "SYMRISE AG"
+    ],
+    [
+      "tkadeeur",
+      "ThyssenKrupp AG"
+    ],
+    [
+      "tui1deeur",
+      "TUI AG"
+    ],
+    [
+      "vnadeeur",
+      "Vonovia SE"
+    ],
+    [
+      "vow3deeur",
+      "Volkswagen AG"
+    ],
+    [
+      "0005hkhkd",
+      "HSBC Holdings"
+    ],
+    [
+      "0027hkhkd",
+      "Galaxy Entertainment Group"
+    ],
+    [
+      "0175hkhkd",
+      "Geely Automobile Holdings"
+    ],
+    [
+      "0291hkhkd",
+      "China Resources Beer Holdings"
+    ],
+    [
+      "0386hkhkd",
+      "Sinopec Corp"
+    ],
+    [
+      "0388hkhkd",
+      "HK Exchanges & Clearing"
+    ],
+    [
+      "0700hkhkd",
+      "Tencent Holdings"
+    ],
+    [
+      "0857hkhkd",
+      "PetroChina"
+    ],
+    [
+      "0883hkhkd",
+      "China National Offshore Oil Corporation"
+    ],
+    [
+      "0939hkhkd",
+      "China Construction Bank"
+    ],
+    [
+      "0941hkhkd",
+      "China Mobile"
+    ],
+    [
+      "0998hkhkd",
+      "CITIC Bank International"
+    ],
+    [
+      "1093hkhkd",
+      "CSPC Pharmaceutical Group"
+    ],
+    [
+      "1177hkhkd",
+      "Sino Biopharmeceutical"
+    ],
+    [
+      "1288hkhkd",
+      "Agricultural Bank of China"
+    ],
+    [
+      "1299hkhkd",
+      "AIA"
+    ],
+    [
+      "1398hkhkd",
+      "Industrial and Commercial Bank of China"
+    ],
+    [
+      "1810hkhkd",
+      "Xiaomi Corp"
+    ],
+    [
+      "1918hkhkd",
+      "Sunac China Holdings"
+    ],
+    [
+      "2007hkhkd",
+      "Country Garden Holdings"
+    ],
+    [
+      "2018hkhkd",
+      "AAC Technologies Holdings"
+    ],
+    [
+      "2318hkhkd",
+      "Ping An Insurance"
+    ],
+    [
+      "2388hkhkd",
+      "BOC Hong Kong (Holdings)"
+    ],
+    [
+      "2628hkhkd",
+      "China Life Insurance Company"
+    ],
+    [
+      "3333hkhkd",
+      "China Evergrande Group"
+    ],
+    [
+      "3968hkhkd",
+      "China Merchants Bank"
+    ],
+    [
+      "3988hkhkd",
+      "Bank of China"
+    ],
+    [
+      "birgieeur",
+      "Bank Of Ireland Plc"
+    ],
+    [
+      "crgieeur",
+      "CRH Plc"
+    ],
+    [
+      "krxieeur",
+      "Kingspan Group Plc"
+    ],
+    [
+      "krzieeur",
+      "Kerry Group Plc"
+    ],
+    [
+      "ry4cieeur",
+      "Ryanair Holdings Plc"
+    ],
+    [
+      "a2aiteur",
+      "A2A Spa"
+    ],
+    [
+      "agliteur",
+      "Autogrill Spa"
+    ],
+    [
+      "ampiteur",
+      "Amplifon Spa"
+    ],
+    [
+      "atliteur",
+      "Atlantia Spa"
+    ],
+    [
+      "azmiteur",
+      "Azimut Holding Spa"
+    ],
+    [
+      "bamiiteur",
+      "Banco BPM Spa"
+    ],
+    [
+      "bciteur",
+      "Brunello Cucinelli Spa"
+    ],
+    [
+      "bmpsiteur",
+      "Banca Monte dei Paschi di Siena Spa"
+    ],
+    [
+      "bpeiteur",
+      "Bper Banca Spa"
+    ],
+    [
+      "breiteur",
+      "Brembo Spa"
+    ],
+    [
+      "bzuiteur",
+      "Buzzi Unicem Spa"
+    ],
+    [
+      "cassiteur",
+      "Cattolica Ass Coop A"
+    ],
+    [
+      "cerviteur",
+      "Cerved Information Solutions SPA"
+    ],
+    [
+      "cpriteur",
+      "Davide Campari-Milano Spa"
+    ],
+    [
+      "cvaliteur",
+      "Credito Valtellinese Spa"
+    ],
+    [
+      "daniteur",
+      "Danieli & Co Spa"
+    ],
+    [
+      "diaiteur",
+      "Diasorin Spa"
+    ],
+    [
+      "eneliteur",
+      "Enel SpA"
+    ],
+    [
+      "eniiteur",
+      "ENI Spa"
+    ],
+    [
+      "ergiteur",
+      "ERG Spa"
+    ],
+    [
+      "fbkiteur",
+      "FinecoBank Banca Fineco Spa"
+    ],
+    [
+      "fcaiteur",
+      "Fiat Chrysler Auto NV"
+    ],
+    [
+      "giteur",
+      "Assicurazioni Generali Spa"
+    ],
+    [
+      "igiteur",
+      "Italgas Spa"
+    ],
+    [
+      "inwiteur",
+      "Infrastrutture Wireless Italiane Spa"
+    ],
+    [
+      "ispiteur",
+      "Intesa Sanpaolo Spa"
+    ],
+    [
+      "juveiteur",
+      "Juventus Football Club Spa"
+    ],
+    [
+      "ldoiteur",
+      "Leonardo Spa"
+    ],
+    [
+      "mbiteur",
+      "Mediobanca Spa"
+    ],
+    [
+      "monciteur",
+      "Moncler Spa"
+    ],
+    [
+      "msiteur",
+      "Mediaset Spa"
+    ],
+    [
+      "piaiteur",
+      "Piaggio & C. Spa"
+    ],
+    [
+      "pryiteur",
+      "Prysmian Spa"
+    ],
+    [
+      "raceiteur",
+      "Ferrari NV"
+    ],
+    [
+      "reciteur",
+      "Recordati Industria Chimica e Farma Spa"
+    ],
+    [
+      "sferiteur",
+      "Salvat Ferragamo Spa"
+    ],
+    [
+      "spmiteur",
+      "SAIPEM Spa"
+    ],
+    [
+      "srgiteur",
+      "Snam Spa"
+    ],
+    [
+      "srsiteur",
+      "Saras Spa"
+    ],
+    [
+      "stmiteur",
+      "STMicroelectronics NV"
+    ],
+    [
+      "teniteur",
+      "Tenaris SA"
+    ],
+    [
+      "tisiteur",
+      "Tiscali Spa"
+    ],
+    [
+      "tititeur",
+      "Telecom Italia Spa"
+    ],
+    [
+      "toditeur",
+      "Tods Spa"
+    ],
+    [
+      "trniteur",
+      "Terna Spa"
+    ],
+    [
+      "ucgiteur",
+      "UniCredit Spa"
+    ],
+    [
+      "usiteur",
+      "Unipolsai Assicurazioni Spa"
+    ],
+    [
+      "wbditeur",
+      "WeBuild Spa"
+    ],
+    [
+      "2502jpjpy",
+      "Asahi Group Holdings"
+    ],
+    [
+      "2503jpjpy",
+      "Kirin Brewery Co"
+    ],
+    [
+      "2914jpjpy",
+      "Japan Tobacco"
+    ],
+    [
+      "3382jpjpy",
+      "Seven and I Holdings"
+    ],
+    [
+      "3436jpjpy",
+      "Sumco Corp"
+    ],
+    [
+      "4004jpjpy",
+      "Showa Denko"
+    ],
+    [
+      "4005jpjpy",
+      "Sumitomo Chemical"
+    ],
+    [
+      "4063jpjpy",
+      "Shin-Etsu Chemical"
+    ],
+    [
+      "4452jpjpy",
+      "Kao Corp"
+    ],
+    [
+      "4502jpjpy",
+      "Takeda"
+    ],
+    [
+      "4503jpjpy",
+      "Astellas Pharma"
+    ],
+    [
+      "4507jpjpy",
+      "Shionogi"
+    ],
+    [
+      "4523jpjpy",
+      "Eisai"
+    ],
+    [
+      "4543jpjpy",
+      "Terumo Corp"
+    ],
+    [
+      "4689jpjpy",
+      "Yahoo Japan Corp"
+    ],
+    [
+      "4911jpjpy",
+      "Shiseido"
+    ],
+    [
+      "5108jpjpy",
+      "Bridgestone Corp"
+    ],
+    [
+      "5301jpjpy",
+      "Tokai Carbon"
+    ],
+    [
+      "5401jpjpy",
+      "Nippon Steel Corp"
+    ],
+    [
+      "6098jpjpy",
+      "Recruit Holdings Co Ltd"
+    ],
+    [
+      "6301jpjpy",
+      "Komatsu"
+    ],
+    [
+      "6367jpjpy",
+      "Daikin Industries"
+    ],
+    [
+      "6501jpjpy",
+      "Hitachi"
+    ],
+    [
+      "6502jpjpy",
+      "Toshiba Corp"
+    ],
+    [
+      "6503jpjpy",
+      "Mitsubishi Electric Corp"
+    ],
+    [
+      "6506jpjpy",
+      "Yaskawa Electric Corp"
+    ],
+    [
+      "6702jpjpy",
+      "Fujitsu"
+    ],
+    [
+      "6752jpjpy",
+      "Panasonic Corp"
+    ],
+    [
+      "6758jpjpy",
+      "Sony Corp Japan"
+    ],
+    [
+      "6762jpjpy",
+      "TDK Corp"
+    ],
+    [
+      "6902jpjpy",
+      "Denso Corp"
+    ],
+    [
+      "6954jpjpy",
+      "Fanuc"
+    ],
+    [
+      "6971jpjpy",
+      "Kyocera"
+    ],
+    [
+      "7201jpjpy",
+      "Nissan Motor Co"
+    ],
+    [
+      "7203jpjpy",
+      "Toyota Motor Corp"
+    ],
+    [
+      "7261jpjpy",
+      "Mazda Motor"
+    ],
+    [
+      "7267jpjpy",
+      "Honda Motor Company"
+    ],
+    [
+      "7269jpjpy",
+      "Suzuki Motor Corp"
+    ],
+    [
+      "7270jpjpy",
+      "Subaru Corporation"
+    ],
+    [
+      "7751jpjpy",
+      "Canon"
+    ],
+    [
+      "7974jpjpy",
+      "Nintendo Co Ltd"
+    ],
+    [
+      "8031jpjpy",
+      "Mitsui and Company"
+    ],
+    [
+      "8035jpjpy",
+      "Tokyo Electron"
+    ],
+    [
+      "8306jpjpy",
+      "Mitsubishi UFJ Financial Group"
+    ],
+    [
+      "8316jpjpy",
+      "Sumitomo Mitsui Financial Group"
+    ],
+    [
+      "8411jpjpy",
+      "Mizuho Financial Group"
+    ],
+    [
+      "8766jpjpy",
+      "Tokio Marine Holdings"
+    ],
+    [
+      "8801jpjpy",
+      "Mitsui Fudosan Company"
+    ],
+    [
+      "8802jpjpy",
+      "Mitsubishi Estate Company"
+    ],
+    [
+      "9020jpjpy",
+      "East Japan Railway Company"
+    ],
+    [
+      "9432jpjpy",
+      "Nippon Telegraph and Tel"
+    ],
+    [
+      "9433jpjpy",
+      "KDDI Corp"
+    ],
+    [
+      "9501jpjpy",
+      "Tokyo Electric Power Company"
+    ],
+    [
+      "9983jpjpy",
+      "Fast Retailing"
+    ],
+    [
+      "9984jpjpy",
+      "Softbank Group Corp"
+    ],
+    [
+      "alfaamxmxn",
+      "Alfa SA B A"
+    ],
+    [
+      "alseamxmxn",
+      "Alsea SAB de CV"
+    ],
+    [
+      "amxlmxmxn",
+      "America Movil SAB de C SERL"
+    ],
+    [
+      "arcamxmxn",
+      "Arca Continental SAB de CV"
+    ],
+    [
+      "asurbmxmxn",
+      "Grupo Aeroportuario del Sureste"
+    ],
+    [
+      "bbajioomxmxn",
+      "Banco Del Bajio SA"
+    ],
+    [
+      "bolsaamxmxn",
+      "Bolsa Mexicana de Valores SAB de CV"
+    ],
+    [
+      "cemexcpomxmxn",
+      "Cemex Sab de CV"
+    ],
+    [
+      "elektramxmxn",
+      "Grupo Elektra SAB DE CV"
+    ],
+    [
+      "femsaubdmxmxn",
+      "Fomento Economico Mexica UBD"
+    ],
+    [
+      "gapbmxmxn",
+      "Grupo Aeroportuario del Pacific Sab CV"
+    ],
+    [
+      "gcarsoa1mxmxn",
+      "Grupo Carso Sab De CV"
+    ],
+    [
+      "gccmxmxn",
+      "Grupo Cementos de Chihuahua"
+    ],
+    [
+      "gfnorteomxmxn",
+      "Grupo Financiero Banorte O"
+    ],
+    [
+      "gmexicobmxmxn",
+      "Grupo Mexico SAB DE CV SER B"
+    ],
+    [
+      "grumabmxmxn",
+      "Gruma SA BB"
+    ],
+    [
+      "kimberamxmxn",
+      "Kimberly Clark DE Mexico A"
+    ],
+    [
+      "kofublmxmxn",
+      "Coca Cola Femsa Sab"
+    ],
+    [
+      "labbmxmxn",
+      "Genomma Lab Internacional SAB de CV"
+    ],
+    [
+      "livepolc1mxmxn",
+      "El Puerto de Liverpool"
+    ],
+    [
+      "megacpomxmxn",
+      "Megacable Holdings SAB de CV"
+    ],
+    [
+      "omabmxmxn",
+      "Grupo Aeroportuario del Centro Norte"
+    ],
+    [
+      "orbiamxmxn",
+      "Orbia Advance Corp SAB DE CV"
+    ],
+    [
+      "peolesmxmxn",
+      "Industrias Penoles SAB DE CV"
+    ],
+    [
+      "pinframxmxn",
+      "Promotora Y Operadora DE INF"
+    ],
+    [
+      "qmxmxn",
+      "Qualitas Controladora SAB"
+    ],
+    [
+      "ramxmxn",
+      "Regional Sab De CV"
+    ],
+    [
+      "volaramxmxn",
+      "Controladora Vuela Comp de Aviacion"
+    ],
+    [
+      "walmexmxmxn",
+      "Walmart De Mexico SAB"
+    ],
+    [
+      "agnnleur",
+      "Aegon NV"
+    ],
+    [
+      "ahnleur",
+      "Koninklijke Ahold Delhaize NV"
+    ],
+    [
+      "akzanleur",
+      "Akzo Nobel NV"
+    ],
+    [
+      "asmlnleur",
+      "ASML Holding NV"
+    ],
+    [
+      "dsmnleur",
+      "Koninklijke DSM NV"
+    ],
+    [
+      "heianleur",
+      "Heineken NV"
+    ],
+    [
+      "inganleur",
+      "ING Groep NV"
+    ],
+    [
+      "kpnnleur",
+      "Koninklijke KPN NV"
+    ],
+    [
+      "mtnleur",
+      "ArcelorMittal"
+    ],
+    [
+      "phianleur",
+      "Koninklijke Philips NV"
+    ],
+    [
+      "qianleur",
+      "QIAGEN N.V."
+    ],
+    [
+      "randnleur",
+      "Randstad Holding NV"
+    ],
+    [
+      "rdsanleur",
+      "Royal Dutch Shell PLC"
+    ],
+    [
+      "rennleur",
+      "RELX NV"
+    ],
+    [
+      "unanleur",
+      "Unilever NV"
+    ],
+    [
+      "vpknleur",
+      "Koninklijke Vopak NV"
+    ],
+    [
+      "wklnleur",
+      "Wolters Kluwer NV"
+    ],
+    [
+      "dnbnonok",
+      "DNB ASA"
+    ],
+    [
+      "mhgnonok",
+      "Marine Harvest ASA"
+    ],
+    [
+      "nhynonok",
+      "Norsk Hydro ASA"
+    ],
+    [
+      "orknonok",
+      "Orkla ASA"
+    ],
+    [
+      "stlnonok",
+      "Statoil ASA"
+    ],
+    [
+      "telnonok",
+      "Telenor ASA"
+    ],
+    [
+      "edppteur",
+      "EDP - Energias de Portugal SA"
+    ],
+    [
+      "galppteur",
+      "Galp Energia SGPS SA"
+    ],
+    [
+      "acseseur",
+      "ACS Actividades de Construccion y Servicios SA"
+    ],
+    [
+      "acxeseur",
+      "Acerinox SA"
+    ],
+    [
+      "aenaeseur",
+      "Aena SA"
+    ],
+    [
+      "amseseur",
+      "Amadeus IT Holding SA"
+    ],
+    [
+      "appeseur",
+      "Applus Services"
+    ],
+    [
+      "bbvaeseur",
+      "Banco Bilbao Vizcaya Argentaria SA"
+    ],
+    [
+      "cabkeseur",
+      "CaixaBank"
+    ],
+    [
+      "diaeseur",
+      "Distribuidora Internacional de Alimentacion SA"
+    ],
+    [
+      "ebreseur",
+      "Ebro Foods SA"
+    ],
+    [
+      "eleeseur",
+      "Endesa SA"
+    ],
+    [
+      "engeseur",
+      "Enagas SA"
+    ],
+    [
+      "fcceseur",
+      "Fomento de Construcciones y Contratas SA"
+    ],
+    [
+      "fereseur",
+      "Ferrovial SA"
+    ],
+    [
+      "gameseur",
+      "Gamesa Corporacion Tecnologica SA"
+    ],
+    [
+      "gaseseur",
+      "Gas Natural SDG SA"
+    ],
+    [
+      "grfeseur",
+      "GRIFOLS SA"
+    ],
+    [
+      "ibeeseur",
+      "Iberdrola SA"
+    ],
+    [
+      "itxeseur",
+      "Inditex SA"
+    ],
+    [
+      "mapeseur",
+      "Mapfre SA"
+    ],
+    [
+      "reeeseur",
+      "Red Electrica Corp SA"
+    ],
+    [
+      "repeseur",
+      "Repsol SA"
+    ],
+    [
+      "saneseur",
+      "Banco Santander SA"
+    ],
+    [
+      "tefeseur",
+      "Telefonica SA"
+    ],
+    [
+      "viseseur",
+      "Viscofan SA"
+    ],
+    [
+      "abbsesek",
+      "ABB Ltd"
+    ],
+    [
+      "alfasesek",
+      "Alfa Laval AB"
+    ],
+    [
+      "atcoasesek",
+      "Atlas Copco AB"
+    ],
+    [
+      "eluxbsesek",
+      "Electrolux AB"
+    ],
+    [
+      "ericbsesek",
+      "Telefonaktiebolaget LM Ericsson"
+    ],
+    [
+      "getibsesek",
+      "Getinge AB"
+    ],
+    [
+      "hmbsesek",
+      "Hennes & Mauritz AB"
+    ],
+    [
+      "invebsesek",
+      "Investor AB"
+    ],
+    [
+      "ndasesek",
+      "Nordea Bank AB"
+    ],
+    [
+      "sandsesek",
+      "Sandvik AB"
+    ],
+    [
+      "scabsesek",
+      "Svenska Cellulosa AB"
+    ],
+    [
+      "sebasesek",
+      "Skandinaviska Enskilda Banken AB"
+    ],
+    [
+      "secubsesek",
+      "Securitas AB"
+    ],
+    [
+      "skabsesek",
+      "Skanska AB"
+    ],
+    [
+      "skfbsesek",
+      "SKF AB"
+    ],
+    [
+      "swedasesek",
+      "Swedbank AB"
+    ],
+    [
+      "swmasesek",
+      "Swedish Match AB"
+    ],
+    [
+      "tel2bsesek",
+      "Tele2 AB"
+    ],
+    [
+      "tlsnsesek",
+      "Telia Company AB"
+    ],
+    [
+      "volvbsesek",
+      "Volvo AB"
+    ],
+    [
+      "abbnchchf",
+      "ABB Ltd"
+    ],
+    [
+      "adenchchf",
+      "Adecco SA"
+    ],
+    [
+      "baerchchf",
+      "Julius Baer Group Ltd"
+    ],
+    [
+      "cfrchchf",
+      "Richemont"
+    ],
+    [
+      "clnchchf",
+      "Clariant AG"
+    ],
+    [
+      "csgnchchf",
+      "Credit Suisse Group AG"
+    ],
+    [
+      "givnchchf",
+      "Givaudan SA"
+    ],
+    [
+      "kninchchf",
+      "Kuehne + Nagel International AG"
+    ],
+    [
+      "lhnchchf",
+      "Lafarge Holcim Ltd"
+    ],
+    [
+      "lispchchf",
+      "Chocoladefabriken Lindt & Sprungli"
+    ],
+    [
+      "lognchchf",
+      "Logitech International SA"
+    ],
+    [
+      "lonnchchf",
+      "Lonza Group AG"
+    ],
+    [
+      "mbtnchchf",
+      "Meyer Burger"
+    ],
+    [
+      "nesnchchf",
+      "Nestle SA"
+    ],
+    [
+      "novnchchf",
+      "Novartis AG"
+    ],
+    [
+      "oerlchchf",
+      "OC Oerlikon Corporation"
+    ],
+    [
+      "rogchchf",
+      "Roche Holding AG"
+    ],
+    [
+      "scmnchchf",
+      "Swisscom AG"
+    ],
+    [
+      "sgsnchchf",
+      "SGS SA"
+    ],
+    [
+      "slhnchchf",
+      "Swiss Life Holding AG"
+    ],
+    [
+      "soonchchf",
+      "Sonova Holding AG"
+    ],
+    [
+      "srenchchf",
+      "Swiss Re AG"
+    ],
+    [
+      "temnchchf",
+      "Temenos Group AG"
+    ],
+    [
+      "ubsgchchf",
+      "UBS Group AG"
+    ],
+    [
+      "uhrchchf",
+      "Swatch Group AG/The"
+    ],
+    [
+      "uhrnchchf",
+      "Swatch Group AG (The Registered)"
+    ],
+    [
+      "vifnchchf",
+      "Vifor Pharma"
+    ],
+    [
+      "zurnchchf",
+      "Zurich Insurance Group AG"
+    ],
+    [
+      "aalgbgbx",
+      "Anglo American PLC"
+    ],
+    [
+      "abfgbgbx",
+      "Associated British Foods PLC"
+    ],
+    [
+      "admgbgbx",
+      "Admiral Group PLC"
+    ],
+    [
+      "agkgbgbx",
+      "Aggreko PLC"
+    ],
+    [
+      "ahtgbgbx",
+      "Ashtead Group PLC"
+    ],
+    [
+      "antogbgbx",
+      "Antofagasta PLC"
+    ],
+    [
+      "avgbgbx",
+      "Aviva PLC"
+    ],
+    [
+      "avvgbgbx",
+      "AVEVA GROUP PLC"
+    ],
+    [
+      "azngbgbx",
+      "AstraZeneca PLC"
+    ],
+    [
+      "bagbgbx",
+      "BAE Systems PLC"
+    ],
+    [
+      "babgbgbx",
+      "Babcock International Group PLC"
+    ],
+    [
+      "barcgbgbx",
+      "Barclays PLC"
+    ],
+    [
+      "batsgbgbx",
+      "British American Tobacco PLC"
+    ],
+    [
+      "bdevgbgbx",
+      "BARRATT DEVELOPMENTS PLC"
+    ],
+    [
+      "blndgbgbx",
+      "British Land Co PLC"
+    ],
+    [
+      "bltgbgbx",
+      "BHP Billiton PLC"
+    ],
+    [
+      "bnzlgbgbx",
+      "Bunzl PLC"
+    ],
+    [
+      "bpgbgbx",
+      "BP PLC"
+    ],
+    [
+      "brbygbgbx",
+      "Burberry Group PLC"
+    ],
+    [
+      "btgbgbx",
+      "BT Group PLC"
+    ],
+    [
+      "cclgbgbx",
+      "Carnival PLC"
+    ],
+    [
+      "cnagbgbx",
+      "Centrica PLC"
+    ],
+    [
+      "cpggbgbx",
+      "Compass Group PLC"
+    ],
+    [
+      "cpigbgbx",
+      "Capita PLC"
+    ],
+    [
+      "crdagbgbx",
+      "Croda International PLC"
+    ],
+    [
+      "crhgbgbx",
+      "CRH PLC"
+    ],
+    [
+      "dccgbgbx",
+      "DCC PLC"
+    ],
+    [
+      "dgegbgbx",
+      "Diageo PLC"
+    ],
+    [
+      "dphgbgbx",
+      "DECHRA PHARMACEUTICALS PLC"
+    ],
+    [
+      "ecmgbgbx",
+      "ELECTROCOMPONENTS PLC"
+    ],
+    [
+      "expngbgbx",
+      "Experian PLC"
+    ],
+    [
+      "ezjgbgbx",
+      "easyJet PLC"
+    ],
+    [
+      "fresgbgbx",
+      "Fresnillo PLC"
+    ],
+    [
+      "gfsgbgbx",
+      "G4S PLC"
+    ],
+    [
+      "glengbgbx",
+      "Glencore PLC"
+    ],
+    [
+      "gskgbgbx",
+      "GlaxoSmithKline PLC"
+    ],
+    [
+      "hikgbgbx",
+      "HIKMA PHARMACEUTICALS PLC"
+    ],
+    [
+      "hlmagbgbx",
+      "HALMA PLC"
+    ],
+    [
+      "hmsogbgbx",
+      "Hammerson PLC"
+    ],
+    [
+      "hsbagbgbx",
+      "HSBC Holdings PLC"
+    ],
+    [
+      "iaggbgbx",
+      "International Consolidated Airlines Grou"
+    ],
+    [
+      "icpgbgbx",
+      "INTERMEDIATE CAPITAL GROUP"
+    ],
+    [
+      "ihggbgbx",
+      "InterContinental Hotels Group PLC"
+    ],
+    [
+      "iiigbgbx",
+      "3i Group PLC"
+    ],
+    [
+      "imtgbgbx",
+      "Imperial Brands Plc"
+    ],
+    [
+      "itrkgbgbx",
+      "Intertek Group PLC"
+    ],
+    [
+      "itvgbgbx",
+      "ITV PLC"
+    ],
+    [
+      "kgfgbgbx",
+      "Kingfisher PLC"
+    ],
+    [
+      "landgbgbx",
+      "Land Securities Group PLC"
+    ],
+    [
+      "lgengbgbx",
+      "Legal & General Group PLC"
+    ],
+    [
+      "lloygbgbx",
+      "Lloyds Banking Group PLC"
+    ],
+    [
+      "lsegbgbx",
+      "London Stock Exchange Group PLC"
+    ],
+    [
+      "mggtgbgbx",
+      "Meggitt PLC"
+    ],
+    [
+      "mksgbgbx",
+      "Marks & Spencer Group PLC"
+    ],
+    [
+      "mndigbgbx",
+      "Mondi PLC"
+    ],
+    [
+      "mnggbgbx",
+      "M&G PLC"
+    ],
+    [
+      "mrwgbgbx",
+      "WM Morrison Supermarkets PLC"
+    ],
+    [
+      "nggbgbx",
+      "National Grid PLC"
+    ],
+    [
+      "nxtgbgbx",
+      "Next PLC"
+    ],
+    [
+      "ocdogbgbx",
+      "OCADO GROUP PLC"
+    ],
+    [
+      "pfcgbgbx",
+      "Petrofac Ltd"
+    ],
+    [
+      "phnxgbgbx",
+      "PHOENIX GROUP HOLDINGS PLC"
+    ],
+    [
+      "prugbgbx",
+      "Prudential PLC"
+    ],
+    [
+      "psngbgbx",
+      "Persimmon PLC"
+    ],
+    [
+      "psongbgbx",
+      "Pearson PLC"
+    ],
+    [
+      "rbgbgbx",
+      "Reckitt Benckiser Group PLC"
+    ],
+    [
+      "rbsgbgbx",
+      "Royal Bank of Scotland Group PLC"
+    ],
+    [
+      "rdsbgbgbx",
+      "Royal Dutch Shell PLC"
+    ],
+    [
+      "relgbgbx",
+      "Reed Elsevier PLC"
+    ],
+    [
+      "riogbgbx",
+      "Rio Tinto PLC"
+    ],
+    [
+      "rmggbgbx",
+      "Royal Mail PLC"
+    ],
+    [
+      "rmvgbgbx",
+      "RIGHTMOVE PLC"
+    ],
+    [
+      "rrgbgbx",
+      "Rolls-Royce Holdings PLC"
+    ],
+    [
+      "rsagbgbx",
+      "RSA Insurance Group PLC"
+    ],
+    [
+      "rtogbgbx",
+      "RENTOKIL INITIAL PLC"
+    ],
+    [
+      "sbrygbgbx",
+      "J Sainsbury PLC"
+    ],
+    [
+      "sdrgbgbx",
+      "Schroders PLC"
+    ],
+    [
+      "sgegbgbx",
+      "Sage Group PLC/The"
+    ],
+    [
+      "sgrogbgbx",
+      "SEGRO PLC"
+    ],
+    [
+      "skygbgbx",
+      "Sky Plc"
+    ],
+    [
+      "slagbgbx",
+      "Standard Life Aberdeen Plc"
+    ],
+    [
+      "smdsgbgbx",
+      "DS SMITH PLC"
+    ],
+    [
+      "smingbgbx",
+      "Smiths Group PLC"
+    ],
+    [
+      "smtgbgbx",
+      "SCOTTISH MORTGAGE INV TR PLC"
+    ],
+    [
+      "sngbgbx",
+      "Smith & Nephew PLC"
+    ],
+    [
+      "spxgbgbx",
+      "SPIRAX-SARCO ENGINEERING PLC"
+    ],
+    [
+      "ssegbgbx",
+      "SSE PLC"
+    ],
+    [
+      "stangbgbx",
+      "Standard Chartered PLC"
+    ],
+    [
+      "stjgbgbx",
+      "ST JAMES'S PLACE PLC"
+    ],
+    [
+      "svtgbgbx",
+      "Severn Trent PLC"
+    ],
+    [
+      "tategbgbx",
+      "Tate & Lyle PLC"
+    ],
+    [
+      "tlwgbgbx",
+      "Tullow Oil PLC"
+    ],
+    [
+      "tpkgbgbx",
+      "Travis Perkins PLC"
+    ],
+    [
+      "tscogbgbx",
+      "Tesco PLC"
+    ],
+    [
+      "twgbgbx",
+      "TAYLOR WIMPEY PLC"
+    ],
+    [
+      "ulvrgbgbx",
+      "Unilever PLC"
+    ],
+    [
+      "uugbgbx",
+      "United Utilities Group PLC"
+    ],
+    [
+      "vodgbgbx",
+      "Vodafone Group PLC"
+    ],
+    [
+      "weirgbgbx",
+      "Weir Group PLC/The"
+    ],
+    [
+      "wosgbgbx",
+      "Wolseley PLC"
+    ],
+    [
+      "wppgbgbx",
+      "WPP PLC"
+    ],
+    [
+      "wtbgbgbx",
+      "Whitbread PLC"
+    ]
+  ]
+}

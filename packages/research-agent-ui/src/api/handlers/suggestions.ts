@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Handler that generates follow-up question suggestions for a chat conversation.
+ *
+ * Loads a chat model, runs the suggestion-generator agent over the chat
+ * history, then splits any multi-question suggestions on "?" into separate
+ * standalone questions.
+ */
 import generateSuggestions from "chat-agent-toolkit/tools/search/suggestionGeneratorAgent";
 import ModelRegistry from "chat-agent-toolkit/models/registry";
 import type { ModelWithProvider } from "chat-agent-toolkit/config/config-types";
@@ -7,6 +14,11 @@ interface SuggestionsGenerationBody {
   chatHistory: any[];
   chatModel: ModelWithProvider;
   maxQuestions?: number;
+  /**
+   * Optional user-authored follow-up prompt from Settings → Search Settings.
+   * Blank or absent falls back to the toolkit's built-in template.
+   */
+  promptTemplate?: string;
 }
 
 export function createSuggestionsHandler() {
@@ -29,7 +41,11 @@ export function createSuggestionsHandler() {
     );
 
     const rawSuggestions = await generateSuggestions(
-      { chat_history: chatHistory, maxQuestions: body.maxQuestions },
+      {
+        chat_history: chatHistory,
+        maxQuestions: body.maxQuestions,
+        promptTemplate: body.promptTemplate,
+      },
       llm,
     );
 

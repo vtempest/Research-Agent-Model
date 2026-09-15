@@ -53,6 +53,25 @@ export class GoogleDocsService {
     this.refreshToken = refreshToken;
   }
 
+  /**
+   * Scopes requested when a user connects Google Drive.
+   *
+   * `drive.file` is the per-file scope: it grants access only to files the
+   * user explicitly hands over through the Google Picker plus files this app
+   * creates itself, which is the whole of what the connector does (download
+   * picked files, create/update docs it exported). It replaces the pair this
+   * used to request — `drive.readonly` and `documents` — which Google renders
+   * on the consent screen as "See and download all your Google Drive files"
+   * and "See, edit, create and delete all your Google Docs documents". Those
+   * are restricted scopes: they cover the user's entire Drive, they drag the
+   * OAuth client through Google's restricted-scope verification, and because
+   * this app uses one OAuth client for both sign-in and Drive they made the
+   * account's first Google consent look like a demand for the whole Drive.
+   */
+  static readonly AUTH_SCOPES: readonly string[] = [
+    'https://www.googleapis.com/auth/drive.file',
+  ];
+
   static getAuthUrl(config: GoogleDocsConfig): string {
     const params = new URLSearchParams({
       client_id: config.clientId,
@@ -60,10 +79,11 @@ export class GoogleDocsService {
       response_type: 'code',
       access_type: 'offline',
       prompt: 'consent',
-      scope: [
-        'https://www.googleapis.com/auth/documents',
-        'https://www.googleapis.com/auth/drive.readonly',
-      ].join(' '),
+      // Layer this grant on top of whatever the account already approved (the
+      // identity scopes from sign-in) instead of replacing it, so connecting
+      // Drive never silently drops the sign-in grant.
+      include_granted_scopes: 'true',
+      scope: GoogleDocsService.AUTH_SCOPES.join(' '),
     });
     return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   }

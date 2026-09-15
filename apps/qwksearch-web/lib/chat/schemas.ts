@@ -78,6 +78,7 @@ export const chatModelSchema: z.ZodType<ModelWithProvider> = z.object({
  * @property {ModelWithProvider} chatModel         - Selected AI model and provider.
  * @property {boolean}   [sourceExtractionEnabled=false] - Whether to extract and return source content.
  * @property {string|null} [systemInstructions=""]  - Custom system instructions to prepend to the prompt.
+ * @property {string|null} [queryExpansionPrompt=""] - Custom prompt used to rephrase the query for search.
  */
 export const bodySchema = z.object({
   /** The user's chat message. */
@@ -110,6 +111,11 @@ export const bodySchema = z.object({
   sourceExtractionEnabled: z.boolean().optional().default(false),
   /** Custom system instructions to prepend to the prompt. */
   systemInstructions: z.string().nullable().optional().default(""),
+  /**
+   * User-authored replacement for the focus mode's query-expansion prompt
+   * (edited in Settings → Search Settings). Blank means "use the built-in one".
+   */
+  queryExpansionPrompt: z.string().nullable().optional().default(""),
   /**
    * Max seconds to spend extracting source content.
    * 0 = unlimited (uses server default); >0 = budget spread across top 3 sources.

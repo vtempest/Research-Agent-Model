@@ -1,0 +1,80 @@
+---
+title: "VS Code Extension"
+description: "Ask cited research questions from a sidebar in your editor, and edit .md/.docx with REASON."
+icon: "Code"
+---
+
+**QwkSearch for VS Code** puts the research agent in an Activity Bar sidebar,
+talking to the same API as the website. Source lives in
+[`apps/qwk-vscode-ext`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/apps/qwk-vscode-ext).
+
+## Features
+
+- **Chat sidebar** — ask a question, get a cited, streamed answer without
+  leaving the editor. It keeps its state when you switch sidebar views, and is
+  reachable from any file via **QwkSearch: Open Research Agent**.
+- **Ask About Selection** — select text anywhere, right-click, and send it
+  straight to the composer.
+- **Citations as links** — sources open in your default browser.
+- **REASON for `.md` and `.docx`** — opening a Markdown or Word file loads it
+  in [`react-reason-editor`](/docs/reason-editor)'s rich-text surface instead of
+  plain text, with tables, images, KaTeX, Mermaid, comments and Word
+  import/export. Its **Ask QwkSearch** button sends the current selection (or
+  the whole document) to the chat sidebar.
+- **Guest or signed-in** — works signed-out like the website; signing in uses
+  your own configured models and higher limits.
+- **Points at your own deployment** — set `qwksearch.apiBaseUrl` to a
+  self-hosted `qwksearch-web` instead of the public API.
+
+## Signing in
+
+A VS Code webview can't hold the browser session cookie the website uses, so
+the extension authenticates with a **personal API key** instead:
+
+<Steps>
+
+<Step>
+Run **QwkSearch: Sign In**, or click *Sign In* in the sidebar.
+</Step>
+
+<Step>
+Choose *Open QwkSearch to get a Key*. Your browser opens `{apiBaseUrl}/settings`,
+where your account's API key is shown under **Account** with a copy button.
+</Step>
+
+<Step>
+Paste the key back into VS Code. It's stored in VS Code's `SecretStorage` (your
+OS keychain) — never in a settings file or in extension state.
+</Step>
+
+</Steps>
+
+## How it's wired
+
+```
+┌─────────────────────────────┐   postMessage/JSON   ┌──────────────────────┐
+│ Webview (webview-ui/)       │◄────────────────────►│ Extension host       │──► https://qwksearch.com/api/*
+│ React + Vite, sandboxed,    │                      │ holds the API key    │
+│ no direct network access    │                      │                      │
+└─────────────────────────────┘                      └──────────────────────┘
+```
+
+The webview never sees your API key. It exchanges typed `postMessage` events
+with the extension host, which proxies them to the QwkSearch API with an
+`Authorization: Bearer` header and streams the response back chunk by chunk, so
+answers render as they generate.
+
+<Callout title="Why not just reuse research-agent-ui?">
+[`research-agent-ui`](https://www.npmjs.com/package/research-agent-ui) is built
+for Next.js — it uses `next/navigation`, `next/image`, and relative `fetch("/api/...")`
+calls that assume a same-origin Next.js server. A VS Code webview has neither.
+The extension is therefore a purpose-built UI that reuses the same **wire
+protocol**: the same `POST /api/agent/chat` request shape, the same
+newline-delimited `sources` / `searching` / `message` / `messageEnd` / `error`
+event stream, and the same `GET /api/agent/providers` model-selection logic.
+</Callout>
+
+## Related
+
+- [Chat & research agent](/docs/chat) — the API the extension speaks
+- [REASON editor](/docs/reason-editor) — the `.md`/`.docx` editing surface

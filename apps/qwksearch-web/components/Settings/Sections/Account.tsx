@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Loader2, Upload, Copy, RefreshCw, Eye, EyeOff, ChevronDown, Moon, Sun } from 'lucide-react';
+import { Loader2, Upload, Copy, RefreshCw, Eye, EyeOff, ChevronDown, Moon, Sun, ImagePlus, Trash2 } from 'lucide-react';
 import { authClient } from '@/lib/auth/client';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { useImageUpload } from '@/lib/hooks/use-image-upload';
 
 interface UserProfile {
   id: string;
@@ -173,6 +174,7 @@ const SaveButton = ({ onClick, loading, disabled }: { onClick: () => void; loadi
 
 export default function Account() {
   const { data: authSession, isPending: isSessionLoading } = authClient.useSession();
+ // @ts-ignore
   const isAuthenticated = !!authSession?.user;
   const { theme, setTheme } = useTheme();
 
@@ -204,7 +206,17 @@ export default function Account() {
   const [fontFamily, setFontFamily] = useState('');
   const [themeMounted, setThemeMounted] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarRemoving, setAvatarRemoving] = useState(false);
+  const [isDraggingAvatar, setIsDraggingAvatar] = useState(false);
+
+  const {
+    previewUrl: avatarPreview,
+    fileName: avatarFileName,
+    fileInputRef,
+    handleThumbnailClick,
+    handleFileSelect,
+    handleRemove: clearAvatarPreview,
+  } = useImageUpload();
 
   useEffect(() => {
     setThemeMounted(true);
@@ -251,32 +263,76 @@ export default function Account() {
     fetchData();
   }, [isAuthenticated, isSessionLoading]);
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const readAsDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => resolve(ev.target?.result as string);
+      reader.onerror = () => reject(new Error('Could not read the selected file.'));
+      reader.readAsDataURL(file);
+    });
+
+  /** Validates, previews locally, then persists the image as a data URL. */
+  const handleAvatarFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please choose an image file (JPG, PNG, GIF or WebP).');
+      return;
+    }
     if (file.size > 2 * 1024 * 1024) {
       toast.error('Avatar must be under 2MB.');
       return;
     }
+    handleFileSelect(file);
     setAvatarSaving(true);
     try {
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        const dataUrl = ev.target?.result as string;
-        const res = await fetch('/api/user', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: dataUrl }),
-        });
-        if (!res.ok) throw new Error();
-        setProfile((p) => p ? { ...p, image: dataUrl } : p);
-        toast.success('Avatar updated.');
-        setAvatarSaving(false);
-      };
-      reader.readAsDataURL(file);
+      const dataUrl = await readAsDataUrl(file);
+      const res = await fetch('/api/user', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: dataUrl }),
+      });
+      if (!res.ok) throw new Error();
+      setProfile((p) => p ? { ...p, image: dataUrl } : p);
+      toast.success('Avatar updated.');
     } catch {
+      clearAvatarPreview();
       toast.error('Failed to upload avatar.');
+    } finally {
       setAvatarSaving(false);
+    }
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // Reset so picking the same file again still fires a change event.
+    e.target.value = '';
+    if (file) handleAvatarFile(file);
+  };
+
+  const handleAvatarDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingAvatar(false);
+    if (avatarSaving || avatarRemoving) return;
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleAvatarFile(file);
+  };
+
+  const handleRemoveAvatar = async () => {
+    setAvatarRemoving(true);
+    try {
+      const res = await fetch('/api/user', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: null }),
+      });
+      if (!res.ok) throw new Error();
+      clearAvatarPreview();
+      setProfile((p) => p ? { ...p, image: null } : p);
+      toast.success('Avatar removed.');
+    } catch {
+      toast.error('Failed to remove avatar.');
+    } finally {
+      setAvatarRemoving(false);
     }
   };
 
@@ -484,38 +540,80 @@ export default function Account() {
 
   const colors = themeColors[colorTheme];
 
+  // Local preview wins while an upload is in flight, then matches the saved image.
+  const avatarSrc = avatarPreview ?? profile?.image ?? null;
+
   return (
     <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
       {/* Avatar */}
       <SectionCard>
         <SectionTitle
           title="Avatar"
-          subtitle="Click on the avatar to upload a custom one from your files."
+          subtitle="Click the avatar, or drag and drop an image, to upload a custom one."
         />
-        <div className="flex items-center gap-4">
+        <div
+          onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingAvatar(true); }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            // Ignore leaves fired while moving between children of the drop zone.
+            if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+            setIsDraggingAvatar(false);
+          }}
+          onDrop={handleAvatarDrop}
+          className={cn(
+            'flex items-center gap-4 rounded-lg border-2 border-dashed border-transparent p-2 -m-2 transition-colors',
+            isDraggingAvatar && 'border-[#24A0ED]/50 bg-[#24A0ED]/5',
+          )}
+        >
           <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={avatarSaving}
-            className="relative group w-16 h-16 rounded-full overflow-hidden border-2 border-light-200 dark:border-dark-200 flex-shrink-0 hover:border-[#24A0ED] transition-colors"
-            title="Upload avatar"
+            onClick={handleThumbnailClick}
+            disabled={avatarSaving || avatarRemoving}
+            className="relative group w-16 h-16 rounded-full overflow-hidden border-2 border-light-200 dark:border-dark-200 flex-shrink-0 hover:border-[#24A0ED] transition-colors disabled:cursor-not-allowed"
+            title={avatarSrc ? 'Change avatar' : 'Upload avatar'}
           >
-            {profile?.image ? (
-              <img src={profile.image} alt="Avatar" className="w-full h-full object-cover" />
+            {avatarSrc ? (
+              <img src={avatarSrc} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-light-200 dark:bg-dark-200 flex items-center justify-center text-xl font-medium text-black/50 dark:text-white/50">
                 {profile?.name?.[0]?.toUpperCase() ?? '?'}
               </div>
             )}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              {avatarSaving
-                ? <Loader2 className="w-5 h-5 text-white animate-spin" />
-                : <Upload className="w-5 h-5 text-white" />
-              }
+            <div className={cn(
+              'absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity',
+              (avatarSaving || avatarRemoving || isDraggingAvatar) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+            )}>
+              {avatarSaving || avatarRemoving ? (
+                <Loader2 className="w-5 h-5 text-white animate-spin" />
+              ) : isDraggingAvatar ? (
+                <ImagePlus className="w-5 h-5 text-white" />
+              ) : (
+                <Upload className="w-5 h-5 text-white" />
+              )}
             </div>
           </button>
-          <p className="text-xs text-black/50 dark:text-white/50">
-            An avatar is optional but strongly recommended.
-          </p>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-black/50 dark:text-white/50">
+              An avatar is optional but strongly recommended. JPG, PNG, GIF or WebP, up to 2MB.
+            </p>
+            {avatarFileName && (
+              <p className="mt-1 truncate text-[11px] text-black/40 dark:text-white/40" title={avatarFileName}>
+                {avatarFileName}
+              </p>
+            )}
+          </div>
+          {avatarSrc && (
+            <button
+              onClick={handleRemoveAvatar}
+              disabled={avatarSaving || avatarRemoving}
+              className="flex flex-shrink-0 items-center gap-1.5 rounded-lg border border-black/20 dark:border-dark-200 px-3 py-2 text-xs text-black/70 dark:text-white/70 hover:bg-light-200 dark:hover:bg-dark-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Remove avatar"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Remove
+            </button>
+          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -675,7 +773,7 @@ export default function Account() {
                     <span className="font-medium">{provider.name}</span>
                     {linkedAccount && (
                       <span className="text-[10px] text-black/50 dark:text-white/50">
-                        {linkedAccount.accountId}
+                        {profile?.email ?? linkedAccount.accountId}
                       </span>
                     )}
                   </div>

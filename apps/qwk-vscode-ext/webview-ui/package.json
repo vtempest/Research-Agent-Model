@@ -9,17 +9,17 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "markdown-to-jsx": "^9.8.2",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "markdown-to-jsx": "^9.10.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
     "@types/vscode-webview": "^1.57.5",
-    "@vitejs/plugin-react": "^6.0.3",
-    "typescript": "^6.0.3",
-    "vite": "^8.1.3"
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
   },
   "license": "rights.institute/PROSPER"
 }

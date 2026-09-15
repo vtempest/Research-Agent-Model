@@ -1,5 +1,8 @@
+/**
+ * @fileoverview Engine adapter that scrapes PubMed search results.
+ */
 import { parseHTML } from "linkedom";
-import { EngineFunction } from "../../types/search-engine-interface.js";
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const pubmed: EngineFunction = async (
   query: string,

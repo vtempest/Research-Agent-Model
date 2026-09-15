@@ -1,4 +1,7 @@
-import { EngineFunction, EngineResult } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the Open Library API for book search results.
+ */
+import { EngineFunction, EngineResult } from "../../types/search-engine-interface";
 
 export const openlibrary: EngineFunction = async (
   query: string,

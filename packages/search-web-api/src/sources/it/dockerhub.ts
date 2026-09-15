@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the Docker Hub API for container image search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const dockerhub: EngineFunction = async (
   query: string,

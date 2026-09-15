@@ -1,0 +1,2126 @@
+{
+  "A": {
+    "name": "Agilent Technologies Inc.",
+    "wikiTitle": "Agilent Technologies"
+  },
+  "AA": {
+    "name": "Alcoa Corporation",
+    "wikiTitle": "Alcoa"
+  },
+  "AAL": {
+    "name": "American Airlines Group Inc.",
+    "wikiTitle": "American Airlines Group"
+  },
+  "AAMI": {
+    "name": "Acadian Asset Management Inc.",
+    "wikiTitle": "Acadian Asset Management"
+  },
+  "AAOI": {
+    "name": "Applied Optoelectronics Inc.",
+    "wikiTitle": "Applied Optoelectronics"
+  },
+  "AAON": {
+    "name": "AAON Inc.",
+    "wikiTitle": "AAON"
+  },
+  "AAP": {
+    "name": "Advance Auto Parts Inc.",
+    "wikiTitle": "Advance Auto Parts"
+  },
+  "AAPL": {
+    "name": "Apple Inc.",
+    "wikiTitle": "Apple Inc."
+  },
+  "AAUC": {
+    "name": "Allied Gold Corporation",
+    "wikiTitle": "Allied Gold (Canada)"
+  },
+  "AB": {
+    "name": "AllianceBernstein Holding L.P.",
+    "wikiTitle": "AllianceBernstein"
+  },
+  "ABAT": {
+    "name": "American Battery Technology Company",
+    "wikiTitle": "American Battery Technology Company"
+  },
+  "ABBV": {
+    "name": "AbbVie Inc.",
+    "wikiTitle": "AbbVie"
+  },
+  "ABCB": {
+    "name": "Ameris Bancorp",
+    "wikiTitle": "Ameris Bancorp"
+  },
+  "ABCL": {
+    "name": "AbCellera Biologics Inc.",
+    "wikiTitle": "AbCellera"
+  },
+  "ABEV": {
+    "name": "Ambev S.A.",
+    "wikiTitle": "Ambev"
+  },
+  "ABG": {
+    "name": "Asbury Automotive Group Inc",
+    "wikiTitle": "Asbury Automotive Group"
+  },
+  "ABM": {
+    "name": "ABM Industries Incorporated",
+    "wikiTitle": "ABM Industries"
+  },
+  "ABT": {
+    "name": "Abbott Laboratories",
+    "wikiTitle": "Abbott Laboratories"
+  },
+  "ABUS": {
+    "name": "Arbutus Biopharma Corporation",
+    "wikiTitle": "Arbutus Biopharma"
+  },
+  "ABVX": {
+    "name": "Abivax SA",
+    "wikiTitle": "Abivax"
+  },
+  "ACAD": {
+    "name": "ACADIA Pharmaceuticals Inc.",
+    "wikiTitle": "Acadia Pharmaceuticals"
+  },
+  "ACB": {
+    "name": "Aurora Cannabis Inc.",
+    "wikiTitle": "Aurora Cannabis"
+  },
+  "ACCO": {
+    "name": "Acco Brands Corporation",
+    "wikiTitle": "ACCO Brands"
+  },
+  "ACFN": {
+    "name": "Acorn Energy Inc.",
+    "wikiTitle": "Acorn Energy"
+  },
+  "ACGL": {
+    "name": "Arch Capital Group Ltd.",
+    "wikiTitle": "Arch Capital Group"
+  },
+  "ACGLN": {
+    "name": "Arch Capital Group Ltd.",
+    "wikiTitle": "Arch Capital Group"
+  },
+  "ACGLO": {
+    "name": "Arch Capital Group Ltd.",
+    "wikiTitle": "Arch Capital Group"
+  },
+  "ACHC": {
+    "name": "Acadia Healthcare Company Inc.",
+    "wikiTitle": "Acadia Healthcare"
+  },
+  "ACHV": {
+    "name": "Achieve Life Sciences Inc.",
+    "wikiTitle": "Liminal BioSciences"
+  },
+  "ACIW": {
+    "name": "ACI Worldwide Inc.",
+    "wikiTitle": "ACI Worldwide"
+  },
+  "ACLS": {
+    "name": "Axcelis Technologies Inc.",
+    "wikiTitle": "Axcelis Technologies"
+  },
+  "ACLX": {
+    "name": "Arcellx Inc.",
+    "wikiTitle": "Gilead Sciences"
+  },
+  "ACM": {
+    "name": "AECOM",
+    "wikiTitle": "AECOM"
+  },
+  "ACRE": {
+    "name": "Ares Commercial Real Estate Corporation",
+    "wikiTitle": "Ares Management"
+  },
+  "ACU": {
+    "name": "Acme United Corporation.",
+    "wikiTitle": "Acme United Corporation"
+  },
+  "ADBE": {
+    "name": "Adobe Inc.",
+    "wikiTitle": "Adobe Inc."
+  },
+  "ADEA": {
+    "name": "Adeia Inc.",
+    "wikiTitle": "Xperi"
+  },
+  "ADI": {
+    "name": "Analog Devices Inc.",
+    "wikiTitle": "Analog Devices"
+  },
+  "ADM": {
+    "name": "Archer-Daniels-Midland Company",
+    "wikiTitle": "Archer Daniels Midland"
+  },
+  "ADNT": {
+    "name": "Adient plc",
+    "wikiTitle": "Adient"
+  },
+  "ADP": {
+    "name": "Automatic Data Processing Inc.",
+    "wikiTitle": "ADP (company)"
+  },
+  "ADSK": {
+    "name": "Autodesk Inc.",
+    "wikiTitle": "Autodesk"
+  },
+  "ADT": {
+    "name": "ADT Inc.",
+    "wikiTitle": "ADT Inc."
+  },
+  "AEBI": {
+    "name": "Aebi Schmidt Holding AG",
+    "wikiTitle": "AEBI"
+  },
+  "AEE": {
+    "name": "Ameren Corporation",
+    "wikiTitle": "Ameren"
+  },
+  "AEIS": {
+    "name": "Advanced Energy Industries Inc.",
+    "wikiTitle": "Advanced Energy"
+  },
+  "AEM": {
+    "name": "Agnico Eagle Mines Limited",
+    "wikiTitle": "Agnico Eagle"
+  },
+  "AEO": {
+    "name": "American Eagle Outfitters Inc.",
+    "wikiTitle": "American Eagle Outfitters"
+  },
+  "AEP": {
+    "name": "American Electric Power Company Inc.",
+    "wikiTitle": "American Electric Power"
+  },
+  "AER": {
+    "name": "AerCap Holdings N.V.",
+    "wikiTitle": "AerCap"
+  },
+  "AERO": {
+    "name": "Grupo Aeromexico S.A.B. de C.V.",
+    "wikiTitle": "Aeroméxico"
+  },
+  "AES": {
+    "name": "The AES Corporation",
+    "wikiTitle": "AES Corporation"
+  },
+  "AEVA": {
+    "name": "Aeva Technologies Inc.",
+    "wikiTitle": "Aeva"
+  },
+  "AFG": {
+    "name": "American Financial Group Inc.",
+    "wikiTitle": "American Financial Group"
+  },
+  "AFL": {
+    "name": "AFLAC Incorporated",
+    "wikiTitle": "Aflac"
+  },
+  "AG": {
+    "name": "First Majestic Silver Corp.",
+    "wikiTitle": "First Majestic Silver"
+  },
+  "AGCO": {
+    "name": "AGCO Corporation",
+    "wikiTitle": "AGCO"
+  },
+  "AGEN": {
+    "name": "Agenus Inc.",
+    "wikiTitle": "Agenus"
+  },
+  "AGIO": {
+    "name": "Agios Pharmaceuticals Inc.",
+    "wikiTitle": "Agios Pharmaceuticals"
+  },
+  "AGM": {
+    "name": "Federal Agricultural Mortgage Corporation",
+    "wikiTitle": "Federal Agricultural Mortgage Corporation"
+  },
+  "AGNC": {
+    "name": "AGNC Investment Corp.",
+    "wikiTitle": "American Capital"
+  },
+  "AGNCL": {
+    "name": "AGNC Investment Corp.",
+    "wikiTitle": "American Capital"
+  },
+  "AGNCM": {
+    "name": "AGNC Investment Corp.",
+    "wikiTitle": "American Capital"
+  },
+  "AGNCN": {
+    "name": "AGNC Investment Corp.",
+    "wikiTitle": "American Capital"
+  },
+  "AGNCO": {
+    "name": "AGNC Investment Corp.",
+    "wikiTitle": "American Capital"
+  },
+  "AGNCP": {
+    "name": "AGNC Investment Corp.",
+    "wikiTitle": "American Capital"
+  },
+  "AGNCZ": {
+    "name": "AGNC Investment Corp.",
+    "wikiTitle": "American Capital"
+  },
+  "AGYS": {
+    "name": "Agilysys Inc.",
+    "wikiTitle": "Agilysys"
+  },
+  "AIG": {
+    "name": "American International Group Inc. New",
+    "wikiTitle": "American International Group"
+  },
+  "AIM": {
+    "name": "AIM ImmunoTech Inc.",
+    "wikiTitle": "AIM ImmunoTech"
+  },
+  "AIN": {
+    "name": "Albany International Corporation",
+    "wikiTitle": "Albany International"
+  },
+  "AIOT": {
+    "name": "PowerFleet Inc.",
+    "wikiTitle": "Powerfleet"
+  },
+  "AIP": {
+    "name": "Arteris Inc.",
+    "wikiTitle": "Arteris"
+  },
+  "AIR": {
+    "name": "AAR Corp.",
+    "wikiTitle": "AAR Corp."
+  },
+  "AIT": {
+    "name": "Applied Industrial Technologies Inc.",
+    "wikiTitle": "Applied Industrial Technologies"
+  },
+  "AIV": {
+    "name": "Apartment Investment and Management Company",
+    "wikiTitle": "Aimco"
+  },
+  "AIXI": {
+    "name": "XIAO-I Corporation",
+    "wikiTitle": "Xiao-i"
+  },
+  "AIZ": {
+    "name": "Assurant Inc.",
+    "wikiTitle": "Assurant"
+  },
+  "AJG": {
+    "name": "Arthur J. Gallagher & Co.",
+    "wikiTitle": "Arthur J. Gallagher & Co."
+  },
+  "AKAM": {
+    "name": "Akamai Technologies Inc.",
+    "wikiTitle": "Akamai Technologies"
+  },
+  "ALAB": {
+    "name": "Astera Labs Inc.",
+    "wikiTitle": "Astera Labs"
+  },
+  "ALB": {
+    "name": "Albemarle Corporation",
+    "wikiTitle": "Albemarle Corporation"
+  },
+  "ALC": {
+    "name": "Alcon Inc.",
+    "wikiTitle": "Alcon"
+  },
+  "ALCO": {
+    "name": "Alico Inc.",
+    "wikiTitle": "Alico, Inc."
+  },
+  "ALEX": {
+    "name": "Alexander & Baldwin Inc.",
+    "wikiTitle": "Alexander & Baldwin"
+  },
+  "ALGN": {
+    "name": "Align Technology Inc.",
+    "wikiTitle": "Align Technology"
+  },
+  "ALGT": {
+    "name": "Allegiant Travel Company",
+    "wikiTitle": "Allegiant Travel Company"
+  },
+  "ALK": {
+    "name": "Alaska Air Group Inc.",
+    "wikiTitle": "Alaska Air Group"
+  },
+  "ALKS": {
+    "name": "Alkermes plc",
+    "wikiTitle": "Alkermes plc"
+  },
+  "ALL": {
+    "name": "Allstate Corporation (The)",
+    "wikiTitle": "Allstate"
+  },
+  "ALLE": {
+    "name": "Allegion plc",
+    "wikiTitle": "Allegion"
+  },
+  "ALLT": {
+    "name": "Allot Ltd.",
+    "wikiTitle": "Allot Ltd."
+  },
+  "ALLY": {
+    "name": "Ally Financial Inc.",
+    "wikiTitle": "Ally Financial"
+  },
+  "ALM": {
+    "name": "Almonty Industries Inc.",
+    "wikiTitle": "Almonty Industries"
+  },
+  "ALNT": {
+    "name": "Allient Inc.",
+    "wikiTitle": "Allied Motion Technologies"
+  },
+  "ALNY": {
+    "name": "Alnylam Pharmaceuticals Inc.",
+    "wikiTitle": "Alnylam Pharmaceuticals"
+  },
+  "ALRS": {
+    "name": "Alerus Financial Corporation",
+    "wikiTitle": "Alerus Financial"
+  },
+  "ALV": {
+    "name": "Autoliv Inc.",
+    "wikiTitle": "Autoliv"
+  },
+  "ALX": {
+    "name": "Alexander's Inc.",
+    "wikiTitle": "Alexander's"
+  },
+  "AM": {
+    "name": "Antero Midstream Corporation",
+    "wikiTitle": "Antero Resources"
+  },
+  "AMAL": {
+    "name": "Amalgamated Financial Corp.",
+    "wikiTitle": "Amalgamated Bank"
+  },
+  "AMAT": {
+    "name": "Applied Materials Inc.",
+    "wikiTitle": "Applied Materials"
+  },
+  "AMBA": {
+    "name": "Ambarella Inc.",
+    "wikiTitle": "Ambarella Inc."
+  },
+  "AMBP": {
+    "name": "Ardagh Metal Packaging S.A.",
+    "wikiTitle": "Ardagh Group"
+  },
+  "AMBQ": {
+    "name": "Ambiq Micro Inc.",
+    "wikiTitle": "Ambiq Micro"
+  },
+  "AMCR": {
+    "name": "Amcor plc",
+    "wikiTitle": "Amcor"
+  },
+  "AMD": {
+    "name": "Advanced Micro Devices Inc.",
+    "wikiTitle": "AMD"
+  },
+  "AME": {
+    "name": "AMETEK Inc.",
+    "wikiTitle": "Ametek"
+  },
+  "AMG": {
+    "name": "Affiliated Managers Group Inc.",
+    "wikiTitle": "Affiliated Managers Group"
+  },
+  "AMGN": {
+    "name": "Amgen Inc.",
+    "wikiTitle": "Amgen"
+  },
+  "AMH": {
+    "name": "American Homes 4 Rent",
+    "wikiTitle": "American Homes 4 Rent"
+  },
+  "AMKR": {
+    "name": "Amkor Technology Inc.",
+    "wikiTitle": "Amkor Technology"
+  },
+  "AMLX": {
+    "name": "Amylyx Pharmaceuticals Inc.",
+    "wikiTitle": "Amylyx Pharmaceuticals"
+  },
+  "AMP": {
+    "name": "Ameriprise Financial Inc.",
+    "wikiTitle": "Ameriprise Financial"
+  },
+  "AMPH": {
+    "name": "Amphastar Pharmaceuticals Inc.",
+    "wikiTitle": "Amphastar Pharmaceuticals"
+  },
+  "AMPY": {
+    "name": "Amplify Energy Corp.",
+    "wikiTitle": "Amplify Energy"
+  },
+  "AMR": {
+    "name": "Alpha Metallurgical Resources Inc.",
+    "wikiTitle": "Alpha Metallurgical Resources"
+  },
+  "AMRN": {
+    "name": "Amarin Corporation plc",
+    "wikiTitle": "Amarin Corporation"
+  },
+  "AMRZ": {
+    "name": "Amrize Ltd",
+    "wikiTitle": "Holcim"
+  },
+  "AMSC": {
+    "name": "American Superconductor Corporation",
+    "wikiTitle": "American Superconductor"
+  },
+  "AMT": {
+    "name": "American Tower Corporation (REIT)",
+    "wikiTitle": "American Tower"
+  },
+  "AMTD": {
+    "name": "AMTD IDEA Group",
+    "wikiTitle": "AMTD Digital"
+  },
+  "AMWD": {
+    "name": "American Woodmark Corporation",
+    "wikiTitle": "American Woodmark"
+  },
+  "AMX": {
+    "name": "America Movil S.A.B. de C.V.",
+    "wikiTitle": "América Móvil"
+  },
+  "AMZN": {
+    "name": "Amazon.com Inc.",
+    "wikiTitle": "Amazon (company)"
+  },
+  "AN": {
+    "name": "AutoNation Inc.",
+    "wikiTitle": "AutoNation"
+  },
+  "ANDE": {
+    "name": "Andersons Inc. (The)",
+    "wikiTitle": "The Andersons"
+  },
+  "ANET": {
+    "name": "Arista Networks Inc.",
+    "wikiTitle": "Arista Networks"
+  },
+  "ANF": {
+    "name": "Abercrombie & Fitch Company",
+    "wikiTitle": "Abercrombie & Fitch"
+  },
+  "ANGH": {
+    "name": "Anghami Inc.",
+    "wikiTitle": "Anghami"
+  },
+  "ANGO": {
+    "name": "AngioDynamics Inc.",
+    "wikiTitle": "Navilyst Medical"
+  },
+  "ANY": {
+    "name": "Sphere 3D Corp.",
+    "wikiTitle": "Overland Storage"
+  },
+  "AORT": {
+    "name": "Artivion Inc.",
+    "wikiTitle": "Artivion"
+  },
+  "AOS": {
+    "name": "A.O. Smith Corporation",
+    "wikiTitle": "A. O. Smith"
+  },
+  "AOUT": {
+    "name": "American Outdoor Brands Inc.",
+    "wikiTitle": "American Outdoor Brands"
+  },
+  "AP": {
+    "name": "Ampco-Pittsburgh Corporation",
+    "wikiTitle": "Ampco Pittsburgh"
+  },
+  "APA": {
+    "name": "APA Corporation",
+    "wikiTitle": "APA Corporation"
+  },
+  "APD": {
+    "name": "Air Products and Chemicals Inc.",
+    "wikiTitle": "Air Products"
+  },
+  "APH": {
+    "name": "Amphenol Corporation",
+    "wikiTitle": "Amphenol"
+  },
+  "API": {
+    "name": "Agora Inc.",
+    "wikiTitle": "Agora, Inc."
+  },
+  "APO": {
+    "name": "Apollo Global Management Inc. (New)",
+    "wikiTitle": "Apollo Global Management"
+  },
+  "APTV": {
+    "name": "Aptiv PLC",
+    "wikiTitle": "Aptiv"
+  },
+  "APVO": {
+    "name": "Aptevo Therapeutics Inc.",
+    "wikiTitle": "Emergent BioSolutions"
+  },
+  "APYX": {
+    "name": "Apyx Medical Corporation",
+    "wikiTitle": "Bovie Medical"
+  },
+  "AQB": {
+    "name": "AquaBounty Technologies Inc.",
+    "wikiTitle": "AquaBounty Technologies"
+  },
+  "AQN": {
+    "name": "Algonquin Power & Utilities Corp.",
+    "wikiTitle": "Algonquin Power & Utilities"
+  },
+  "AR": {
+    "name": "Antero Resources Corporation",
+    "wikiTitle": "Antero Resources"
+  },
+  "ARAY": {
+    "name": "Accuray Incorporated",
+    "wikiTitle": "Accuray"
+  },
+  "ARBE": {
+    "name": "Arbe Robotics Ltd.",
+    "wikiTitle": "Arbe Robotics"
+  },
+  "ARCB": {
+    "name": "ArcBest Corporation",
+    "wikiTitle": "ArcBest"
+  },
+  "ARCC": {
+    "name": "Ares Capital Corporation",
+    "wikiTitle": "Ares Management"
+  },
+  "ARDT": {
+    "name": "Ardent Health Inc.",
+    "wikiTitle": "Ardent Health Services"
+  },
+  "ARE": {
+    "name": "Alexandria Real Estate Equities Inc.",
+    "wikiTitle": "Alexandria Real Estate Equities"
+  },
+  "ARGX": {
+    "name": "argenx SE",
+    "wikiTitle": "Argenx"
+  },
+  "ARI": {
+    "name": "Apollo Commercial Real Estate Finance Inc",
+    "wikiTitle": "Apollo Global Management"
+  },
+  "ARKO": {
+    "name": "ARKO Corp.",
+    "wikiTitle": "GPM Investments"
+  },
+  "ARLO": {
+    "name": "Arlo Technologies Inc.",
+    "wikiTitle": "Arlo Technologies"
+  },
+  "ARM": {
+    "name": "Arm Holdings plc",
+    "wikiTitle": "Arm Holdings"
+  },
+  "ARMK": {
+    "name": "Aramark",
+    "wikiTitle": "Aramark"
+  },
+  "ARTW": {
+    "name": "Art's-Way Manufacturing Co. Inc.",
+    "wikiTitle": "Art's Way"
+  },
+  "ARW": {
+    "name": "Arrow Electronics Inc.",
+    "wikiTitle": "Arrow Electronics"
+  },
+  "ARWR": {
+    "name": "Arrowhead Pharmaceuticals Inc.",
+    "wikiTitle": "Arrowhead Pharmaceuticals"
+  },
+  "AS": {
+    "name": "Amer Sports Inc.",
+    "wikiTitle": "Amer Sports"
+  },
+  "ASB": {
+    "name": "Associated Banc-Corp",
+    "wikiTitle": "Associated Banc-Corp"
+  },
+  "ASH": {
+    "name": "Ashland Inc.",
+    "wikiTitle": "Ashland Global"
+  },
+  "ASIX": {
+    "name": "AdvanSix Inc.",
+    "wikiTitle": "AdvanSix"
+  },
+  "ASLE": {
+    "name": "AerSale Corporation",
+    "wikiTitle": "AerSale"
+  },
+  "ASO": {
+    "name": "Academy Sports and Outdoors Inc.",
+    "wikiTitle": "Academy Sports + Outdoors"
+  },
+  "ASR": {
+    "name": "Grupo Aeroportuario del Sureste S.A. de C.V.",
+    "wikiTitle": "Grupo Aeroportuario del Sureste"
+  },
+  "ASRV": {
+    "name": "AmeriServ Financial Inc.",
+    "wikiTitle": "AmeriServ Financial"
+  },
+  "ASTI": {
+    "name": "Ascent Solar Technologies Inc.",
+    "wikiTitle": "Ascent Solar"
+  },
+  "ASTL": {
+    "name": "Algoma Steel Group Inc.",
+    "wikiTitle": "Algoma Steel"
+  },
+  "ASUR": {
+    "name": "Asure Software Inc",
+    "wikiTitle": "Asure Software"
+  },
+  "ASX": {
+    "name": "ASE Technology Holding Co. Ltd.",
+    "wikiTitle": "ASE Group"
+  },
+  "ATEN": {
+    "name": "A10 Networks Inc.",
+    "wikiTitle": "A10 Networks"
+  },
+  "ATGE": {
+    "name": "Adtalem Global Education Inc.",
+    "wikiTitle": "Adtalem Global Education"
+  },
+  "ATHA": {
+    "name": "Athira Pharma Inc.",
+    "wikiTitle": "Athira Pharma"
+  },
+  "ATO": {
+    "name": "Atmos Energy Corporation",
+    "wikiTitle": "Atmos Energy"
+  },
+  "ATOM": {
+    "name": "Atomera Incorporated",
+    "wikiTitle": "Atomera"
+  },
+  "ATR": {
+    "name": "AptarGroup Inc.",
+    "wikiTitle": "AptarGroup"
+  },
+  "ATRO": {
+    "name": "Astronics Corporation",
+    "wikiTitle": "Astronics"
+  },
+  "ATS": {
+    "name": "ATS Corporation",
+    "wikiTitle": "ATS Corporation"
+  },
+  "ATYR": {
+    "name": "aTyr Pharma Inc.",
+    "wikiTitle": "ATyr Pharma"
+  },
+  "AU": {
+    "name": "AngloGold Ashanti PLC",
+    "wikiTitle": "AngloGold Ashanti"
+  },
+  "AUB": {
+    "name": "Atlantic Union Bankshares Corporation",
+    "wikiTitle": "Atlantic Union Bank"
+  },
+  "AUBN": {
+    "name": "Auburn National Bancorporation Inc.",
+    "wikiTitle": "Auburn Bank"
+  },
+  "AUDC": {
+    "name": "AudioCodes Ltd.",
+    "wikiTitle": "AudioCodes"
+  },
+  "AUGO": {
+    "name": "Aura Minerals Inc.",
+    "wikiTitle": "Aura Minerals"
+  },
+  "AVA": {
+    "name": "Avista Corporation",
+    "wikiTitle": "Avista"
+  },
+  "AVAV": {
+    "name": "AeroVironment Inc.",
+    "wikiTitle": "AeroVironment"
+  },
+  "AVB": {
+    "name": "AvalonBay Communities Inc.",
+    "wikiTitle": "AvalonBay Communities"
+  },
+  "AVBC": {
+    "name": "Avidia Bancorp Inc.",
+    "wikiTitle": "Avidia Bank"
+  },
+  "AVDL": {
+    "name": "Avadel Pharmaceuticals plc",
+    "wikiTitle": "Avadel Pharmaceuticals"
+  },
+  "AVGO": {
+    "name": "Broadcom Inc.",
+    "wikiTitle": "Broadcom"
+  },
+  "AVNS": {
+    "name": "Avanos Medical Inc.",
+    "wikiTitle": "Avanos Medical"
+  },
+  "AVNT": {
+    "name": "Avient Corporation",
+    "wikiTitle": "Avient Corporation"
+  },
+  "AVNW": {
+    "name": "Aviat Networks Inc.",
+    "wikiTitle": "Aviat Networks"
+  },
+  "AVT": {
+    "name": "Avnet Inc.",
+    "wikiTitle": "Avnet"
+  },
+  "AVTR": {
+    "name": "Avantor Inc.",
+    "wikiTitle": "Avantor"
+  },
+  "AVY": {
+    "name": "Avery Dennison Corporation",
+    "wikiTitle": "Avery Dennison"
+  },
+  "AWI": {
+    "name": "Armstrong World Industries Inc",
+    "wikiTitle": "Armstrong World Industries"
+  },
+  "AWK": {
+    "name": "American Water Works Company Inc.",
+    "wikiTitle": "American Water Works"
+  },
+  "AWRE": {
+    "name": "Aware Inc.",
+    "wikiTitle": "Aware, Inc."
+  },
+  "AX": {
+    "name": "Axos Financial Inc.",
+    "wikiTitle": "Axos Financial"
+  },
+  "AXGN": {
+    "name": "Axogen Inc.",
+    "wikiTitle": "Axogen"
+  },
+  "AXON": {
+    "name": "Axon Enterprise Inc.",
+    "wikiTitle": "Axon Enterprise"
+  },
+  "AXP": {
+    "name": "American Express Company",
+    "wikiTitle": "American Express"
+  },
+  "AXR": {
+    "name": "AMREP Corporation",
+    "wikiTitle": "Amrep Corporation"
+  },
+  "AXS": {
+    "name": "Axis Capital Holdings Limited",
+    "wikiTitle": "AXIS Capital"
+  },
+  "AXTA": {
+    "name": "Axalta Coating Systems Ltd.",
+    "wikiTitle": "Axalta"
+  },
+  "AYI": {
+    "name": "Acuity Inc.",
+    "wikiTitle": "Acuity Brands"
+  },
+  "AZN": {
+    "name": "AstraZeneca PLC",
+    "wikiTitle": "AstraZeneca"
+  },
+  "AZO": {
+    "name": "AutoZone Inc.",
+    "wikiTitle": "AutoZone"
+  },
+  "AZTA": {
+    "name": "Azenta Inc.",
+    "wikiTitle": "Azenta"
+  },
+  "B": {
+    "name": "Barrick Mining Corporation",
+    "wikiTitle": "Barrick Mining"
+  },
+  "BA": {
+    "name": "Boeing Company (The)",
+    "wikiTitle": "Boeing"
+  },
+  "BABA": {
+    "name": "Alibaba Group Holding Limited",
+    "wikiTitle": "Alibaba Group"
+  },
+  "BAC": {
+    "name": "Bank of America Corporation",
+    "wikiTitle": "Bank of America"
+  },
+  "BAH": {
+    "name": "Booz Allen Hamilton Holding Corporation",
+    "wikiTitle": "Booz Allen Hamilton"
+  },
+  "BALL": {
+    "name": "Ball Corporation",
+    "wikiTitle": "Ball Corporation"
+  },
+  "BALY": {
+    "name": "Bally's Corporation",
+    "wikiTitle": "Bally's Corporation"
+  },
+  "BANC": {
+    "name": "Banc of California Inc.",
+    "wikiTitle": "Banc of California"
+  },
+  "BANF": {
+    "name": "BancFirst Corporation",
+    "wikiTitle": "BancFirst"
+  },
+  "BANR": {
+    "name": "Banner Corporation",
+    "wikiTitle": "Banner Bank"
+  },
+  "BAP": {
+    "name": "Credicorp Ltd.",
+    "wikiTitle": "Credicorp"
+  },
+  "BAX": {
+    "name": "Baxter International Inc.",
+    "wikiTitle": "Baxter International"
+  },
+  "BB": {
+    "name": "BlackBerry Limited",
+    "wikiTitle": "BlackBerry Limited"
+  },
+  "BBBY": {
+    "name": "Bed Bath & Beyond Inc.",
+    "wikiTitle": "Bed Bath & Beyond"
+  },
+  "BBD": {
+    "name": "Banco Bradesco Sa",
+    "wikiTitle": "Banco Bradesco"
+  },
+  "BBDC": {
+    "name": "Barings BDC Inc.",
+    "wikiTitle": "Barings LLC"
+  },
+  "BBDO": {
+    "name": "Banco Bradesco Sa",
+    "wikiTitle": "Banco Bradesco"
+  },
+  "BBU": {
+    "name": "Brookfield Business Partners L.P. Limited Partnership",
+    "wikiTitle": "Brookfield Business Partners"
+  },
+  "BBVA": {
+    "name": "Banco Bilbao Vizcaya Argentaria S.A.",
+    "wikiTitle": "Banco Bilbao Vizcaya Argentaria"
+  },
+  "BBWI": {
+    "name": "Bath & Body Works Inc.",
+    "wikiTitle": "Bath & Body Works, Inc."
+  },
+  "BBY": {
+    "name": "Best Buy Co. Inc.",
+    "wikiTitle": "Best Buy"
+  },
+  "BC": {
+    "name": "Brunswick Corporation",
+    "wikiTitle": "Brunswick Corporation"
+  },
+  "BCC": {
+    "name": "Boise Cascade L.L.C.",
+    "wikiTitle": "Boise Cascade"
+  },
+  "BCE": {
+    "name": "BCE Inc.",
+    "wikiTitle": "BCE Inc."
+  },
+  "BCIC": {
+    "name": "BCP Investment Corporation",
+    "wikiTitle": "Credicorp"
+  },
+  "BCO": {
+    "name": "Brinks Company (The)",
+    "wikiTitle": "Brink's"
+  },
+  "BCPC": {
+    "name": "Balchem Corporation",
+    "wikiTitle": "Bergstrom Nutrition"
+  },
+  "BCRX": {
+    "name": "BioCryst Pharmaceuticals Inc.",
+    "wikiTitle": "BioCryst Pharmaceuticals"
+  },
+  "BCS": {
+    "name": "Barclays PLC",
+    "wikiTitle": "Barclays"
+  },
+  "BCSF": {
+    "name": "Bain Capital Specialty Finance Inc.",
+    "wikiTitle": "Bain Capital"
+  },
+  "BDC": {
+    "name": "Belden Inc",
+    "wikiTitle": "Belden Incorporated"
+  },
+  "BDL": {
+    "name": "Flanigan's Enterprises Inc.",
+    "wikiTitle": "Flanigan's"
+  },
+  "BDX": {
+    "name": "Becton Dickinson and Company",
+    "wikiTitle": "BD (company)"
+  },
+  "BEAM": {
+    "name": "Beam Therapeutics Inc.",
+    "wikiTitle": "Beam Therapeutics"
+  },
+  "BEN": {
+    "name": "Franklin Resources Inc.",
+    "wikiTitle": "Franklin Templeton Investments"
+  },
+  "BEP": {
+    "name": "Brookfield Renewable Partners L.P. Limited Partnership",
+    "wikiTitle": "Brookfield Renewable Partners"
+  },
+  "BFAM": {
+    "name": "Bright Horizons Family Solutions Inc.",
+    "wikiTitle": "Bright Horizons"
+  },
+  "BFS": {
+    "name": "Saul Centers Inc.",
+    "wikiTitle": "B. F. Saul Company"
+  },
+  "BG": {
+    "name": "Bunge Limited",
+    "wikiTitle": "Bunge Global"
+  },
+  "BGI": {
+    "name": "Birks Group Inc.",
+    "wikiTitle": "Birks Group"
+  },
+  "BGS": {
+    "name": "B&G Foods Inc.",
+    "wikiTitle": "B&G Foods"
+  },
+  "BHC": {
+    "name": "Bausch Health Companies Inc.",
+    "wikiTitle": "Bausch Health"
+  },
+  "BHE": {
+    "name": "Benchmark Electronics Inc.",
+    "wikiTitle": "Benchmark Electronics"
+  },
+  "BHF": {
+    "name": "Brighthouse Financial Inc.",
+    "wikiTitle": "Brighthouse Financial"
+  },
+  "BHFAM": {
+    "name": "Brighthouse Financial Inc.",
+    "wikiTitle": "Brighthouse Financial"
+  },
+  "BHFAN": {
+    "name": "Brighthouse Financial Inc.",
+    "wikiTitle": "Brighthouse Financial"
+  },
+  "BHFAO": {
+    "name": "Brighthouse Financial Inc.",
+    "wikiTitle": "Brighthouse Financial"
+  },
+  "BHFAP": {
+    "name": "Brighthouse Financial Inc.",
+    "wikiTitle": "Brighthouse Financial"
+  },
+  "BHP": {
+    "name": "BHP Group Limited",
+    "wikiTitle": "BHP"
+  },
+  "BIIB": {
+    "name": "Biogen Inc.",
+    "wikiTitle": "Biogen"
+  },
+  "BILI": {
+    "name": "Bilibili Inc.",
+    "wikiTitle": "Bilibili"
+  },
+  "BIP": {
+    "name": "Brookfield Infrastructure Partners LP Limited Partnership",
+    "wikiTitle": "Brookfield Infrastructure Partners"
+  },
+  "BIPC": {
+    "name": "Brookfield Infrastructure Corporation",
+    "wikiTitle": "Brookfield Corporation"
+  },
+  "BIRK": {
+    "name": "Birkenstock Holding plc",
+    "wikiTitle": "Birkenstock"
+  },
+  "BJRI": {
+    "name": "BJ's Restaurants Inc.",
+    "wikiTitle": "BJ's Restaurants"
+  },
+  "BK": {
+    "name": "The Bank of New York Mellon Corporation",
+    "wikiTitle": "BNY"
+  },
+  "BKD": {
+    "name": "Brookdale Senior Living Inc.",
+    "wikiTitle": "Brookdale Senior Living"
+  },
+  "BKE": {
+    "name": "Buckle Inc. (The)",
+    "wikiTitle": "Buckle (clothing retailer)"
+  },
+  "BKH": {
+    "name": "Black Hills Corporation",
+    "wikiTitle": "Black Hills Corporation"
+  },
+  "BKU": {
+    "name": "BankUnited Inc.",
+    "wikiTitle": "BankUnited"
+  },
+  "BL": {
+    "name": "BlackLine Inc.",
+    "wikiTitle": "BlackLine Systems"
+  },
+  "BLBD": {
+    "name": "Blue Bird Corporation",
+    "wikiTitle": "Blue Bird Corporation"
+  },
+  "BLCO": {
+    "name": "Bausch + Lomb Corporation",
+    "wikiTitle": "Bausch & Lomb"
+  },
+  "BLDP": {
+    "name": "Ballard Power Systems Inc.",
+    "wikiTitle": "Ballard Power Systems"
+  },
+  "BLDR": {
+    "name": "Builders FirstSource Inc.",
+    "wikiTitle": "Builders FirstSource"
+  },
+  "BLK": {
+    "name": "BlackRock Inc.",
+    "wikiTitle": "BlackRock"
+  },
+  "BLKB": {
+    "name": "Blackbaud Inc.",
+    "wikiTitle": "Blackbaud"
+  },
+  "BLMN": {
+    "name": "Bloomin' Brands Inc.",
+    "wikiTitle": "Bloomin' Brands"
+  },
+  "BLNK": {
+    "name": "Blink Charging Co.",
+    "wikiTitle": "Blink Charging"
+  },
+  "BLRX": {
+    "name": "BioLineRx Ltd.",
+    "wikiTitle": "BioLineRx"
+  },
+  "BLSH": {
+    "name": "Bullish",
+    "wikiTitle": "Bullish"
+  },
+  "BLX": {
+    "name": "Banco Latinoamericano de Comercio Exterior S.A.",
+    "wikiTitle": "Banco Latinoamericano de Comercio Exterior"
+  },
+  "BMRN": {
+    "name": "BioMarin Pharmaceutical Inc.",
+    "wikiTitle": "BioMarin Pharmaceutical"
+  },
+  "BMO": {
+    "name": "Bank Of Montreal",
+    "wikiTitle": "Bank of Montreal"
+  },
+  "BMY": {
+    "name": "Bristol-Myers Squibb Company",
+    "wikiTitle": "Bristol Myers Squibb"
+  },
+  "BNED": {
+    "name": "Barnes & Noble Education Inc",
+    "wikiTitle": "BNED"
+  },
+  "BNTX": {
+    "name": "BioNTech SE American",
+    "wikiTitle": "BioNTech"
+  },
+  "BOH": {
+    "name": "Bank of Hawaii Corporation",
+    "wikiTitle": "Bank of Hawaii"
+  },
+  "BOKF": {
+    "name": "BOK Financial Corporation",
+    "wikiTitle": "BOK Financial Corporation"
+  },
+  "BOSC": {
+    "name": "B.O.S. Better Online Solutions",
+    "wikiTitle": "Better Online Solutions"
+  },
+  "BP": {
+    "name": "BP p.l.c.",
+    "wikiTitle": "BP"
+  },
+  "BPOP": {
+    "name": "Popular Inc.",
+    "wikiTitle": "Banco Popular de Puerto Rico"
+  },
+  "BR": {
+    "name": "Broadridge Financial Solutions Inc.",
+    "wikiTitle": "Broadridge Financial Solutions"
+  },
+  "BRBR": {
+    "name": "BellRing Brands Inc.",
+    "wikiTitle": "Post Holdings"
+  },
+  "BRC": {
+    "name": "Brady Corporation",
+    "wikiTitle": "Brady Corporation"
+  },
+  "BRKR": {
+    "name": "Bruker Corporation",
+    "wikiTitle": "Bruker"
+  },
+  "BRNS": {
+    "name": "Barinthus Biotherapeutics plc",
+    "wikiTitle": "Barinthus Biotherapeutics"
+  },
+  "BRO": {
+    "name": "Brown & Brown Inc.",
+    "wikiTitle": "Brown & Brown"
+  },
+  "BRX": {
+    "name": "Brixmor Property Group Inc.",
+    "wikiTitle": "Brixmor Property Group"
+  },
+  "BSBR": {
+    "name": "Banco Santander Brasil SA",
+    "wikiTitle": "Banco Santander"
+  },
+  "BSET": {
+    "name": "Bassett Furniture Industries Incorporated",
+    "wikiTitle": "Bassett Furniture"
+  },
+  "BSX": {
+    "name": "Boston Scientific Corporation",
+    "wikiTitle": "Boston Scientific"
+  },
+  "BTCS": {
+    "name": "BTCS Inc.",
+    "wikiTitle": "BTCS Inc."
+  },
+  "BTE": {
+    "name": "Baytex Energy Corp",
+    "wikiTitle": "Baytex Energy"
+  },
+  "BTG": {
+    "name": "B2Gold Corp",
+    "wikiTitle": "B2Gold"
+  },
+  "BTI": {
+    "name": "British American Tobacco Industries p.l.c.",
+    "wikiTitle": "British American Tobacco"
+  },
+  "BTU": {
+    "name": "Peabody Energy Corporation",
+    "wikiTitle": "Peabody Energy"
+  },
+  "BUR": {
+    "name": "Burford Capital Limited",
+    "wikiTitle": "Burford Capital"
+  },
+  "BURL": {
+    "name": "Burlington Stores Inc.",
+    "wikiTitle": "Burlington (department store)"
+  },
+  "BUSEP": {
+    "name": "First Busey Corporation",
+    "wikiTitle": "Busey Bank"
+  },
+  "BW": {
+    "name": "Babcock & Wilcox Enterprises Inc.",
+    "wikiTitle": "Babcock & Wilcox"
+  },
+  "BWA": {
+    "name": "BorgWarner Inc.",
+    "wikiTitle": "BorgWarner"
+  },
+  "BWAY": {
+    "name": "BrainsWay Ltd.",
+    "wikiTitle": "Brainsway"
+  },
+  "BWLP": {
+    "name": "BW LPG Limited",
+    "wikiTitle": "BW Group"
+  },
+  "BWXT": {
+    "name": "BWX Technologies Inc.",
+    "wikiTitle": "BWX Technologies"
+  },
+  "BX": {
+    "name": "Blackstone Inc.",
+    "wikiTitle": "Blackstone Inc."
+  },
+  "BXP": {
+    "name": "BXP Inc.",
+    "wikiTitle": "BXP, Inc."
+  },
+  "BY": {
+    "name": "Byline Bancorp Inc.",
+    "wikiTitle": "Byline Bank"
+  },
+  "BYD": {
+    "name": "Boyd Gaming Corporation",
+    "wikiTitle": "Boyd Gaming"
+  },
+  "BYND": {
+    "name": "Beyond Meat Inc.",
+    "wikiTitle": "Beyond Meat"
+  },
+  "BZH": {
+    "name": "Beazer Homes USA Inc.",
+    "wikiTitle": "Beazer Homes USA"
+  },
+  "C": {
+    "name": "Citigroup Inc.",
+    "wikiTitle": "Citigroup"
+  },
+  "CAAS": {
+    "name": "China Automotive Systems Inc.",
+    "wikiTitle": "China Automotive Systems"
+  },
+  "CABO": {
+    "name": "Cable One Inc.",
+    "wikiTitle": "Cable One"
+  },
+  "CAC": {
+    "name": "Camden National Corporation",
+    "wikiTitle": "Camden National Bank"
+  },
+  "CACC": {
+    "name": "Credit Acceptance Corporation",
+    "wikiTitle": "Credit Acceptance"
+  },
+  "CADE": {
+    "name": "Cadence Bank",
+    "wikiTitle": "Cadence Bank"
+  },
+  "CAE": {
+    "name": "CAE Inc.",
+    "wikiTitle": "CAE Inc."
+  },
+  "CAG": {
+    "name": "ConAgra Brands Inc.",
+    "wikiTitle": "Conagra Brands"
+  },
+  "CAH": {
+    "name": "Cardinal Health Inc.",
+    "wikiTitle": "Cardinal Health"
+  },
+  "CAKE": {
+    "name": "Cheesecake Factory Incorporated (The)",
+    "wikiTitle": "The Cheesecake Factory"
+  },
+  "CAL": {
+    "name": "Caleres Inc.",
+    "wikiTitle": "Caleres"
+  },
+  "CALM": {
+    "name": "Cal-Maine Foods Inc.",
+    "wikiTitle": "Cal-Maine"
+  },
+  "CALX": {
+    "name": "Calix Inc",
+    "wikiTitle": "Calix, Inc."
+  },
+  "CAN": {
+    "name": "Canaan Inc.",
+    "wikiTitle": "Canaan Creative"
+  },
+  "CAPL": {
+    "name": "CrossAmerica Partners LP Common",
+    "wikiTitle": "Sunoco"
+  },
+  "CAR": {
+    "name": "Avis Budget Group Inc.",
+    "wikiTitle": "Avis Budget Group"
+  },
+  "CARR": {
+    "name": "Carrier Global Corporation",
+    "wikiTitle": "Carrier Global"
+  },
+  "CARS": {
+    "name": "Cars.com Inc.",
+    "wikiTitle": "Cars.com"
+  },
+  "CART": {
+    "name": "Maplebear Inc.",
+    "wikiTitle": "Instacart"
+  },
+  "CASH": {
+    "name": "Pathward Financial Inc.",
+    "wikiTitle": "Pathward"
+  },
+  "CASY": {
+    "name": "Casey's General Stores Inc.",
+    "wikiTitle": "Casey's"
+  },
+  "CAT": {
+    "name": "Caterpillar Inc.",
+    "wikiTitle": "Caterpillar Inc."
+  },
+  "CATY": {
+    "name": "Cathay General Bancorp",
+    "wikiTitle": "Cathay Bank"
+  },
+  "CAVA": {
+    "name": "CAVA Group Inc.",
+    "wikiTitle": "Cava Group"
+  },
+  "CB": {
+    "name": "Chubb Limited",
+    "wikiTitle": "Chubb Limited"
+  },
+  "CBL": {
+    "name": "CBL & Associates Properties Inc.",
+    "wikiTitle": "CBL Properties"
+  },
+  "CBRE": {
+    "name": "CBRE Group Inc",
+    "wikiTitle": "CBRE Group"
+  },
+  "CBRL": {
+    "name": "Cracker Barrel Old Country Store Inc",
+    "wikiTitle": "Cracker Barrel"
+  },
+  "CBSH": {
+    "name": "Commerce Bancshares Inc.",
+    "wikiTitle": "Commerce Bancshares"
+  },
+  "CBT": {
+    "name": "Cabot Corporation",
+    "wikiTitle": "Cabot Corporation"
+  },
+  "CBU": {
+    "name": "Community Financial System Inc.",
+    "wikiTitle": "Community Bank, N.A."
+  },
+  "CBZ": {
+    "name": "CBIZ Inc.",
+    "wikiTitle": "CBIZ"
+  },
+  "CC": {
+    "name": "Chemours Company (The)",
+    "wikiTitle": "Chemours"
+  },
+  "CCEL": {
+    "name": "Cryo-Cell International Inc.",
+    "wikiTitle": "Cryo-Cell International"
+  },
+  "CCEP": {
+    "name": "Coca-Cola Europacific Partners plc",
+    "wikiTitle": "Coca-Cola Europacific Partners"
+  },
+  "CCI": {
+    "name": "Crown Castle Inc.",
+    "wikiTitle": "Crown Castle"
+  },
+  "CCJ": {
+    "name": "Cameco Corporation",
+    "wikiTitle": "Cameco"
+  },
+  "CCL": {
+    "name": "Carnival Corporation",
+    "wikiTitle": "Carnival Corporation & plc"
+  },
+  "CCLD": {
+    "name": "CareCloud Inc.",
+    "wikiTitle": "CareCloud"
+  },
+  "CCSI": {
+    "name": "Consensus Cloud Solutions Inc.",
+    "wikiTitle": "J2 Global"
+  },
+  "CCU": {
+    "name": "Compania Cervecerias Unidas S.A.",
+    "wikiTitle": "Compañía de las Cervecerías Unidas"
+  },
+  "CDE": {
+    "name": "Coeur Mining Inc.",
+    "wikiTitle": "Coeur Mining"
+  },
+  "CDNS": {
+    "name": "Cadence Design Systems Inc.",
+    "wikiTitle": "Cadence Design Systems"
+  },
+  "CDP": {
+    "name": "COPT Defense Properties",
+    "wikiTitle": "COPT Defense Properties"
+  },
+  "CDW": {
+    "name": "CDW Corporation",
+    "wikiTitle": "CDW"
+  },
+  "CDXS": {
+    "name": "Codexis Inc.",
+    "wikiTitle": "Codexis"
+  },
+  "CE": {
+    "name": "Celanese Corporation",
+    "wikiTitle": "Celanese"
+  },
+  "CECO": {
+    "name": "CECO Environmental Corp.",
+    "wikiTitle": "CECO Environmental"
+  },
+  "CEG": {
+    "name": "Constellation Energy Corporation",
+    "wikiTitle": "Constellation Energy"
+  },
+  "CENX": {
+    "name": "Century Aluminum Company",
+    "wikiTitle": "Century Aluminum"
+  },
+  "CEPU": {
+    "name": "Central Puerto S.A.",
+    "wikiTitle": "Central Puerto"
+  },
+  "CERS": {
+    "name": "Cerus Corporation",
+    "wikiTitle": "Cerus Corporation"
+  },
+  "CEVA": {
+    "name": "CEVA Inc.",
+    "wikiTitle": "Ceva (semiconductor company)"
+  },
+  "CFFN": {
+    "name": "Capitol Federal Financial Inc.",
+    "wikiTitle": "Capitol Federal Savings Bank"
+  },
+  "CFG": {
+    "name": "Citizens Financial Group Inc.",
+    "wikiTitle": "Citizens Financial Group"
+  },
+  "CFR": {
+    "name": "Cullen/Frost Bankers Inc.",
+    "wikiTitle": "Frost Bank"
+  },
+  "CG": {
+    "name": "The Carlyle Group Inc.",
+    "wikiTitle": "The Carlyle Group"
+  },
+  "CGAU": {
+    "name": "Centerra Gold Inc.",
+    "wikiTitle": "Centerra Gold"
+  },
+  "CGBD": {
+    "name": "Carlyle Secured Lending Inc.",
+    "wikiTitle": "The Carlyle Group"
+  },
+  "CGC": {
+    "name": "Canopy Growth Corporation",
+    "wikiTitle": "Canopy Growth"
+  },
+  "CGEN": {
+    "name": "Compugen Ltd.",
+    "wikiTitle": "Compugen Ltd."
+  },
+  "CGNT": {
+    "name": "Cognyte Software Ltd.",
+    "wikiTitle": "Verint Systems"
+  },
+  "CGNX": {
+    "name": "Cognex Corporation",
+    "wikiTitle": "Cognex Corporation"
+  },
+  "CHD": {
+    "name": "Church & Dwight Company Inc.",
+    "wikiTitle": "Church & Dwight"
+  },
+  "CHDN": {
+    "name": "Churchill Downs Incorporated",
+    "wikiTitle": "Churchill Downs Incorporated"
+  },
+  "CHGG": {
+    "name": "Chegg Inc.",
+    "wikiTitle": "Chegg"
+  },
+  "CHH": {
+    "name": "Choice Hotels International Inc.",
+    "wikiTitle": "Choice Hotels"
+  },
+  "CHKP": {
+    "name": "Check Point Software Technologies Ltd.",
+    "wikiTitle": "Check Point"
+  },
+  "CHMG": {
+    "name": "Chemung Financial Corp",
+    "wikiTitle": "Chemung Canal Trust Company"
+  },
+  "CHRD": {
+    "name": "Chord Energy Corporation",
+    "wikiTitle": "Chord Energy"
+  },
+  "CHRW": {
+    "name": "C.H. Robinson Worldwide Inc.",
+    "wikiTitle": "C.H. Robinson"
+  },
+  "CHT": {
+    "name": "Chunghwa Telecom Co. Ltd.",
+    "wikiTitle": "Chunghwa Telecom"
+  },
+  "CI": {
+    "name": "The Cigna Group",
+    "wikiTitle": "The Cigna Group"
+  },
+  "CIEN": {
+    "name": "Ciena Corporation",
+    "wikiTitle": "Ciena"
+  },
+  "CINF": {
+    "name": "Cincinnati Financial Corporation",
+    "wikiTitle": "Cincinnati Financial"
+  },
+  "CIX": {
+    "name": "CompX International Inc.",
+    "wikiTitle": "NL Industries"
+  },
+  "CL": {
+    "name": "Colgate-Palmolive Company",
+    "wikiTitle": "Colgate-Palmolive"
+  },
+  "CLAR": {
+    "name": "Clarus Corporation",
+    "wikiTitle": "Black Diamond Equipment"
+  },
+  "CLB": {
+    "name": "Core Laboratories Inc.",
+    "wikiTitle": "Core Laboratories"
+  },
+  "CLBT": {
+    "name": "Cellebrite DI Ltd.",
+    "wikiTitle": "Cellebrite"
+  },
+  "CLF": {
+    "name": "Cleveland-Cliffs Inc.",
+    "wikiTitle": "Cleveland-Cliffs"
+  },
+  "CLFD": {
+    "name": "Clearfield Inc.",
+    "wikiTitle": "Clearfield, Inc."
+  },
+  "CLH": {
+    "name": "Clean Harbors Inc.",
+    "wikiTitle": "Clean Harbors"
+  },
+  "CLIR": {
+    "name": "ClearSign Technologies Corporation",
+    "wikiTitle": "ClearSign Technologies"
+  },
+  "CLMT": {
+    "name": "Calumet Inc.",
+    "wikiTitle": "Calumet, Inc."
+  },
+  "CLPR": {
+    "name": "Clipper Realty Inc.",
+    "wikiTitle": "Clipper Equity"
+  },
+  "CLS": {
+    "name": "Celestica Inc.",
+    "wikiTitle": "Celestica"
+  },
+  "CLVT": {
+    "name": "Clarivate Plc",
+    "wikiTitle": "Clarivate"
+  },
+  "CLW": {
+    "name": "Clearwater Paper Corporation",
+    "wikiTitle": "Clearwater Paper"
+  },
+  "CLX": {
+    "name": "Clorox Company (The)",
+    "wikiTitle": "Clorox"
+  },
+  "CM": {
+    "name": "Canadian Imperial Bank of Commerce",
+    "wikiTitle": "Canadian Imperial Bank of Commerce"
+  },
+  "CMA": {
+    "name": "Comerica Incorporated",
+    "wikiTitle": "Comerica"
+  },
+  "CMBM": {
+    "name": "Cambium Networks Corporation",
+    "wikiTitle": "Cambium Networks"
+  },
+  "CMBT": {
+    "name": "CMB.TECH NV",
+    "wikiTitle": "CMB.TECH"
+  },
+  "CMC": {
+    "name": "Commercial Metals Company",
+    "wikiTitle": "Commercial Metals Company"
+  },
+  "CMCM": {
+    "name": "Cheetah Mobile Inc.",
+    "wikiTitle": "Cheetah Mobile"
+  },
+  "CMCO": {
+    "name": "Columbus McKinnon Corporation",
+    "wikiTitle": "Magnetek"
+  },
+  "CMG": {
+    "name": "Chipotle Mexican Grill Inc.",
+    "wikiTitle": "Chipotle Mexican Grill"
+  },
+  "CMI": {
+    "name": "Cummins Inc.",
+    "wikiTitle": "Cummins"
+  },
+  "CMPR": {
+    "name": "Cimpress plc",
+    "wikiTitle": "Cimpress"
+  },
+  "CMRE": {
+    "name": "Costamare Inc.",
+    "wikiTitle": "Costamare"
+  },
+  "CMS": {
+    "name": "CMS Energy Corporation",
+    "wikiTitle": "CMS Energy"
+  },
+  "CMT": {
+    "name": "Core Molding Technologies Inc",
+    "wikiTitle": "Core Molding Technologies"
+  },
+  "CNA": {
+    "name": "CNA Financial Corporation",
+    "wikiTitle": "CNA Financial"
+  },
+  "CNC": {
+    "name": "Centene Corporation",
+    "wikiTitle": "Centene Corporation"
+  },
+  "CNCK": {
+    "name": "Coincheck Group N.V.",
+    "wikiTitle": "Monex Group"
+  },
+  "CNDT": {
+    "name": "Conduent Incorporated",
+    "wikiTitle": "Conduent"
+  },
+  "CNH": {
+    "name": "CNH Industrial N.V.",
+    "wikiTitle": "CNH Industrial"
+  },
+  "CNI": {
+    "name": "Canadian National Railway Company",
+    "wikiTitle": "Canadian National Railway"
+  },
+  "CNMD": {
+    "name": "CONMED Corporation",
+    "wikiTitle": "CONMED Corporation"
+  },
+  "CNO": {
+    "name": "CNO Financial Group Inc.",
+    "wikiTitle": "CNO Financial Group"
+  },
+  "CNQ": {
+    "name": "Canadian Natural Resources Limited",
+    "wikiTitle": "Canadian Natural Resources"
+  },
+  "CNS": {
+    "name": "Cohen & Steers Inc",
+    "wikiTitle": "Cohen & Steers"
+  },
+  "CNTY": {
+    "name": "Century Casinos Inc.",
+    "wikiTitle": "Century Casinos"
+  },
+  "CNX": {
+    "name": "CNX Resources Corporation",
+    "wikiTitle": "CNX Resources"
+  },
+  "CNXC": {
+    "name": "Concentrix Corporation",
+    "wikiTitle": "Concentrix"
+  },
+  "CNXN": {
+    "name": "PC Connection Inc.",
+    "wikiTitle": "PC Connection"
+  },
+  "COCO": {
+    "name": "The Vita Coco Company Inc.",
+    "wikiTitle": "Vita Coco"
+  },
+  "COF": {
+    "name": "Capital One Financial Corporation",
+    "wikiTitle": "Capital One"
+  },
+  "COHR": {
+    "name": "Coherent Corp.",
+    "wikiTitle": "Coherent Corp."
+  },
+  "COKE": {
+    "name": "Coca-Cola Consolidated Inc.",
+    "wikiTitle": "Coca-Cola Consolidated"
+  },
+  "COLM": {
+    "name": "Columbia Sportswear Company",
+    "wikiTitle": "Columbia Sportswear"
+  },
+  "COMM": {
+    "name": "CommScope Holding Company Inc.",
+    "wikiTitle": "CommScope"
+  },
+  "CON": {
+    "name": "Concentra Group Holdings Parent Inc.",
+    "wikiTitle": "Concentra"
+  },
+  "COO": {
+    "name": "The Cooper Companies Inc.",
+    "wikiTitle": "The Cooper Companies"
+  },
+  "COP": {
+    "name": "ConocoPhillips",
+    "wikiTitle": "ConocoPhillips"
+  },
+  "COR": {
+    "name": "Cencora Inc.",
+    "wikiTitle": "Cencora"
+  },
+  "COST": {
+    "name": "Costco Wholesale Corporation",
+    "wikiTitle": "Costco"
+  },
+  "COUR": {
+    "name": "Coursera Inc.",
+    "wikiTitle": "Coursera"
+  },
+  "CP": {
+    "name": "Canadian Pacific Kansas City Limited",
+    "wikiTitle": "Canadian Pacific Kansas City"
+  },
+  "CPAC": {
+    "name": "Cementos Pacasmayo S.A.A.",
+    "wikiTitle": "Cementos Pacasmayo"
+  },
+  "CPAY": {
+    "name": "Corpay Inc.",
+    "wikiTitle": "Corpay"
+  },
+  "CPB": {
+    "name": "The Campbell's Company",
+    "wikiTitle": "Campbell's"
+  },
+  "CPF": {
+    "name": "Central Pacific Financial Corp New",
+    "wikiTitle": "Central Pacific Bank"
+  },
+  "CPHC": {
+    "name": "Canterbury Park Holding Corporation 'New'",
+    "wikiTitle": "Canterbury Park"
+  },
+  "CPK": {
+    "name": "Chesapeake Utilities Corporation",
+    "wikiTitle": "Chesapeake Utilities"
+  },
+  "CPRI": {
+    "name": "Capri Holdings Limited",
+    "wikiTitle": "Capri Holdings"
+  },
+  "CPRX": {
+    "name": "Catalyst Pharmaceuticals Inc.",
+    "wikiTitle": "Catalyst Pharmaceuticals"
+  },
+  "CR": {
+    "name": "Crane Company",
+    "wikiTitle": "Crane Co."
+  },
+  "CRAI": {
+    "name": "CRA International Inc.",
+    "wikiTitle": "CRA International"
+  },
+  "CRBG": {
+    "name": "Corebridge Financial Inc.",
+    "wikiTitle": "Corebridge Financial"
+  },
+  "CRC": {
+    "name": "California Resources Corporation",
+    "wikiTitle": "California Resources Corporation"
+  },
+  "CRGO": {
+    "name": "Freightos Limited",
+    "wikiTitle": "Freightos"
+  },
+  "CRH": {
+    "name": "CRH PLC",
+    "wikiTitle": "CRH plc"
+  },
+  "CRI": {
+    "name": "Carter's Inc.",
+    "wikiTitle": "Carter's"
+  },
+  "CRL": {
+    "name": "Charles River Laboratories International Inc.",
+    "wikiTitle": "Charles River Laboratories"
+  },
+  "CRM": {
+    "name": "Salesforce Inc.",
+    "wikiTitle": "Salesforce"
+  },
+  "CRNC": {
+    "name": "Cerence Inc.",
+    "wikiTitle": "Cerence"
+  },
+  "CRNT": {
+    "name": "Ceragon Networks Ltd.",
+    "wikiTitle": "Ceragon"
+  },
+  "CRNX": {
+    "name": "Crinetics Pharmaceuticals Inc.",
+    "wikiTitle": "Crinetics Pharmaceuticals"
+  },
+  "CRON": {
+    "name": "Cronos Group Inc.",
+    "wikiTitle": "Altria"
+  },
+  "CROX": {
+    "name": "Crocs Inc.",
+    "wikiTitle": "Crocs"
+  },
+  "CRS": {
+    "name": "Carpenter Technology Corporation",
+    "wikiTitle": "Carpenter Technology Corporation"
+  },
+  "CRSP": {
+    "name": "CRISPR Therapeutics AG",
+    "wikiTitle": "CRISPR Therapeutics"
+  },
+  "CRSR": {
+    "name": "Corsair Gaming Inc.",
+    "wikiTitle": "Corsair Gaming"
+  },
+  "CRTO": {
+    "name": "Criteo S.A.",
+    "wikiTitle": "Criteo"
+  },
+  "CRUS": {
+    "name": "Cirrus Logic Inc.",
+    "wikiTitle": "Cirrus Logic"
+  },
+  "CRVL": {
+    "name": "CorVel Corp.",
+    "wikiTitle": "CorVel Corporation"
+  },
+  "CRWS": {
+    "name": "Crown Crafts Inc",
+    "wikiTitle": "Crown Crafts"
+  },
+  "CSBR": {
+    "name": "Champions Oncology Inc.",
+    "wikiTitle": "Champions Oncology"
+  },
+  "CSCO": {
+    "name": "Cisco Systems Inc.",
+    "wikiTitle": "Cisco"
+  },
+  "CSGP": {
+    "name": "CoStar Group Inc.",
+    "wikiTitle": "CoStar Group"
+  },
+  "CSGS": {
+    "name": "CSG Systems International Inc.",
+    "wikiTitle": "CSG International"
+  },
+  "CSIQ": {
+    "name": "Canadian Solar Inc.",
+    "wikiTitle": "Canadian Solar"
+  },
+  "CSL": {
+    "name": "Carlisle Companies Incorporated",
+    "wikiTitle": "Carlisle Companies"
+  },
+  "CSTE": {
+    "name": "Caesarstone Ltd.",
+    "wikiTitle": "Caesarstone"
+  },
+  "CSTM": {
+    "name": "Constellium SE",
+    "wikiTitle": "Constellium"
+  },
+  "CSX": {
+    "name": "CSX Corporation",
+    "wikiTitle": "CSX Corporation"
+  },
+  "CTAS": {
+    "name": "Cintas Corporation",
+    "wikiTitle": "Cintas"
+  },
+  "CTLP": {
+    "name": "Cantaloupe Inc.",
+    "wikiTitle": "Cantaloupe, Inc."
+  },
+  "CTRA": {
+    "name": "Coterra Energy Inc.",
+    "wikiTitle": "Coterra"
+  },
+  "CTRM": {
+    "name": "Castor Maritime Inc.",
+    "wikiTitle": "Castor Maritime"
+  },
+  "CTRN": {
+    "name": "Citi Trends Inc.",
+    "wikiTitle": "Citi Trends"
+  },
+  "CTSO": {
+    "name": "Cytosorbents Corporation",
+    "wikiTitle": "Cytosorbents Corporation"
+  },
+  "CTVA": {
+    "name": "Corteva Inc.",
+    "wikiTitle": "Corteva"
+  },
+  "CUBE": {
+    "name": "CubeSmart",
+    "wikiTitle": "CubeSmart"
+  },
+  "CUBI": {
+    "name": "Customers Bancorp Inc",
+    "wikiTitle": "Customers Bank"
+  },
+  "CUZ": {
+    "name": "Cousins Properties Incorporated",
+    "wikiTitle": "Cousins Properties"
+  },
+  "CVAC": {
+    "name": "CureVac N.V.",
+    "wikiTitle": "CureVac"
+  },
+  "CVCO": {
+    "name": "Cavco Industries Inc.",
+    "wikiTitle": "Cavco Industries"
+  },
+  "CVE": {
+    "name": "Cenovus Energy Inc",
+    "wikiTitle": "Cenovus Energy"
+  },
+  "CVEO": {
+    "name": "Civeo Corporation (Canada)",
+    "wikiTitle": "Civeo Corporation"
+  },
+  "CVGW": {
+    "name": "Calavo Growers Inc.",
+    "wikiTitle": "Calavo Growers"
+  },
+  "CVI": {
+    "name": "CVR Energy Inc.",
+    "wikiTitle": "Coffeyville Resources"
+  },
+  "CVLT": {
+    "name": "Commvault Systems Inc.",
+    "wikiTitle": "Commvault"
+  },
+  "CVM": {
+    "name": "Cel-Sci Corporation",
+    "wikiTitle": "Cel-Sci Corporation"
+  },
+  "CVS": {
+    "name": "CVS Health Corporation",
+    "wikiTitle": "CVS Health"
+  },
+  "CVU": {
+    "name": "CPI Aerostructures Inc.",
+    "wikiTitle": "CPI Aerostructures"
+  },
+  "CVX": {
+    "name": "Chevron Corporation",
+    "wikiTitle": "Chevron Corporation"
+  },
+  "CW": {
+    "name": "Curtiss-Wright Corporation",
+    "wikiTitle": "Curtiss-Wright"
+  },
+  "CWBC": {
+    "name": "Community West Bancshares",
+    "wikiTitle": "Community West Bancshares"
+  },
+  "CWK": {
+    "name": "Cushman & Wakefield Ltd.",
+    "wikiTitle": "Cushman & Wakefield"
+  },
+  "CWT": {
+    "name": "California Water Service Group",
+    "wikiTitle": "California Water Service Group"
+  },
+  "CXT": {
+    "name": "Crane NXT Co.",
+    "wikiTitle": "Crane Co."
+  },
+  "CXW": {
+    "name": "CoreCivic Inc.",
+    "wikiTitle": "CoreCivic"
+  },
+  "CYBN": {
+    "name": "Cybin Inc.",
+    "wikiTitle": "Cybin"
+  },
+  "CYBR": {
+    "name": "CyberArk Software Ltd.",
+    "wikiTitle": "CyberArk"
+  },
+  "CYD": {
+    "name": "China Yuchai International Limited",
+    "wikiTitle": "China Yuchai International"
+  },
+  "CYH": {
+    "name": "Community Health Systems Inc.",
+    "wikiTitle": "Community Health Systems"
+  },
+  "CYTK": {
+    "name": "Cytokinetics Incorporated",
+    "wikiTitle": "Cytokinetics"
+  },
+  "CZR": {
+    "name": "Caesars Entertainment Inc.",
+    "wikiTitle": "Caesars Entertainment"
+  },
+  "D": {
+    "name": "Dominion Energy Inc.",
+    "wikiTitle": "Dominion Energy"
+  },
+  "DAIO": {
+    "name": "Data I/O Corporation",
+    "wikiTitle": "Data I/O"
+  },
+  "DAKT": {
+    "name": "Daktronics Inc.",
+    "wikiTitle": "Daktronics"
+  },
+  "DAN": {
+    "name": "Dana Incorporated",
+    "wikiTitle": "Dana Incorporated"
+  },
+  "DAO": {
+    "name": "Youdao Inc.",
+    "wikiTitle": "NetEase"
+  }
+}

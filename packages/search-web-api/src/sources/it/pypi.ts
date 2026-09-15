@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that scrapes PyPI search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const pypi: EngineFunction = async (
   query: string,

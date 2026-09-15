@@ -62,11 +62,15 @@ import { Twitter } from 'react-reason-editor/twitter';
 import { Video } from 'react-reason-editor/video';
 import { WordCount } from 'react-reason-editor/wordcount';
 
+import { Ai, createRewriteCompletion, DEFAULT_AI_ENDPOINT } from '@/extensions/Ai';
 import { Comment } from '@/extensions/Comment';
 import { Drawio } from '@/extensions/Drawio';
 import { Harper } from '@/extensions/Harper';
 import { OfficePaste } from '@/extensions/OfficePaste';
 import { Pagination } from '@/extensions/Pagination';
+import { ReadAloud } from '@/extensions/ReadAloud';
+import { SelectSimilar } from '@/extensions/SelectSimilar';
+import { Transcribe } from '@/extensions/Transcribe';
 
 import { EMOJI_LIST } from '../emojis';
 import { convertBase64ToBlob, MOCK_USERS } from '../components/constants';
@@ -168,6 +172,14 @@ export const PLUGIN_REGISTRY: PluginDefinition[] = [
     category: 'Editing',
     defaultEnabled: true,
     create: () => Clear,
+  },
+  {
+    key: 'selectSimilar',
+    label: 'Select Similar',
+    description: 'Select every run of text sharing the selection’s font or style, and format them together.',
+    category: 'Editing',
+    defaultEnabled: true,
+    create: () => SelectSimilar,
   },
 
   // ── Text formatting ──
@@ -545,6 +557,55 @@ export const PLUGIN_REGISTRY: PluginDefinition[] = [
     create: () => ExportPdf,
   },
   {
+    key: 'readAloud',
+    label: 'Read Aloud',
+    description:
+      'Speak the selected text, or the whole document when nothing is selected.',
+    category: 'Tools',
+    defaultEnabled: true,
+    settings: [
+      {
+        key: 'voice',
+        label: 'Voice',
+        type: 'text',
+        default: 'af_heart',
+        placeholder: 'af_heart',
+        help: 'Kokoro voice id, e.g. af_heart (warm) or am_michael (clear).',
+      },
+      {
+        key: 'endpoint',
+        label: 'Speech endpoint',
+        type: 'text',
+        default: '/api/speech/tts',
+        help: "Route that synthesizes text. Falls back to the browser's own voice when unreachable.",
+      },
+    ],
+    create: (s) =>
+      ReadAloud.configure({
+        voice: s.voice || 'af_heart',
+        endpoint: s.endpoint || '/api/speech/tts',
+      }),
+  },
+  {
+    key: 'transcribe',
+    label: 'Dictate',
+    description:
+      'Type what you say into the document, with each phrase shown on screen as it lands.',
+    category: 'Tools',
+    defaultEnabled: true,
+    settings: [
+      {
+        key: 'language',
+        label: 'Language',
+        type: 'text',
+        default: 'en-US',
+        placeholder: 'en-US',
+        help: 'BCP-47 tag used by the browser recognizer, e.g. en-US or es-ES.',
+      },
+    ],
+    create: (s) => Transcribe.configure({ language: s.language || 'en-US' }),
+  },
+  {
     key: 'pagination',
     label: 'Pagination',
     description: 'Paginated page view with headers and margins.',
@@ -619,6 +680,35 @@ export const PLUGIN_REGISTRY: PluginDefinition[] = [
       },
     ],
     create: (s) => Harper.configure({ autoLint: !!s.autoLint }),
+  },
+  {
+    key: 'ai',
+    label: 'AI Writing',
+    description: 'Ask AI anything: rewrite, expand, shorten, or fix selected text with an inline diff review.',
+    category: 'Collaboration',
+    defaultEnabled: true,
+    settings: [
+      {
+        key: 'endpoint',
+        label: 'Completion endpoint',
+        type: 'text',
+        default: DEFAULT_AI_ENDPOINT,
+        placeholder: DEFAULT_AI_ENDPOINT,
+        help: 'POST target for AI actions. Clear it to use the offline demo transform instead of a model.',
+      },
+      {
+        key: 'contextChars',
+        label: 'Document context (characters)',
+        type: 'number',
+        default: 4000,
+        help: 'How much text around the selection is sent as context. 0 sends none.',
+      },
+    ],
+    create: (s) =>
+      Ai.configure({
+        getCompletion: createRewriteCompletion(String(s.endpoint ?? '').trim()),
+        contextChars: Number.isFinite(Number(s.contextChars)) ? Number(s.contextChars) : 4000,
+      }),
   },
 
   // ── Discoverable extras (off by default) ──

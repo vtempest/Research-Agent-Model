@@ -1,7 +1,7 @@
 {
   "name": "use-voice-control",
-  "version": "0.1.37",
-  "description": "React voice control with speech transcription, vocalization, and interruption (STT/TTS/VAD) support.",
+  "version": "0.1.178",
+  "description": "React voice control with speech transcription, vocalization, and interruption (STT/TTS/VAD) support, plus a CLI that reads Markdown and text files aloud to audio files.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OpenSourceAGI/qwksearch-research-agent.git",
@@ -10,10 +10,29 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "use-voice-control": "bin/use-voice-control.mjs"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node.js"
+    },
+    "./markdown": {
+      "types": "./dist/utils/markdown-to-speech.d.ts",
+      "import": "./dist/markdown.js"
     },
     "./api-client": {
       "types": "./speech/api-client.ts",
@@ -23,33 +42,41 @@
   "files": [
     "dist",
     "speech",
+    "bin",
     "README.md"
   ],
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite build --watch",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
-    "lucide-react": "^0.344.0",
+    "lucide-react": "^1.43.0",
     "@moonshine-ai/moonshine-js": "^0.1.29",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "kokoro-js": "^1.2.1"
   },
   "devDependencies": {
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.0",
-    "vite-plugin-dts": "^5.0.0"
+    "@types/node": "^26.5.0",
+    "@types/react": "^19.2.18",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@types/react-dom": "^19.2.7",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "@vitest/coverage-v8": "^5.0.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vite-plugin-dts": "^5.1.0",
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "optionalDependencies": {
-    "@huggingface/transformers": "^3.0.0"
+    "@huggingface/transformers": "^4.2.0"
   },
   "license": "rights.institute/PROSPER"
 }

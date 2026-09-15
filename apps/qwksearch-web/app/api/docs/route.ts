@@ -3,14 +3,15 @@
  * Scalar API reference viewer powered by the OpenAPI spec.
  */
 import { NextResponse } from "next/server";
-import { APP_NAME } from "@/lib/config/site";
+import { config } from "@/lib/config/site";
+import { withCors, corsPreflight } from "@/lib/cors";
 
-export async function GET() {
+async function renderDocsPage() {
   const html = `
 <!DOCTYPE html>
 <html>
 <head>
-  <title>${APP_NAME} API Documentation</title>
+  <title>${config.appName} API Documentation</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
@@ -30,3 +31,6 @@ export async function GET() {
     },
   });
 }
+
+export const GET = withCors(renderDocsPage, { skipApiKeyCheck: true });
+export const OPTIONS = corsPreflight;

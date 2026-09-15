@@ -1,0 +1,39 @@
+/**
+ * Layout fixes for the SVAR file manager rendered by FileManagerModal.
+ *
+ * `<Willow>` wraps its children in a bare `<div class="wx-theme
+ * wx-willow-theme">` that carries no height of its own, while the widget root
+ * (`.wx-filemanager`) is `height: 100%`. A percentage height resolved against
+ * an auto-height block computes to `auto`, so the file manager collapsed to
+ * the height of its rows and left the rest of the modal empty. Stretch the
+ * theme wrapper — and the widget inside it — across the shell the modal
+ * reserves so the toolbar, folder tree and table get the full dialog.
+ *
+ * Selectors are deliberately three classes deep so they outrank SVAR's own
+ * two-class rules (`.wx-filemanager.wx-RJbNonjJ`) no matter which order the
+ * bundler concatenates the stylesheets in.
+ */
+
+.qwk-filemanager-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.qwk-filemanager-shell > .wx-theme {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.qwk-filemanager-shell > .wx-theme > .wx-filemanager {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  /* SVAR defaults the root to `max-height: 100vh`, which lets it spill out of
+     a dialog that is only 95vh tall once the dialog's own chrome is counted. */
+  max-height: 100%;
+}

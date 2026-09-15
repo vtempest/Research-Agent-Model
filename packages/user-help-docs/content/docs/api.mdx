@@ -1,0 +1,147 @@
+---
+title: "API"
+description: "The QwkSearch REST API — endpoints, auth, and the generated TypeScript client."
+icon: "Terminal"
+---
+
+Everything the website does goes through a documented REST API you can call
+yourself.
+
+- **Base URL** — `https://qwksearch.com/api`
+- **Interactive reference** — [/api/docs](/api/docs), rendered from the OpenAPI spec
+- **Raw spec** — [/api/openapi](/api/openapi)
+
+## Authentication
+
+Requests work signed-out, with guest rate limits. To use your account's models,
+history and storage, send your personal API key:
+
+```http
+Authorization: Bearer <your-api-key>
+```
+
+Find it under **Settings → Account** on your QwkSearch instance.
+
+## TypeScript client
+
+Rather than hand-writing fetch calls, use the generated client — it's built
+from the same OpenAPI spec, so it stays in step with the API.
+
+```bash
+bun i qwksearch-api-client
+```
+
+```ts
+import { client } from 'qwksearch-api-client';
+
+client.setConfig({
+  baseUrl: 'https://qwksearch.com/api',
+  headers: { Authorization: `Bearer ${process.env.QWKSEARCH_API_KEY}` },
+});
+```
+
+## Endpoints
+
+### Search
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/search/engines` | Every available engine, by category |
+| `GET` | `/search/engines/status` | Which engines are enabled |
+| `POST` | `/search/engines/status` | Update enabled engines |
+| `POST` | `/search/engines/test` | Probe which engines are responding |
+| `GET` | `/agent/search` | Meta-search via SearXNG |
+| `GET` | `/agent/autocomplete` | Query autocomplete suggestions |
+
+### Research agent
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/agent/chat` | Streaming research chat |
+| `POST` | `/agent/suggestions` | Follow-up suggestions for a chat |
+| `POST` | `/agent/rewrite` | Rewrite text with AI |
+| `GET` | `/agent/discover` | Curated content by topic |
+| `POST` | `/agent/transcript` | Transcribe audio (Whisper) |
+| `POST` | `/agent/voice` | Text to speech (Kokoro / Deepgram) |
+
+### Chats
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` / `DELETE` | `/agent/chats` | List / delete all chats |
+| `GET` | `/agent/chats/search` | Search chats by title |
+| `GET` / `DELETE` | `/agent/chats/{id}` | One chat with messages / delete it |
+| `POST` | `/agent/chats/share` | Share a chat |
+| `POST` | `/agent/messages` | Save a chat message |
+
+### Providers & MCP
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` / `POST` | `/agent/providers` | List / add an LLM provider |
+| `PATCH` / `DELETE` | `/agent/providers/{id}` | Update / remove a provider |
+| `POST` / `DELETE` | `/agent/providers/{id}/models` | Add / remove a model |
+| `POST` | `/agent/test-models` | Test which models a key can reach |
+| `GET` / `POST` | `/agent/mcpservers` | List / add an MCP server |
+| `PATCH` / `DELETE` | `/agent/mcpservers/{id}` | Update / remove |
+| `POST` | `/agent/mcpservers/{id}/toggle` | Enable or disable |
+
+### Documents & extraction
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` / `POST` | `/scraper` | Scrape and extract a URL |
+| `GET` | `/doc/article` | Fetch and cache an article |
+| `POST` | `/doc/article` | Store article Q&A or follow-ups |
+| `POST` | `/agent/article-qa` | Answer a question from one article |
+| `POST` | `/agent/article-followups` | Follow-up questions for an article |
+| `GET` / `POST` | `/doc/documents` | List / create documents |
+| `GET` / `PUT` / `DELETE` | `/doc/documents/{id}` | Read / update / delete |
+| `GET` / `POST` | `/doc/quotes` | List / create quotes for a document |
+| `PUT` / `DELETE` | `/doc/quotes/{id}` | Update / delete a quote |
+| `GET` / `POST` / `DELETE` | `/doc/favorites` | Manage favorites |
+| `POST` | `/doc/share` | Create a share token for a document |
+| `GET` | `/doc/share/{id}` | Resolve a share token |
+| `POST` / `GET` / `DELETE` | `/doc/uploads` | Upload, read, delete files (R2) |
+
+### Google Docs
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/doc/google-docs/auth` | OAuth consent URL |
+| `GET` | `/doc/google-docs/auth/status` | Connection status |
+| `GET` | `/doc/google-docs/callback` | Exchange code for tokens |
+| `POST` | `/doc/google-docs/import` | Import a Google Doc |
+| `POST` | `/doc/google-docs/export` | Export a document |
+| `POST` | `/doc/google-docs/share` | Share a Google Doc |
+| `GET` | `/doc/google-docs/files` | Download a Drive file |
+
+### NotebookLM
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/notebooklm/login` | Connect with Google credentials |
+| `GET` / `DELETE` | `/notebooklm/status` | Status / disconnect |
+| `GET` / `POST` | `/notebooklm/notebooks` | List / create notebooks |
+| `DELETE` | `/notebooklm/notebooks/{id}` | Delete a notebook |
+| `POST` | `/notebooklm/notebooks/{id}/ask` | Ask against a notebook |
+| `POST` | `/notebooklm/notebooks/{id}/audio` | Generate an audio overview |
+| `GET` / `POST` | `/notebooklm/notebooks/{id}/sources` | List / add sources |
+
+### Account
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` / `PATCH` / `DELETE` | `/user` | Profile / update / delete account |
+| `GET` / `DELETE` | `/user/accounts` | Linked OAuth accounts |
+| `POST` | `/user/password` | Change password |
+| `GET` / `DELETE` | `/user/sessions` | List / revoke sessions |
+| `DELETE` | `/user/sessions/{id}` | Revoke one session |
+| `GET` | `/user/storage` | Storage usage |
+| `GET` / `POST` | `/config` | Read / write app configuration |
+
+<Callout type="info">
+This table is a map, not the contract. Request and response shapes, parameters
+and status codes are in the [interactive reference](/api/docs), which is
+generated from the spec and always current.
+</Callout>

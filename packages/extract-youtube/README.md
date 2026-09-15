@@ -1,33 +1,28 @@
-
 <p align="center">
     <img width="300px" src="https://i.imgur.com/dwg2IYg.png" />
-<br /> 
-    <a href="https://www.npmjs.com/package/extract-youtube"><img src="https://img.shields.io/npm/dm/extract-youtube.svg" alt="NPM Monthly Downloads"></a>
-    <a href="https://www.npmjs.com/package/extract-youtube"><img src="https://img.shields.io/npm/v/extract-youtube.svg" alt="npm version"></a>
-    <a href="https://discord.gg/SJdBqBz3tV">
-        <img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat"
-            alt="Join Discord" />
-    </a>  
-     <a href="https://github.com/vtempest/qwksearch-research-agent/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/vtempest/qwksearch-research-agent" /></a>
-<br />
-    <a href="https://github.com/vtempest/qwksearch-research-agent/discussions">
-    <img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/vtempest/qwksearch-research-agent" />
-    </a>
-    <a href="https://github.com/vtempest/qwksearch-research-agent/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/vtempest/qwksearch-research-agent" />
-    </a>
-    <img src="https://img.shields.io/github/last-commit/vtempest/qwksearch-research-agent.svg" alt="GitHub last commit" />
-<br />
-    <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">
-        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"
-            alt="PRs Welcome" />
-    </a>
-    <a href="https://codespaces.new/vtempest/qwksearch-research-agent">
-    <img src="https://github.com/codespaces/badge.svg" width="150" height="20" />
-    </a>
 </p>
+
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://qwksearch.com/api/docs"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/qwksearch-research-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/extract-youtube"><img src="https://img.shields.io/npm/dm/extract-youtube.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/extract-youtube"><img src="https://img.shields.io/npm/v/extract-youtube.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/extract-youtube"><img src="https://img.shields.io/npm/dt/extract-youtube.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/extract-youtube"><img src="https://img.shields.io/npm/types/extract-youtube" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=extract-youtube"><img src="https://packagephobia.com/badge?p=extract-youtube" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/qwksearch-research-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/qwksearch-research-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/qwksearch-research-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/qwksearch-research-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/qwksearch-research-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/extract-youtube"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white" alt="Jest" />
+</p>
+<!-- template-git-repo:badges:end -->
 
 # Extract YouTube Transcript 
 
@@ -180,6 +175,11 @@ const api = new YouTubeTranscriptApi({
 });
 ```
 
+See [docs/proxy.md](./docs/proxy.md) for the full guide: generic vs. Webshare
+proxies, the CLI flags, why `proxyConfig` does nothing on Cloudflare
+Workers/edge (and what to use there instead), and caching in front of the
+fetcher so a proxy request is only spent on a video you don't already have.
+
 ## Error Handling
 
 ```typescript
@@ -243,6 +243,268 @@ extract-youtube --help
 - `--proxy <url>` - HTTP/HTTPS proxy URL
 - `--webshare-user <username>` - Webshare proxy username
 - `--webshare-pass <password>` - Webshare proxy password
+
+## React Components (Floating Player + Transcript Modal)
+
+`extract-youtube/react` is the package's UI half — two self-contained
+components, both ported from the video player used in production on
+[debate-ai.com](https://debate-ai.com), with everything app-specific
+stripped out. Neither depends on a design system, a state library, or a CSS
+framework: they inject their own minimal scoped styles and drop into any
+React app.
+
+- **`<FloatingYouTubePlayer />`** — a floating, draggable, resizable player
+  that keeps playing while the user moves around your app. Mount it once;
+  drive it from anywhere with `youtubePlayer.play({ videoId })`.
+- **`<YouTubeTranscriptModal />`** — a popout modal with the video on the
+  left and a transcript panel on the right that scrolls and highlights in
+  sync with playback; click any line to seek.
+
+### Why it's a separate entry point
+
+`extract-youtube` (the main entry) fetches captions server-side with no
+browser dependency at all — that's the whole point of the package.
+`extract-youtube/react` is a second, independent entry point that only
+exports UI: it never imports the transcript-fetching code, and the main
+entry never imports React. Import only the one you need and the other never
+ends up in your bundle. React, ReactDOM, and `lucide-react` (used for the
+icons) are peer dependencies — install them yourself if you don't already
+have them:
+
+```bash
+npm install extract-youtube react react-dom lucide-react
+```
+
+### The floating player
+
+Mount it once, near the root of your app. It renders through a portal into
+`document.body`, so nothing in the tree around it can clip it, hide it, or
+remount the playing video on a route change. It renders nothing at all until
+something asks it to play.
+
+```tsx
+// app/layout.tsx (or wherever your app root lives)
+import { FloatingYouTubePlayer } from 'extract-youtube/react';
+
+export default function RootLayout({ children }) {
+  return (
+    <>
+      {children}
+      <FloatingYouTubePlayer transcriptUrl="/api/transcript" />
+    </>
+  );
+}
+```
+
+Then play something from anywhere — a grid, a search result, a keyboard
+shortcut. No context provider, no prop drilling:
+
+```tsx
+import { youtubePlayer, usePlayerState, thumbnailUrl } from 'extract-youtube/react';
+
+function VideoCard({ videoId, title }: { videoId: string; title: string }) {
+  const { activeVideo } = usePlayerState();
+
+  return (
+    <button onClick={() => youtubePlayer.play({ videoId, title })}>
+      <img src={thumbnailUrl(videoId)} alt="" />
+      {title} {activeVideo?.videoId === videoId && '(playing)'}
+    </button>
+  );
+}
+```
+
+What you get, without wiring any of it up yourself:
+
+| | |
+| --- | --- |
+| **Drag & resize** | Drag by the title bar, resize from either side edge or a bottom corner, clamped to the viewport. Mouse and touch. |
+| **Minimize** | Collapses to the title bar. The iframe is hidden with CSS, never unmounted, so playback isn't interrupted. |
+| **Picture-in-picture** | Pops the video into an always-on-top OS window via the Document Picture-in-Picture API, where the browser supports it. The node is *moved*, not cloned, so playback continues. |
+| **Queue** | `addToQueue` / `setQueue` / `playNext`, with an "Up next" strip under the video. |
+| **Synced captions** | Optional subtitles panel above the video — caption cues are regrouped into whole sentences (no timestamps), the spoken one highlights and auto-scrolls, and clicking a sentence seeks. Needs `transcriptUrl` or `fetchTranscript` (see below). |
+| **Resume** | Remembers what was playing, and how far into it, across a reload — plus a per-video position for the last 50 videos, for 24 hours. `storageKey={null}` turns it off. |
+| **Error recovery** | Reads the IFrame API's error codes, explains them ("this video is private", "the owner doesn't allow embedding"), and offers Retry or Watch on YouTube from the same spot. |
+| **Theming** | Colours are CSS custom properties on `.eytp-root` and follow `prefers-color-scheme` by default. Override them to match your app. |
+
+#### Custom controls belong to your app, not the package
+
+The built-in control strip only holds buttons that mean the same thing for
+any YouTube video: play/pause, skip, captions, picture-in-picture, minimize,
+close. Anything specific to *your* product — a bookmark, a share menu, a
+speed control framed for your users — is yours to render, through
+`extraControls`:
+
+```tsx
+import { Gauge } from 'lucide-react';
+import { FloatingYouTubePlayer } from 'extract-youtube/react';
+
+<FloatingYouTubePlayer
+  transcriptUrl="/api/transcript"
+  extraControls={({ playbackRate, player }) => (
+    <button
+      // The player's own control classes, so custom buttons match the built-ins.
+      className={`eytp-btn${playbackRate !== 1 ? ' eytp-btn-active' : ''}`}
+      onClick={() => player.setPlaybackRate(playbackRate !== 1 ? 1 : 0.65)}
+      title="Slow it down"
+    >
+      <Gauge size={13} />
+    </button>
+  )}
+/>
+```
+
+debate-ai.com uses exactly this seam for its "slow the debate spread down"
+button — its own label, icon and rate, sitting in the same strip. The
+package stays generic: it exposes `player.setPlaybackRate()` and reports the
+current `playbackRate`, and the host decides what the button says and does.
+`renderTitle` is the same idea for the title bar, if you want badges or
+links instead of a plain video title.
+
+#### The imperative API
+
+Everything the player can do is on `youtubePlayer`, importable anywhere:
+
+```ts
+import { youtubePlayer, usePlayerState, getPlayerState } from 'extract-youtube/react';
+
+youtubePlayer.play({ videoId, title, meta });  // meta is yours; passed back untouched
+youtubePlayer.play({ videoId }, { startSeconds: 120 });
+youtubePlayer.togglePlay();
+youtubePlayer.seekTo(90);
+youtubePlayer.setPlaybackRate(1.5);
+youtubePlayer.addToQueue({ videoId, title });
+youtubePlayer.setQueue(videos);                // e.g. "play all" over a grid
+youtubePlayer.playNext();
+youtubePlayer.getCurrentTime();                // seconds
+youtubePlayer.close();
+
+usePlayerState();   // in a component: { activeVideo, isPlaying, isMinimized, playbackRate, queue, startTime }
+getPlayerState();   // the same, outside React
+```
+
+#### Floating player props
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `transcriptUrl` | `string` | Your captions endpoint (see below). Enables the subtitles button. |
+| `fetchTranscript` | `(videoId: string) => Promise<{ snippets, error? }>` | Custom caption loader, instead of `transcriptUrl`. |
+| `extraControls` | `ReactNode \| (ctx: PlayerControlContext) => ReactNode` | Your own buttons, rendered in the control strip. |
+| `renderTitle` | `(ctx: PlayerControlContext) => ReactNode` | Custom title-bar content. Defaults to the video title. |
+| `showSubtitles` | `boolean` | Force the captions button on or off. By default it appears only for videos that turned out to have a transcript — every video played is checked, and one without captions gets no button and no error. |
+| `showPictureInPicture` | `boolean` | Show the PiP button where supported. Default `true`. |
+| `storageKey` | `string \| null` | localStorage key for resume-after-reload. `null` disables persistence entirely. |
+| `className` | `string` | Extra class on the player root, for host-side positioning or theming. |
+| `onClose` | `() => void` | Called when the user closes the player. |
+| `minWidth` / `maxWidth` | `number` | Resize bounds in px. Default 256 / 800. |
+
+### Setup: video captions still have to be fetched server-side
+
+Neither component talks to YouTube's caption endpoints directly — browsers
+can't (no CORS, and it would leak this package's whole fetching strategy
+client-side for no benefit). Instead, you expose one small backend endpoint
+that calls this package's `YouTubeTranscriptApi`, and point the components
+at it with `transcriptUrl`.
+
+**1. Add a backend endpoint** (any framework works — this is a Next.js
+route handler, following the same pattern as the Vercel Edge example
+above):
+
+```typescript
+// app/api/transcript/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { YouTubeTranscriptApi, extractVideoId } from 'extract-youtube';
+
+const api = new YouTubeTranscriptApi();
+
+export async function GET(req: NextRequest) {
+  const raw = req.nextUrl.searchParams.get('videoId');
+  const videoId = raw ? extractVideoId(raw) : null;
+  if (!videoId) {
+    return NextResponse.json({ error: 'Missing videoId' }, { status: 400 });
+  }
+
+  try {
+    const transcript = await api.fetchTranscript(videoId, { languages: ['en'] });
+    return NextResponse.json({ videoId, snippets: transcript.toRawData() });
+  } catch (error) {
+    // 200 + an `error` field, not a 4xx/5xx — "no captions for this video"
+    // isn't a server failure, and the components check this field either way.
+    return NextResponse.json({
+      videoId,
+      snippets: [],
+      error: error instanceof Error ? error.message : 'Failed to fetch transcript',
+    });
+  }
+}
+```
+
+**2. Point the components at it** with `transcriptUrl="/api/transcript"`.
+The `videoId` query param is appended for you, and one request is shared
+per video across every component asking for it.
+
+`extractVideoId` (exported from the main entry, since it runs fine in Node)
+accepts any of the URL shapes YouTube uses — watch, youtu.be, embed, shorts,
+live — so you can pass what a user pastes in straight through.
+
+### Transcript modal
+
+```tsx
+import { YouTubeTranscriptModal } from 'extract-youtube/react';
+import { extractVideoId } from 'extract-youtube';
+
+function VideoCard({ url, title }: { url: string; title: string }) {
+  const videoId = extractVideoId(url);
+  if (!videoId) return null;
+
+  return <YouTubeTranscriptModal videoId={videoId} title={title} transcriptUrl="/api/transcript" />;
+}
+```
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `videoId` | `string` | **Required.** The YouTube video ID (not a full URL — run it through `extractVideoId` first if needed). |
+| `title` | `string` | Shown in the modal header and as the iframe's accessible title. |
+| `transcriptUrl` | `string` | URL of your backend endpoint (see above). Fetched with `fetch()` when the modal opens. The `videoId` query param is appended automatically if not already present. |
+| `fetchTranscript` | `(videoId: string) => Promise<{ snippets, error? }>` | Use instead of `transcriptUrl` if you want to load the transcript some other way (e.g. from a React Query cache). |
+| `snippets` | `TranscriptSnippet[]` | Pass transcript data directly to skip fetching entirely — e.g. if you already loaded it server-side. |
+| `trigger` | `ReactNode` | Custom element that opens the modal on click. Defaults to a small captions-icon button. |
+| `onOpenChange` | `(open: boolean) => void` | Called whenever the modal opens or closes. |
+
+### Demo: a video library, a floating player, synced subtitles
+
+The `demo/` folder is a small standalone app — an Express server for the
+transcript endpoint plus a Vite/React page — that puts the whole thing
+together: a **grid of saved favorite videos** to pick from, the floating
+player they open in, a queue, and per-card transcripts.
+
+```bash
+cd packages/extract-youtube
+npm run build          # builds dist/ (main lib + dist/react), which the demo depends on
+npm run demo           # installs the demo's own deps and starts it
+```
+
+`npm run demo` runs `cd demo && npm install && npm run dev`, which starts
+both the Express transcript API (port 8787) and the Vite dev server
+(port 5173, proxying `/api` to 8787) together. Open
+**http://localhost:5173** and click any video in the grid: it opens in the
+floating player, which you can drag, resize, minimize or pop out while you
+keep browsing. Star videos to favorite them, queue more up, hit **Play all**
+to run the grid as a playlist, or turn on the captions button to follow a
+synced transcript.
+
+Run the two halves separately if you'd rather:
+
+```bash
+cd packages/extract-youtube/demo
+npm install
+npm run server   # Express API on :8787
+npm run dev      # in another terminal — Vite dev server on :5173
+```
+
+See `demo/README.md` for what each file does — including
+`demo/src/SpeedButton.jsx`, the worked example of an app-supplied custom
+control.
 
 ## Features
 

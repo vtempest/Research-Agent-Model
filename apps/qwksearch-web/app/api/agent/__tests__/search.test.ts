@@ -93,6 +93,17 @@ describe('createSearchHandler GET', () => {
     )
   })
 
+  it('falls back to page 1 when page is not a positive number', async () => {
+    mockSearchWeb.mockResolvedValue({ results: [{ url: 'https://a.com' }] })
+
+    await handler.GET(getRequest({ q: 'test', page: 'not-a-number' }))
+
+    expect(mockSearchWeb).toHaveBeenCalledWith(
+      'test',
+      expect.objectContaining({ page: 1 }),
+    )
+  })
+
   it('returns 500 when searchWeb throws', async () => {
     mockSearchWeb.mockRejectedValue(new Error('searxng down'))
     const res = await handler.GET(getRequest({ q: 'fail' }))

@@ -1,0 +1,48 @@
+---
+title: "Browser Extension"
+description: "QwkSearch Tab Manager AI — vertical tabs, in-tab search, reader mode, and ask-AI across open tabs."
+icon: "Puzzle"
+---
+
+**QwkSearch Tab Manager AI** turns the browser sidebar into a tab manager and a
+research surface at the same time. Source lives in
+[`apps/qwksearch-ext`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/apps/qwksearch-ext).
+
+## What it does
+
+- **Vertical tab sidebar** with sorting and a right-click context menu.
+- **Search inside all open tabs** — full-text over the *content* of your tabs,
+  not just their titles.
+- **Select text, press <kbd>Tab</kbd>** to search the web for it; press
+  <kbd>Tab</kbd> again to jump straight to the first result.
+- **Reader mode** — extract the main content and citation of the current page,
+  including PDFs and YouTube, using the same
+  [extraction pipeline](/docs/reader) as the website.
+- **Ask AI about your tabs** — put the text of open and saved tabs into a
+  question.
+
+## Why use it instead of the website
+
+The extension reads pages from the tab you already have open, with your
+session. That gets past the two cases server-side extraction can't handle:
+pages behind a login, and pages that only exist after client-side JavaScript
+runs.
+
+## Install
+
+Load it unpacked while it's in review:
+
+```bash
+bun x git0 vtempest/qwksearch-research-agent
+cd qwksearch-research-agent/apps/qwksearch-ext
+bun install
+bun run build
+```
+
+Then in Chrome open `chrome://extensions`, turn on **Developer mode**, choose
+**Load unpacked**, and select the build output directory.
+
+## Related
+
+- [Reading & extraction](/docs/reader) — what reader mode does to a page
+- [Desktop app](/docs/desktop-app) — the same idea outside the browser

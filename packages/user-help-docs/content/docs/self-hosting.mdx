@@ -1,0 +1,119 @@
+---
+title: "Self-Hosting"
+description: "Run your own QwkSearch on Cloudflare Workers or locally."
+icon: "Server"
+---
+
+QwkSearch is open source and designed to be run by someone other than us. The
+web app deploys to Cloudflare Workers with D1, KV and R2; nothing in the stack
+requires a server you keep alive.
+
+## Get the source
+
+```bash
+bun x git0 vtempest/qwksearch-research-agent
+cd qwksearch-research-agent
+bun install
+```
+
+The repo is a Bun + Turborepo workspace: `apps/` holds the web app, desktop
+app, browser extension and VS Code extension; `packages/` holds the ~20
+libraries they share (see [Packages](/docs/packages)).
+
+## Configure
+
+```bash
+cd apps/qwksearch-web
+cp .env.example .env
+```
+
+`.env.example` documents every variable with a link to where the credential
+comes from. The ones that matter first:
+
+| Variable | Needed for |
+|---|---|
+| `NEXT_PUBLIC_BASE_URL` | Your app's public URL (`http://localhost:3000` locally) |
+| `BETTER_AUTH_SECRET` | Session signing — generate with `openssl rand -base64 32` |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Extra origins allowed to make authenticated requests |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google sign-in and Google Docs import/export |
+| `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET` | Discord sign-in |
+| `AUTH_LINKEDIN_ID` / `AUTH_LINKEDIN_SECRET` | LinkedIn sign-in |
+| `AUTH_RESEND_KEY` | Transactional email |
+| `OPENROUTER_API_KEY`, `DEEPSEEK_API_KEY`, `NVIDIA_API_KEY`, … | Default LLM providers |
+| `TAVILY_API_KEY` | Optional search provider |
+| `THENEWSAPI_API_KEY` | Optional — the homepage trending-news widget ([thenewsapi.com](https://www.thenewsapi.com/)) |
+
+<Callout type="warn">
+Generate `BETTER_AUTH_SECRET` yourself and keep it out of version control. A
+shared or committed secret lets anyone forge a session on your instance.
+</Callout>
+
+Users can add their own provider keys in the app afterwards, so you only need
+enough model credentials to make the defaults work.
+
+## Run locally
+
+```bash
+bun run dev
+```
+
+For local database work:
+
+```bash
+bun run db:generate            # generate migrations from the schema
+bun run db:migrate:local       # apply them to the local D1
+bun run db:studio              # browse the database
+```
+
+## Deploy to Cloudflare
+
+The one-click path is the **Deploy to Cloudflare Workers** button in the
+[repo README](https://github.com/OpenSourceAGI/qwksearch-research-agent), which
+provisions the Worker and its bindings for you.
+
+By hand:
+
+```bash
+cd apps/qwksearch-web
+bun run build
+bun run deploy
+```
+
+`wrangler.jsonc` declares the bindings the app expects:
+
+| Binding | Resource | Used for |
+|---|---|---|
+| `DB` | D1 database `qwksearch-new` | Users, chats, documents, quotes |
+| `KV` | KV namespace | Caching and config |
+| `R2` | R2 bucket `qwksearch-uploads` | Uploaded PDFs, DOCX, HTML |
+| `ASSETS` | Static assets | The built front end |
+| `IMAGES` | Cloudflare Images | Image transformations |
+
+Create the D1 database and apply migrations against it:
+
+```bash
+bun run db:push
+bun run db:migrate            # wrangler d1 migrations apply --remote
+bun run db:migrate:status
+```
+
+A staging deploy is `bun run deploy:staging`.
+
+## Private metasearch
+
+By default, searches hit public engine endpoints. To keep queries inside your
+own infrastructure, deploy the SearXNG proxy config in
+[`packages/searxng-search-cloudflare`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/searxng-search-cloudflare)
+and point your instance at it.
+
+## Fully local models
+
+Any OpenAI-compatible endpoint can be registered as a provider, so an Ollama or
+vLLM server on your own hardware works. Combined with self-hosted SearXNG, no
+query or document text leaves your network.
+
+## Related
+
+- [Packages](/docs/packages) — the libraries you can reuse independently
+- [API](/docs/api) — what your deployment exposes
+- [Architecture](/docs/architecture/d1-read-replication) — design notes

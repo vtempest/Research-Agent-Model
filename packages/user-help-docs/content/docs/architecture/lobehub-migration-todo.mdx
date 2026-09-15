@@ -1,0 +1,1064 @@
+---
+title: "LobeHub Migration To-Do"
+description: "Running checklist for making apps/qwk-in-lobe the engine behind qwksearch.com."
+---
+
+# LobeHub Migration To-Do
+
+The working checklist behind the
+[LobeHub Packages Migration Plan](./lobe-packages-migration-plan). The plan says
+*what* the target architecture is; this page tracks *where each piece stands* and
+what the next concrete step is. Every item names the file that owns it, so a run
+can pick one up without re-deriving the seam.
+
+The map of what already connects is
+[LobeHub Integrations Reference](./lobehub-integrations).
+
+**Legend** — ✅ done · 🚧 in progress · ⬜ not started · 🔒 blocked
+
+Last updated: 2026-09-12.
+
+## Snapshot
+
+| Phase | State |
+|---|---|
+| 0. Baseline — LobeHub builds and deploys on Workers | ✅ |
+| 1. Chat mode on the engine (staging) | 🚧 search and extraction wired, both with a settings layer, a pane and shared controls; the Worker's one unreachable chain deleted; parity open |
+| 2. Settings as the single system of record | 🚧 Both panes shipped and their controls finished (2.2), and the old surface is now mapped section by section as a tested artifact (2.1); the key migration and the deletion remain, with 9 of 9 sections still blocking it |
+| 3. REASON docs inside the engine | ⬜ |
+| 4. Public cutover | 🔒 needs the license answer |
+| 5. Decommission + satellites + ops gaps | 🚧 `worker/` type-checks clean and CI finally installs this workspace (5.5, 5.6); packages, satellites and the ops gaps untouched |
+
+## Phase 1 — Chat mode powered by the engine
+
+### 1.1 Stand up staging ⬜
+
+Needs Cloudflare account access, so it cannot be done from a code-only run.
+
+1. `cd apps/qwk-in-lobe && pnpm install && bun run build:worker`
+2. Create the Hyperdrive config and paste the id into `wrangler.jsonc`
+   (or set `DATABASE_URL` to a Neon URL and keep `DATABASE_DRIVER=neon`).
+3. `bun run db:migrate` (Postgres, 157 migrations) and `bun run cf:d1:migrate` (D1).
+4. `bun run cf:deploy`, then smoke `/api/health`,
+   `/trpc/lambda/config.getGlobalConfig`, `/signin`.
+
+Until then, `bun run cf:dev` (local wrangler, dummy secrets, local D1/KV) is the
+only end-to-end check available.
+
+### 1.2 Search tool = `search-web-api` ✅
+
+Done: `apps/server/src/services/search/impls/qwksearch/` implements
+`SearchServiceImpl` against Worker A's `GET /api/agent/search`; registered as
+`SearchImplType.QwkSearch`; enabled via `SEARCH_PROVIDERS=qwksearch` in
+`wrangler.jsonc`. Category normalization, 3-way fan-out, URL-merge and failure
+mapping are covered by `impls/qwksearch/index.test.ts` (20 cases). The contract
+is written up in §F5 of the integrations reference.
+
+Follow-ups that are deliberately *not* in that change:
+
+- ✅ **Extend the tool manifest's category enum.** Done the second way the
+  option offered: `packages/builtin-tool-web-browsing/src/searchCategories.ts`
+  (new file) resolves the enum at module evaluation and widens it *only* when
+  `SEARCH_PROVIDERS` names `qwksearch` and nothing else, so no other backend is
+  ever asked for a category it cannot serve. `manifest.ts` gains an import and
+  swaps the literal for `resolveSearchCategories()`; the package index gains one
+  export line. Those three lines are the whole upstream edit.
+
+  The widening is to **ten**, not thirteen — the fan-out endpoint takes SearXNG
+  spellings, and QwkSearch's 13-name registry aliases onto those ten in
+  `normalizeCategories`. The five the model gains are `files`, `it`, `map`,
+  `music` and `social+media`. Drift between the advertised list and the accepted
+  one now fails a test in `impls/qwksearch/index.test.ts` (27 cases, was 20).
+
+  Two caveats worth knowing: the enum is fixed at module evaluation, which is
+  safe on the Worker only because `worker/cf/globals.ts` mirrors vars onto
+  `process.env` before anything else evaluates; and in the SPA there is no
+  `process`, so the client-side copy of the manifest always reports LobeHub's
+  five. Nothing on the client reads the enum today.
+- ⬜ **Service binding instead of HTTPS.** `QwkSearchImpl` calls Worker A over
+  the public internet. Once both Workers deploy together, a Cloudflare service
+  binding removes a hop and the need for `QWKSEARCH_API_KEY`.
+- ⬜ **Ranking parity.** The fan-out's scores come from `search-web-api`;
+  `domain-rank` (favicons, domain authority) is not consulted on the engine side.
+  Decide whether that belongs in the endpoint or the impl.
+
+### 1.3 Extraction chain, tier 0 = the QwkSearch article extractor ✅
+
+Done. `worker/qwksearch/extractQwkSearch.ts` adapts `extract-webpage`, and
+`tiersForUrl` in `worker/qwksearch/extract.ts` routes each URL kind to its chain.
+One `extractContent` call covered all three sub-items, because the extractor
+branches on the URL itself.
+
+1. ✅ **Tier 0 = `extract-webpage`**, ahead of the scraper, bringing citation
+   extraction (`author_cite`, `author_short`, `author_type`, date, source) that
+   the readability path could not produce. It writes through the same D1
+   `articleCache`, so nothing about the panel's storage changed.
+2. ✅ **YouTube** is its own `UrlKind`, extracted as a transcript through
+   `extract-youtube`, instead of being rejected in `VIDEO_PATTERNS`. Only
+   Vimeo/Dailymotion/Twitch — hosts with no transcript route — still get the
+   "not an article" stub.
+3. ✅ **PDF and arXiv** are their own `UrlKind`, routed to `extract-pdf`
+   through the extractor's PDF branch. `.pdf` (with or without a query string)
+   and `arxiv.org/pdf/` match; `arxiv.org/abs/` stays on the article path
+   because those pages are HTML.
+4. ✅ Every tier still returns `{ error }` rather than throwing — including a
+   failed *module load*, which is why the package is behind an injectable lazy
+   loader. Tests inject a fake module, so they never load the real extractor.
+
+Two things worth knowing before building on this:
+
+- **`linkedom` is no longer shimmed** in `vite.worker.config.ts`. It was stubbed
+  to throw because LobeHub only reached it from the dev-server template
+  rewriter, but `extract-webpage` parses every page with it and it runs fine on
+  workerd. `worker/shims/linkedom.ts` is gone. The Worker bundle went from
+  **7.39 MB to 7.93 MB gzipped** against Cloudflare's 10 MB limit — see 5.4.
+- **The scraper tier got better too.** When tier 0 fails but Puppeteer gets past
+  the bot check, the rendered HTML now runs through the same citation extraction
+  (`articleFromRenderedHtml`) instead of discarding the byline. It falls back to
+  LobeHub readability if that yields nothing.
+
+Follow-ups that are deliberately *not* in that change:
+
+- ✅ **Per-user extraction settings — resolution layer.** Done in 1.5 below;
+  what remains is the UI that writes to it (2.2).
+- ✅ **PDF OCR modes.** `PDF_PROCESSOR` /
+  `PDF_PROCESSOR_URL` reach `extract-pdf` through 1.5.
+- ⬜ **Bundle budget in CI** (5.4) matters more now that the margin is ~2 MB.
+
+#### ✅ Resolved: the second chain in `extract.ts` is deleted
+
+`extract.ts` used to define **two** tier chains, and only one of them ran:
+
+| | `tiersForUrl` (live) | `defaultTiersFor` (deleted) |
+|---|---|---|
+| article | `qwksearch → scraper → tavily → crawler` | `scraper → tavily → crawler` |
+| youtube | `qwksearch` | `extractViaYouTube → scraper → tavily → crawler` |
+| pdf | `qwksearch` | `extractViaPdf → tavily` |
+
+The decision was framed as adopt-or-delete. It turned out not to be a judgement
+call at all, because **the unwired chain could not have run if it had been
+wired**:
+
+- `extractViaYouTube` calls `youTubeVideoId(url)` and `extractViaPdf` calls
+  `pdfUrlFor(url)`. Neither identifier is defined in `extract.ts`, imported into
+  it, or present anywhere else in the repository — `tsc` reports both as
+  `TS2304: Cannot find name`. Every YouTube and PDF extraction through that
+  chain would have thrown `ReferenceError` on its first line, been caught by
+  `extractArticle`'s per-tier `try`, and fallen through as a tier failure.
+- Both tiers also returned `via: 'youtube'` and `via: 'pdf'`, which are not
+  members of the `ExtractedArticle['via']` union they are typed against
+  (`TS2345`).
+
+So adopting it would have been a regression twice over: for `article` URLs it
+drops tier 0 and with it the citation extraction §1.3 exists to deliver, and for
+the two media kinds it leads with a tier that cannot execute. Deleted, along
+with `WEB_TIERS`, the two tiers and their support cast (`TranscriptFetcher`,
+`YouTubeConfig`, `loadTranscriptFetcher`, `transcriptToParagraphs`,
+`fetchYouTubeMetadata`, `PdfConverter`, `PdfConfig`, `loadPdfConverter`), the
+two helpers that were dead for the same reason (`loadCiteExtractor`,
+`articleViaCiteExtractor`, plus the `HtmlCiteExtractor` type and module-level
+`citeExtractor` cache they shared), and the three helpers left unreferenced once
+those went (`articleFromExtractedHtml`, `markdownOf`, `textOf`). 935 lines down
+to 619; no behavior change, because none of it was reachable.
+
+Nothing is lost by the deletion. The knobs the unwired tiers read are the ones
+§1.5 already routes through tier 0 — `extract-webpage` branches on the URL
+itself and calls `extract-youtube` and `extract-pdf` internally, with
+`languages` and `PDF_PROCESSOR` / `PDF_PROCESSOR_URL` bound from the resolved
+settings. `extractViaPdf`'s own `process.env.PDF_PROCESSOR_URL` read was in fact
+the last direct `process.env` read in a tier, which is exactly what §1.5 set out
+to remove.
+
+§F2 of the integrations reference already described the live chain, so it needed
+no rewrite — only a line recording that it is now the only one.
+
+**Why it survived so long, and what now catches it:** nothing type-checked
+`worker/`. The repo-wide `bun run type-check` includes it, but OOMs before
+finishing (see below), and no CI job installed `apps/qwk-in-lobe` at all. Two
+undefined identifiers sat in a request-path module from the day they were
+written. `bun run type-check:qwksearch` is the narrow check that closes that gap
+and §5.6's CI job is what runs it on every engine change — see §5.5 and §5.6.
+
+### 1.5 Extraction settings resolution ✅
+
+The extraction chain no longer hard-codes its knobs.
+`worker/qwksearch/extractSettings.ts` owns one `ExtractionSettings` value, and
+folds it out of three layers — shipped defaults, then Worker env, then
+per-request overrides — validating every value on the way in. `tiersForUrl`
+binds the resolved settings into each tier, so a tier no longer reaches for
+`process.env` itself.
+
+| Setting | Env var | Reaches |
+|---|---|---|
+| Citation style (`apa`/`mla`/`chicago`) | `QWKSEARCH_CITATION_STYLE` | `buildCite`, every tier |
+| Transcript languages | `QWKSEARCH_EXTRACT_LANGUAGES` | `extract-youtube` via `languages` |
+| Extractor timeout | `QWKSEARCH_EXTRACT_TIMEOUT` | `extract-webpage` `timeout` |
+| Enabled tiers, in order | `QWKSEARCH_EXTRACT_TIERS` | `tiersForUrl` |
+| Render backend + budget | `SCRAPER_URL`, `SCRAPER_API_KEY`, `QWKSEARCH_SCRAPER_DEADLINE_MS` | the Puppeteer tier |
+| PDF OCR mode + endpoint | `PDF_PROCESSOR`, `PDF_PROCESSOR_URL` | `extract-pdf` via `processor` |
+| Outbound proxy | `QWKSEARCH_EXTRACT_PROXY` | `extract-webpage` `proxy` |
+| Third-party reader fallback | `QWKSEARCH_EXTRACT_THIRD_PARTY_BACKUP` | `extract-webpage` |
+
+Three things worth knowing before building the pane on top of it:
+
+- **The client layer is deliberately narrower than the user layer.**
+  `GET /api/doc/article` honours `?cite=` and `?lang=` and nothing else. Every
+  other setting either names a host the Worker would then send a bearer token to
+  (`scraperUrl`, `pdfProcessorUrl`, `proxy`) or buys the caller compute
+  (`pdfProcessor=docling` OCRs every page). `ClientExtractionOverrides` is typed
+  to exclude them and `parseClientExtractionOverrides` never reads them.
+- **Citation style survives the cache.** `articleCache` is keyed by URL and holds
+  one `cite` string, so a non-APA request re-renders the citation from the cached
+  fields rather than fragmenting the cache per style. APA keeps the stored
+  string, which came out of the extractor's 90k-name database and beats anything
+  the fallback builder assembles from columns.
+- **An empty tier list is a real outcome.** `QWKSEARCH_EXTRACT_TIERS=scraper`
+  leaves a PDF URL with no viable tier, and the caller gets the "no extraction
+  tier configured" error rather than a tier the operator switched off.
+
+Follow-ups:
+
+- ✅ **The user layer now has storage and an API.** See 1.6.
+- ⬜ **MLA/Chicago only reach the fallback builder's fields.** The extractor's
+  own citation is APA, so a non-APA style is rebuilt from `author_cite`, `title`,
+  `source` and `date` — correct, but it loses the extractor's author-type
+  handling (organizations, two-author, more-than-two). Teaching
+  `extract-webpage` the other styles is the real fix.
+
+### 1.6 Extraction preferences: the user layer ✅
+
+1.5 defined a user layer and gave it nowhere to live —
+`UserExtractionOverrides` was a type `resolveExtractionSettings` accepted and
+nothing ever produced. It now has storage, an API and a caller:
+
+- `worker/qwksearch/extractionPreferences.ts` — load / save / clear one user's
+  overrides, and `userExtractionOverridesForRequest(headers)` for the article
+  route. Every read is validated again on the way out and never throws; a
+  failure resolves to `{}` and the caller falls back to the operator's config.
+- `worker/routes/qwksearch/extractionSettings.ts` —
+  `GET`/`PUT`/`DELETE /api/doc/extraction-settings`, sign-in required, returning
+  `{ overrides, effective, options }`.
+- `extraction_settings` on D1 (`migrations/d1/0002_extraction_settings.sql`,
+  idempotent like 0001; both files run from `bun run cf:d1:migrate`).
+- `/api/doc/article` folds the layer in between env and query, so precedence is
+  now **default → env → user → `?cite=`/`?lang=`**. A request with no `cookie`
+  header skips the session lookup, so the anonymous path is unchanged.
+
+The full contract is §F2b of the integrations reference.
+
+**Correction to the plan.** 2.2 below used to say the Extraction pane needed
+"nothing further server-side". That was wrong: the resolver took a user layer,
+but no code path produced one, so a pane writing to
+`src/store/user/slices/settings/` would have changed nothing about an
+extraction. That gap is what 1.6 closes.
+
+**Deliberate deviation.** The plan said to persist through LobeHub's user
+settings store. The overrides are on D1 instead, keyed by the same LobeHub user
+id as favorites and documents. Reading Postgres `user_settings` from a Hono
+Worker route would couple the extraction chain to Hyperdrive for a six-field
+blob, and adding a namespace to it means an upstream type edit plus a Postgres
+migration — the opposite of the "keep changes additive" rule below. Phase 2's
+"one system of record" is about the settings *surface*, and there is still
+exactly one: the pane. If the panes later consolidate onto the LobeHub store,
+this route is the migration's read side.
+
+Follow-ups:
+
+- ✅ **The client consumer landed** — 1.7 below.
+- ✅ **`languages` is capped at five and `tiers` at the four known ids**; the
+  pane reads both bounds out of `options` and never repeats them.
+
+### 1.7 Extraction settings pane ✅ (#393)
+
+2.2's Extraction half, shipped. `/settings/extraction` is a form over the one
+JSON document 1.6 serves, and the first QwkSearch surface to live *inside*
+LobeHub's settings shell rather than beside it. The full contract is §F2c of the
+integrations reference.
+
+```
+src/features/Settings/extraction/
+  index.tsx           SettingHeader + the form
+  api.ts              GET/PUT/DELETE, and the response types
+  formState.ts        form values ⇄ UserExtractionOverrides (pure, no React)
+  features/ExtractionForm.tsx
+```
+
+Three things worth knowing before touching it:
+
+- **An unset field is not a value.** `normalizeOverrides` drops `undefined`, so
+  a field the user has not touched must be *absent* from the PUT body — not
+  `null`, not `''`, and not the value that happens to be in force. Every input
+  therefore has an explicit inherit state (`INHERIT` for the enums, an empty
+  list, `null` for the timeout) and `overridesFromFormValues` omits those keys.
+  This is why the third-party-fallback control is a three-way select rather than
+  a `Switch`: `false` pins the user to off, unset follows the operator, and a
+  switch cannot say both.
+- **The inputs seed from `overrides`, never from `effective`.** Seeding from
+  what is in force would turn every inherited field into an explicit override
+  the moment the user saved anything, silently pinning them to today's server
+  config. `effective` appears only as the hint under each input and as the
+  timeout's placeholder.
+- **The pane renders the response, not what it sent.** `PUT` trims — a sixth
+  language, an unknown tier, a 99s timeout clamped to 60 — and the response is
+  the authority.
+
+`api.ts` restates the Worker's types instead of importing them, because `src/`
+bundles for the browser and `worker/` for workerd. **`contract.test.ts` is the
+drift guard**: it imports the real `extractSettings.ts`, rebuilds the exact
+document the route returns, and runs a load → edit → save cycle back through
+`normalizeOverrides`. An enum member or override field added on the server and
+not in `api.ts` fails it.
+
+Upstream edits are five registration points and no logic — the `SettingsTabs`
+enum, both `componentMap`s, the sidebar item in `useCategory.tsx`, and the
+compact-header title map in `SettingsContent.tsx`. No route file: `/settings/:tab`
+already dispatches by enum value.
+
+Follow-ups:
+
+- ✅ **`languages` has a language picker.** Closed in 1.11 with the search
+  pane's `language`, which had the same bug. It turned out to be worse than
+  "a typo silently disappears": the field could not be filled in at all, because
+  base-ui's `Select` never creates a value outside its `options` and this one was
+  given none. See 1.11 and §F5d.
+- ✅ **`tiers` is drag-to-reorder.** Closed in 1.11 with the search pane's
+  `categories`, which had the same bug.
+- ✅ **A 401 now prompts to sign in.** Closed in 1.10, which hit the same bug in
+  its own pane: both forms recognise the 401 their API error already carried and
+  say `*.error.loginRequired` instead of printing the status text, on load and on
+  save alike.
+
+### 1.8 Search settings resolution ✅
+
+The search-side mirror of 1.5, and the first of the three steps the Search &
+Sources pane needs. `QwkSearchImpl` no longer reads `process.env` itself or
+hard-codes its knobs:
+`apps/server/src/services/search/impls/qwksearch/searchSettings.ts` owns one
+`SearchSettings` value and folds it out of three layers — shipped defaults, then
+Worker env, then the signed-in user's preferences, then this tool call's own
+arguments — validating every value on the way in. `index.ts` is left turning the
+resolved value into HTTP.
+
+| Setting | Env var | Reaches |
+|---|---|---|
+| Endpoint + bearer token | `QWKSEARCH_SEARCH_URL`, `QWKSEARCH_API_KEY` | the request URL and its `Authorization` header |
+| Default categories | `QWKSEARCH_SEARCH_CATEGORIES` | `cat`, one request per category |
+| Fan-out bound | `QWKSEARCH_SEARCH_MAX_CATEGORIES` | how many of them run (3 by default, up to 10) |
+| Result language | `QWKSEARCH_SEARCH_LANGUAGE` | `lang` — **newly sent**; the endpoint already defaulted to `en-US` |
+| Default recency | `QWKSEARCH_SEARCH_TIME_RANGE` | `recency`, when the call names none |
+| Safe search | `QWKSEARCH_SEARCH_SAFE` | `safesearch` — newly sent |
+| Public SearXNG fallback | `QWKSEARCH_SEARCH_PUBLIC_INSTANCES` | `publicInstances` — newly sent |
+| Result cap | `QWKSEARCH_SEARCH_RESULT_LIMIT` | applied after the URL merge |
+
+Four things worth knowing before building the pane on top of it:
+
+- **It lives beside its consumer, not under `worker/`.** `extractSettings.ts`
+  sits in `worker/qwksearch/` because the extraction chain does. The search impl
+  does not: it is `@/server/*` code. The dependency runs worker → `@/server/*`
+  and never back, so a future `/api/doc/search-settings` route can import this,
+  while the reverse placement would not have worked.
+- **The request layer is narrower than the user layer.** The tool call's
+  arguments are written by the model, so they may narrow only `categories` and
+  `timeRange` — the two fields the manifest offers it. `maxCategories` is
+  withheld from it deliberately: it bounds how many upstream requests one query
+  costs, which is the operator's budget and not a generated argument's to raise.
+  `searchEngines` is still never read at all.
+- **The cap is applied once, at the end.** The category list can arrive from the
+  request layer while `maxCategories` comes from the user layer, so each
+  normalizer returns the full validated list and `resolveSearchSettings`
+  truncates after every layer has resolved.
+- **Three query parameters the endpoint always accepted are now actually sent.**
+  `lang`, `safesearch` and `publicInstances` were in
+  `research-agent-ui/src/api/handlers/search.ts` the whole time and the impl
+  never used them. Only `lang` changes the default request, and it sends the
+  value the endpoint already assumed.
+
+Follow-ups:
+
+- ✅ **The user layer has storage** — 1.9 below.
+- ⬜ **`searchSettingsForClient` has no client**, the same gap 1.6 left before
+  1.7 closed it. `GET /api/doc/search-settings` serves it now; the pane is 1.10.
+
+### 1.9 Search preferences: the user layer ✅
+
+The search-side mirror of 1.6, and the second of the three steps the Search &
+Sources pane needs. 1.8 gave `resolveSearchSettings` a user layer with no
+storage; this is the storage, the route that writes it, and the wiring that
+carries it to the fan-out.
+
+| Piece | File |
+|---|---|
+| `search_settings` table + load/save/clear | `apps/server/src/services/search/impls/qwksearch/searchPreferences.ts` |
+| D1 migration (idempotent, like 0001–0002) | `migrations/d1/0003_search_settings.sql` |
+| `GET`/`PUT`/`DELETE /api/doc/search-settings` | `worker/routes/qwksearch/searchSettings.ts` |
+| Table listed beside its siblings | `worker/qwksearch/schema.ts` (re-export) |
+
+**The open question 1.8 left — how the user id reaches the impl — is answered by
+threading it, not by a per-request factory.** `webBrowsingRuntime`'s factory
+already receives a `ToolExecutionContext` carrying `userId`; it now passes it to
+`new SearchService({ userId })`, which forwards it through
+`createSearchServiceImpl(type, options)` to `new QwkSearchImpl({ userId })`. Four
+one-line changes in a straight line, and no lifecycle change: the service is
+still built per tool execution and still holds its impls for its own lifetime.
+The rejected alternative — giving `SearchService` a per-request impl factory —
+would have rebuilt every provider on every query to serve one of twelve.
+
+Three decisions are worth knowing before building the pane:
+
+- **The storage lives under `@/server/*`, not `worker/`, and the schema file
+  re-exports it.** This is the one place the two features could not be twins.
+  Extraction's preferences sit in `worker/qwksearch/` because only Worker routes
+  read them; search preferences are read by `QwkSearchImpl` too, which is
+  `@/server/*` code, and the dependency runs worker → `@/server/*` and never
+  back. Only the `@/server/*` placement serves both, so `worker/qwksearch/schema.ts`
+  re-exports the table rather than declaring it — the table still has exactly one
+  definition and still appears beside its siblings. The D1 handle comes from
+  `@/database/core/cloudflare`, the bridge the database package already uses to
+  reach the bindings, so nothing imports `worker/` backwards. Cost: a second thin
+  drizzle wrapper over the same `DB` binding, which is a pointer, not a pool.
+- **The row is read once per impl, not once per query.** `overridesFor()` memoizes
+  the *promise*, so a turn that fans out several searches pays one D1 read and
+  concurrent queries collapse onto it. An impl is built per tool execution, so
+  "once per impl" is once per conversation turn — there is no staleness window to
+  invalidate.
+- **A preferences outage degrades, it does not fail.** `loadUserSearchOverrides`
+  resolves to `{}` on any read error and when there is no D1 binding at all, so a
+  Node dev server, a non-Cloudflare deployment and a D1 outage all search on the
+  operator's configuration. `overridesFor()` catches too, so an injected loader
+  cannot break that guarantee and a rejected promise is never what the memo
+  caches. Writes are the opposite and propagate, because the pane has to be able
+  to say a preference was not saved.
+
+The endpoint and the API key are excluded from the user layer at the type level
+and the route proves it at runtime: `PUT`ing an `apiKey` or `endpoint` stores
+neither, and `GET` reduces both to presence flags under `effective.configured`.
+`PUT` returns what was actually stored, so a value that failed validation is
+visible to the pane rather than silently dropped.
+
+Verified by 31 new tests — 18 on the storage module and 13 on the route, both
+running against the real resolver with only D1 and the session faked.
+
+Follow-ups:
+
+- ⬜ **`bun run cf:d1:migrate` must run before the route is useful.** Both migrate
+  scripts in `package.json` name their files one by one and now include 0003; the
+  table does not exist on `qwksearch-new` until someone with Cloudflare
+  credentials runs it. Until then `GET` answers from defaults-under-env and `PUT`
+  returns a 500.
+- ⬜ **Not seen against a real D1.** No Cloudflare credentials here, so the
+  drizzle calls are verified against a fake that reproduces the three chains the
+  module uses, and never against SQLite.
+
+### 1.10 Search & Sources settings pane ✅
+
+1.7's equivalent, shipped, and the last of the three steps. `/settings/search` is
+a form over the one JSON document 1.9 serves, built to 1.7's five-file shape and
+registered at 1.7's same five points. The full contract is §F5c of the
+integrations reference. **This closes 2.2** — both panes it asked for now exist.
+
+```
+src/features/Settings/search/
+  index.tsx           SettingHeader + the form
+  api.ts              GET/PUT/DELETE, and the response types
+  formState.ts        form values ⇄ UserSearchOverrides (pure, no React)
+  features/SearchForm.tsx
+```
+
+Everything 1.7 recorded holds here — an unset field is absent from the PUT body,
+the inputs seed from `overrides` and never from `effective`, and the pane renders
+the response rather than what it sent. Three things are specific to this pane:
+
+- **Trimming has two different outcomes here, and the form has to survive both.**
+  An unknown category is *dropped*; an out-of-range `maxCategories` is *clamped*
+  to the ten categories that exist. `contract.test.ts` asserts both against the
+  real `normalizeSearchOverrides`, which is how the difference was found — the
+  first draft of that test assumed the cap was dropped like the category.
+- **The stored category list can be longer than the list in force.** It is the
+  fan-out order and `maxCategories` keeps the first N, so the pane shows all of
+  what the user chose while `effective.categories` shows what actually runs. The
+  two are deliberately different numbers on screen.
+- **`language` is trimmed client-side** — the only client-side normalization in
+  either pane. The server's tag pattern rejects a trailing space and would drop
+  the whole field for it, silently.
+
+Upstream edits are 1.7's five registration points and no logic: the
+`SettingsTabs.Search` enum member, both `componentMap`s, the sidebar item in
+`useCategory.tsx` (beside Extraction, under AI config), and the compact-header
+title map in `SettingsContent.tsx`.
+
+54 locale keys in en-US and zh-CN, and 36 new tests — 8 on the client, 15 on the
+form state, 13 through the real resolver in `contract.test.ts` — plus 13 on the
+rendered form.
+
+Follow-ups, all inherited from 1.7 and all now closed:
+
+- ✅ **`categories` is drag-to-reorder**, closed in 1.11 together with 1.7's
+  tier list — it was the same problem and the same fix.
+- ✅ **`language` has a language picker**, closed in 1.11 together with 1.7's
+  `languages`.
+- ✅ **The 401 now prompts to sign in** rather than printing the status text, in
+  *both* panes — it was the same bug in each, so it was fixed in each.
+
+### 1.11 The panes' shared controls ✅
+
+Both panes' remaining follow-ups were the same two problems twice over, so they
+were solved once, in `src/features/Settings/qwksearch/` — a home both panes
+import from, which did not exist before and which a third pane on the same
+resolver pattern now gets free. The full contract is §F5d of the integrations
+reference.
+
+```
+src/features/Settings/qwksearch/
+  index.ts                the barrel both panes import from
+  languageTags.ts         the client's mirror of the routes' BCP-47 rule (pure)
+  OrderedList.tsx         numbered, drag-sortable, removable rows
+  OrderedMultiSelect.tsx  closed-set Select + OrderedList
+  LanguageSelect.tsx      LanguageSelect (one tag) + LanguageListSelect (a list)
+```
+
+`tiers` and `categories` became `OrderedMultiSelect`; `languages` became
+`LanguageListSelect`; `language` became `LanguageSelect`. Three things are worth
+knowing before touching this:
+
+- **`languages` was not merely awkward — it could not be filled in.** base-ui's
+  `Select` accepts `mode="tags"` and `tokenSeparators`, but **it never creates a
+  value that is not already in `options`**: typing is a typeahead over the option
+  list and Enter commits whichever option it landed on. 1.7's field passed no
+  options, so there was nothing to commit and no transcript language could be
+  set at all. Adding options makes it worse, not better: typing a valid but
+  unlisted tag like `sw` (Swahili) commits the nearest highlight, `sv` (Swedish).
+  Both language fields are therefore built on base-ui's **`AutoComplete`**, which
+  is a real text input with a suggestion list. Anything else in this repo that
+  wants free-text tag entry will hit the same wall.
+- **The rejection is now visible at the moment of entry.** Both routes validate a
+  tag's shape and drop what fails rather than failing the write, which is right —
+  `en, klingon` should still get you English — but it meant a typo vanished under
+  a "saved" toast. `languageTags.ts` restates the rule so the pane can name what
+  it refused and show the canonical spelling that will be stored. Language names
+  come from `Intl.DisplayNames` in the reader's own locale, so the suggestions
+  need no translated string table and still cover every tag.
+- **`languageTags.contract.test.ts` is the drift guard**, the panes' own
+  `contract.test.ts` mechanism aimed at a rule that lives in two other files. One
+  corpus of 24 inputs goes through `normalizeSearchLanguage`, `normalizeLanguages`
+  and this module; if any of the three drifts, it fails. It also pins the one
+  deliberate difference between the routes — search canonicalizes case,
+  extraction lowercases, because that is what it deduplicates on.
+
+4 locale keys in en-US and zh-CN, and 133 tests under
+`src/features/Settings/qwksearch/`, plus 5 more on the two panes proving the
+controls are actually wired in — including the regression test for the
+unfillable languages field.
+
+Follow-ups:
+
+- ⬜ **Nothing tests an actual drag.** `moveItem` is covered as a pure function
+  and the rows are covered as rendering, but dnd-kit's pointer sequence is not
+  driven in happy-dom. The keyboard sensor is wired (`sortableKeyboardCoordinates`)
+  and unverified.
+- ⬜ **`AutoComplete` has no commit event**, so adding a language is an explicit
+  button rather than Enter. If base-ui grows an `onSelect`/`onPressEnter`, the
+  button can become a shortcut rather than the only way.
+
+### 1.4 Agent parity checklist ⬜
+
+Reproduce today's chat-mode behavior on the engine and record each gap:
+
+- ⬜ Search-cited answers with follow-up suggestions (LobeHub has both — verify
+  they read the QwkSearch results from 1.2).
+- ⬜ File-upload Q&A.
+- ⬜ Voice input — LobeHub's TTS/STT settings tab vs `use-voice-control`; decide
+  per gap whether to adopt or port.
+- ⬜ Guest / anonymous chat with rate limiting. Worker A has
+  `lib/rate-limit/guestRateLimiter.ts`; the engine requires sign-in. Decide
+  *before* cutover: anonymous session mode, or chat becomes login-gated.
+
+## Phase 2 — Settings: one system of record
+
+- ✅ **2.1 Map every section** of `research-agent-ui/src/settings/sections.json`
+  to its engine equivalent. Done, and done as **code rather than as this
+  paragraph**: `apps/qwk-in-lobe/src/features/Settings/qwksearch/legacySettingsMap.ts`
+  carries all nine sections with, for each, what stores its values today, the
+  engine tabs that take it over, and what is still missing before 2.4 may delete
+  it. `legacySettingsMap.contract.test.ts` checks every claim against the thing
+  itself — `sections.json` and `search.json` on the QwkSearch side,
+  `componentMap.ts` and the feature directories on the engine side — so the map
+  fails a test instead of going quietly stale. `retirementBlockers()` is the
+  answer to "may 2.4 run yet?"; it returns **9 of 9** today.
+
+  | Legacy section | Engine tabs | State |
+  |---|---|---|
+  | Account | `profile`, `apikey`, `devices`, `appearance` | 🚧 which API key the Worker trusts; account deletion; browser-session revocation (the `devices` tab is CLI/desktop devices, not sessions) |
+  | Language Models | `provider`, `service-model` | 🚧 global admin row → per-user vault; no "test models" |
+  | Connectors | `connector`, `skill` | 🚧 servers live in Worker A, engine reads its own store |
+  | Skills & Memory | `skill`, `memory` | 🚧 memories are D1 rows vs engine Postgres — the one migrator that is possible |
+  | Search Sources | `search` | 🚧 pane picks categories, legacy picks engines *within* a category + health test |
+  | Search Settings | `search`, `extraction` | 🚧 22 fields, four destinations — see below |
+  | Cloud Storage | — | ⬜ no engine equivalent; credentials in `localStorage` |
+  | Rewrite Modes | — | ⬜ Phase 3: REASON is not in the engine yet |
+  | Voice Settings | `service-model` | 🚧 STT only; `SettingsTabs.TTS` is deprecated and `tts/` has no pane |
+
+  Three findings the map exists to record, because each changes what 2.3 and 2.4
+  have to do:
+
+  - **The old "server" scope was never per-user.** `POST /api/config` is
+    `assertAdmin`-gated, so `searxngURL`, `proxyURL`, `tavilyApiKey` and the
+    provider keys are one global D1 row shared by everyone. On the engine they
+    are Worker secrets — which is what 2.3 already says, but the reason is that
+    they were operator settings all along, not that per-user storage was lost.
+  - **The "Search Settings" section is not one setting.** Its 22 fields have
+    four different destinations, mapped field by field in `LEGACY_SEARCH_FIELDS`:
+    **1** is already on a shipped pane (`sourceScrapeTimeout` → the extraction
+    pane's `timeoutSeconds`), **1** is the agent system role
+    (`ChatSettingsTabs.Prompt`, per-agent rather than global), **3** become
+    Worker secrets, **4** are follow-up/query-expansion prompts and a TTS voice
+    with no engine home, and **13** are chrome of the old shell — homepage
+    background art, orb and cursor glow, result-card glow, the weather widget
+    (5) and the trending-news widget (4).
+  - **`voice → tts` was wrong**, which is the kind of thing a prose map hides:
+    `SettingsTabs.TTS` is deprecated and redirects to `ServiceModel`, and
+    `src/features/Settings/tts/` has no `index` — only an STT sub-form that
+    `service-model` imports. There is no TTS voice pane to map onto.
+- ✅ **2.2 Add the two missing panes**, following the existing tab conventions
+  (`src/features/Settings/<tab>/` + route segment + keys in
+  `packages/locales/src/default/qwksearch.ts`): **Search & Sources** (engine and
+  category selection, per-category defaults, time range, SearXNG URL — now that
+  1.2 exists these map onto `QWKSEARCH_SEARCH_URL` and the category normalizer)
+  and **Extraction** (citation style, transcript language, render backend,
+  scraper/Tavily keys).
+  ✅ **Extraction is done** — 1.5 (resolution), 1.6 (storage + API) and 1.7 (the
+  pane). It is a client of `GET`/`PUT`/`DELETE /api/doc/extraction-settings` and
+  has no slice in `src/store/user/slices/settings/`; 1.6 records why.
+  ✅ **Search & Sources is done too** — the same three steps: 1.8 (resolution),
+  1.9 (storage + API) and 1.10 (the pane). The asymmetry 1.8 flagged — the search
+  impl being built by a factory with no request in scope — was resolved by
+  threading `userId` from the tool-execution context through `SearchService` to
+  the impl; 1.9 records why that beat a per-request factory.
+  Both panes are clients of their route and neither has a slice in
+  `src/store/user/slices/settings/`; 1.6 records why. What is left of Phase 2 is
+  the key migration and retiring the old surface, below — not UI.
+- ⬜ **2.3 Key migration.** Server env keys stay Worker secrets. Per-user keys
+  live in `localStorage` today and have no server copy — announce a one-time
+  re-entry into the engine's key vault; do not build a migrator.
+
+  2.1's map sharpens the list. What actually has to be re-entered is: the
+  **file-source credentials** (SSH / S3 / R2 / B2 / Google Docs / Turso under
+  `REASON-file-sources`, and there is nowhere on the engine to enter them yet),
+  **per-user model provider keys**, and **MCP servers**. What does *not* need
+  announcing is the admin-only global row — those become Worker secrets and no
+  user ever held them. The one place a migrator is even possible is
+  `/api/user/memories`, which is server-side; whether to write one is undecided.
+- ⬜ **2.4 Retire the old surface** when `retirementBlockers()` (2.1) returns
+  empty — it returns all nine sections today. Then delete
+  `apps/qwksearch-web/components/Settings/**`, `app/settings/[[...section]]`,
+  `app/api/config`, and drop `shadcn-settings` from the prebuild chain. Never run
+  two settings stores at once.
+
+## Phase 3 — REASON docs inside the engine
+
+- ⬜ **3.1** Consume `react-reason-editor` + `react-reason-editor-sidebar` from
+  npm in the pnpm workspace (source of truth stays `packages/reason-editor`) and
+  mount the shell in `src/features/QwkSearch/Docs`, replacing the plain editor.
+- ⬜ **3.2** Point its sync hook at `/api/doc/documents` — already served by the
+  same Worker against the same D1 `documents` table, so documents carry over with
+  zero migration.
+- ⬜ **3.3** Style seam: load `react-reason-editor/style.css` scoped to `/docs`;
+  verify Tailwind preflight does not leak into antd components.
+- ⬜ **3.4** "Send to REASON" message action in chat — the engine-side equivalent
+  of today's research → docs flow in `MainWorkspaceView`.
+- ⬜ **3.5** REASON's AI rewrite calls `AiGenerationService`, as ArticlePanel Q&A
+  already does, so one key vault serves chat, article Q&A and rewrite.
+
+## Phase 4 — Public cutover 🔒
+
+Blocked on the LobeHub Community License answer, recorded in
+`apps/qwk-in-lobe/README.md` before any public traffic moves.
+
+- 🔒 **4.1 Routing split.** `/chat*`, `/settings*`, `/docs*`, `/signin*`,
+  `/_spa*`, `/webapi/*`, `/trpc/*`, `/api/auth/*`, `/f/*` → engine; everything
+  else (homepage, marketing, `/api/doc/*`, `/api/agent/search`) → Worker A.
+- 🔒 **4.2 One login.** Both sides run Better Auth 1.6. Consolidate on the
+  engine's instance; Worker A reads the session via `/api/auth/get-session` on
+  the same cookie domain. Migrate `user`/`account` rows D1 → Postgres.
+- 🔒 **4.3 Chat history migration.** One-shot D1 `chats`/`messages` → Postgres
+  topics/messages/sessions, dry-run on a snapshot, D1 read-only for 30 days.
+- 🔒 **4.4 Homepage handoff.** The hero search box submits into `/chat?q=…`;
+  `app/page.tsx` stops mounting `ChatWindow`/`ChatInputBox`.
+- 🔒 **4.5 Decommission in Worker A**: `app/api/agent/**` (except `search`),
+  `lib/chat/**`, `app/c/[chatId]`, the `ChatProvider` mount, the NDJSON protocol.
+  `/c/:id` 301s to migrated topics.
+
+## Phase 5 — Replace the rest
+
+- ⬜ **5.1 Package fates.** Keep + publish: `search-web-api`, `extract-*`,
+  `render-url-to-html`, `domain-rank`, `reason-editor(-sidebar)`,
+  `qwksearch-mcp-server`, `qwksearch-api-client` (regenerate against `/api/v1`).
+  Freeze: `research-agent-ui`, `use-voice-control`. Deprecate:
+  `chat-agent-toolkit`'s live chat path, `write-language`, `shadcn-settings`.
+- ⬜ **5.2 Satellite apps.** Browser and VS Code extensions re-point to the
+  engine (`/webapi`, `/api/v1`); desktop picks Lobe's Electron app or keeps Tauri
+  as a webview.
+- ⬜ **5.3 Trim the prebuild chain** in `apps/qwksearch-web/package.json`.
+- ⬜ **5.4 Ops gaps**, all from `apps/qwk-in-lobe/README.md` § Known gaps:
+  - ⬜ Upstash HTTP Redis provider in `src/libs/redis` — without it, agent stream
+    fan-out, edit locks and some rate limits run on per-isolate memory.
+  - ⬜ Mobile SPA build (`build:spa:mobile`); mobile currently gets the desktop bundle.
+  - 🚧 Worker bundle size budget — now **~7.9 MB gzipped against a 10 MB limit**
+    after 1.3 pulled in `linkedom` and Prism. `bun run cf:budget`
+    (`scripts/checkWorkerBudget.mts`) measures it, warns under ~1 MB of headroom
+    and fails over the limit. Still to do: run it in CI — and 5.6's job
+    deliberately does **not**, because the budget is a different order of cost
+    from the rest of this workspace's checks. It needs `build:worker`, so it
+    needs the SPA builds, 8 GB of heap, and a *full* install:
+    `build:worker:server` dies at `[UNLOADABLE_DEPENDENCY] @napi-rs/canvas`
+    when postinstall never ran, so the `--ignore-scripts` install 5.6 uses
+    cannot produce a bundle to measure. That is the decision left, and it is
+    now only about minutes: the job to hang it on exists.
+  - ⬜ Republish `extract-webpage` so the engine can drop the bundler workaround.
+    Its published dist imports `prismjs/components/prism-markup` and 16 siblings
+    without a `.js` extension, which Node's ESM resolver rejects — Vite/rolldown
+    resolve it, so the Worker build is fine, but the package cannot be loaded by
+    plain Node. Fixed at source in
+    `packages/extract-webpage/src/html-to-content/html-utils.ts`; the fix reaches
+    the engine on the next `npm publish` of that package.
+  - ⬜ OIDC (`/oidc/*` returns 501) — blocks CLI and desktop sign-in.
+  - ⬜ SEO strings in the HTML shell are English-only (`worker/shims/serverTranslation.ts`).
+  - ⬜ No `sharp`; avatar processing falls back to the original image.
+- ✅ **5.5 A type-check that actually runs over the QwkSearch code.** `bun run
+  type-check:qwksearch` (`scripts/typeCheckScoped.mts` +
+  `tsconfig.qwksearch.json`) type-checks every QwkSearch-owned file — `worker/`,
+  `src/features/QwkSearch/`, and the two panes with the controls they share — in
+  about a minute, where the repo-wide `bun run type-check` OOMs at ~13.8 GB RSS
+  and tells you nothing. `bun run type-check:worker` is the same script against
+  `tsconfig.worker.json`, narrowed to the Worker, and stays as the fast path
+  while iterating there. It exists
+  because §1.3's unwired chain called two identifiers that are defined nowhere
+  in the repository and nothing ever noticed.
+
+  Two things it does that the root config does not:
+
+  - **Filters to the scope it was given.** `worker/` imports `@/server/*` and
+    the panes import half of `@lobehub/ui`, so the program pulls in
+    `apps/server`, `apps/desktop` and `packages/*` with their pre-existing
+    errors. Those are counted and ignored; only the QwkSearch paths decide the
+    exit code. The prefixes are arguments, which is the whole difference between
+    the two configs — the script is the same one.
+  - **Gives the Worker its own globals.** The root `types` is
+    `["vitest/globals"]` and *nothing in the repo references
+    `@cloudflare/workers-types`*, so `D1Database`, `KVNamespace`, `Hyperdrive`,
+    `R2Bucket`, `Fetcher` and `ExecutionContext` — the types `worker/cf/env.ts`
+    declares the entire Worker environment in terms of — resolve to nothing
+    under the repo-wide check too. The package is already a devDependency;
+    `tsconfig.worker.json` is the only config that asks for it. Adding it took
+    the Worker's own error count from 50 to 19 on a stub install.
+
+  **Confirmed against a real install, and then widened past `worker/`.**
+  `pnpm install --ignore-scripts` inside `apps/qwk-in-lobe` takes **1m23s** and
+  4.2 GB here, and after it the Worker reports **clean** in about a minute — all
+  19 errors that remained on the stub install were that install, not the code.
+  Three things were checked rather than assumed:
+
+  - **The check is still live on a real install, not silently passing.**
+    Appending one line calling an undefined identifier to
+    `worker/qwksearch/extract.ts` produces exactly
+    `worker/qwksearch/extract.ts(621,31): error TS2304` and exit 1 — the same
+    class of defect §1.3 shipped. Reverted, and clean again.
+  - **`tsgo` is real here now.** The earlier three-error result was produced by
+    the pinned `typescript@6.0.3` `tsc` through a shim, because that session had
+    no `tsgo` binary. `@typescript/native-preview` installs a working `tsgo`
+    even under `--ignore-scripts`, so the run above is the binary
+    `type-check` itself uses, and the two agree.
+  - **The wider scope is clean too, and costs nothing.** Adding
+    `src/features/QwkSearch/` and the three settings directories to the program
+    takes the run from ~60s to ~57s — they were already being pulled in as
+    imports; only the filter changed — and reports **0 errors in QwkSearch
+    code**. The same negative control was run there
+    (`src/features/Settings/qwksearch/languageTags.ts`, one undefined
+    identifier → 1 error, exit 1, reverted), because a filter that matches
+    nothing looks exactly like a scope that is clean.
+
+  Errors *outside* the scope, which the script counts and ignores: **504**,
+  across the `apps/desktop` (248), `apps/server` (98), `packages/*` (~120) and
+  upstream `src/` files the QwkSearch code transitively imports. That number is
+  the reason the filter exists, not a regression — and it is why `worker/` and
+  the panes could sit unchecked while a repo-wide `type-check` existed.
+
+- ✅ **5.6 A CI job that installs `apps/qwk-in-lobe` at all.**
+  `.github/workflows/lobehub-engine.yml` — the blocker 5.4 and 5.5 both named,
+  and the reason a green check on this repo used to say nothing whatsoever about
+  an engine change. It runs `pnpm run type-check:qwksearch` and
+  `pnpm run test:qwksearch` — together, every QwkSearch file in this workspace
+  is type-checked and every test over them is run, on one install, in about four
+  minutes.
+
+  - **`test:qwksearch` is new and is the point of the job.** It is one script in
+    `apps/qwk-in-lobe/package.json` running every path the README and §6 of the
+    integrations reference list as separate recipes — the Worker and its routes,
+    both settings resolution/preferences layers, both panes and their contract
+    drift guards, the shared controls, the Cloudflare adapters, the search
+    provider, and the Hyperdrive bridge in `packages/database` (a separate
+    vitest project, because the root config excludes `**/packages/**`).
+    **579 tests in 37 files, ~1 minute.** The path list living in the script is
+    what stops the workflow, the README and the reference from drifting apart —
+    the same mechanism as the panes' `contract.test.ts`.
+  - **Path-filtered to everything under `apps/qwk-in-lobe/`, plus the workflow file
+    itself.** The install is the expensive step, and nothing outside the engine
+    changes either result.
+
+  - **Three details are specific to this workspace**, and each one is a way the
+    obvious workflow would have failed: `pnpm/action-setup` reads the *repo
+    root* `package.json` by default, which pins **bun**, so it has to be pointed
+    at `apps/qwk-in-lobe/package.json` for the pinned `pnpm@10.33.0`;
+    `pnpm-workspace.yaml` sets `lockfile: false` and `pnpm-lock.yaml` is
+    gitignored, so there is no lockfile to key `setup-node`'s cache on or to
+    install `--frozen` against — the manifests are the cache key instead; and
+    the install is `--ignore-scripts` like every other recipe here, which is
+    also what keeps 5.4's bundle budget out of this job.
+
+  **Both runs so far: green**, on `.nvmrc`'s Node 24.20.0 — the version the
+  Cloudflare build pins and the deploy runs, which nothing local could exercise.
+  #452 (`f3b37e85`) missed the store cache and wrote it; #453 (`3c8839f6`) hit it
+  on the primary key:
+
+  | Step | Cold (#452) | Cache hit (#453) |
+  |---|---|---|
+  | `pnpm install --ignore-scripts` | 1m03s, 3939 packages | **45.7s** |
+  | `pnpm run type-check:qwksearch` | 40s → clean | 47s → clean |
+  | `pnpm run test:qwksearch` | 43s, 568 passed | 56s, 568 passed |
+  | The pnpm store | ~25s to save, **1.0 GB** | hit, nothing saved |
+  | **Whole job** | **3m22s** | **3m36s** |
+
+  Three things those runs settled:
+
+  - **The 504 ignored errors are the same 504** on the runner's Node 24 as on
+    Node 22 here, so the filter's count is a property of the tree rather than of
+    one machine. That is what makes it usable as a tripwire: a change in it is
+    a signal, not a machine difference.
+  - **The store cache is worth about 17 seconds, and that is all.** #452's
+    write-up guessed that a cache hit would take the job to "roughly two
+    minutes"; the measured hit is 3m36s, *slower* than the cold run, within
+    runner variance either way. The cache only removes the download — pnpm still
+    links 3939 packages into `node_modules` every time, and that is the install.
+    Keep the cache (17s and a gentler registry) but do not plan around it: this
+    job costs ~3.5 minutes on every run, which makes the path filter worth
+    minutes and not just runner slots.
+  - **`restore-keys` is no longer unexercised.** The second run hit the primary
+    key, so the fallback branch specifically still has not been taken, but the
+    restore path itself works.
+
+  One warning on every run, and not this job's: `actions/checkout@v4`,
+  `actions/setup-node@v4`, `actions/cache@v4` and `pnpm/action-setup@v4` all
+  target Node 20 and are being forced onto Node 24. Every workflow in this
+  repository uses those actions, so the v5 bump is a repo-wide change, not a
+  `apps/qwk-in-lobe` one.
+
+  Follow-ups:
+
+  - ⬜ **An unlockfiled install is not a reproducible one.** `lockfile: false`
+    is upstream LobeHub's choice and changing it is a real decision, but it
+    means this job resolves fresh semver on every cache miss and can go red for
+    a reason that is not in the diff. If that happens, the store cache key
+    (the manifests) is the first thing to read.
+
+## How to pick up the next item
+
+**Suggested next, in order** — all code-only, all testable without Cloudflare
+credentials:
+
+1. **1.4's agent parity checklist**, now that both settings features are done,
+   the Worker's dead chain is gone and type-checks clean, CI can see this
+   workspace, and Phase 1's remaining work is parity rather than plumbing. Start
+   with the two items that are pure verification against the wired-up engine —
+   search-cited answers with follow-ups, and file-upload Q&A — and record each
+   gap before deciding to adopt or port.
+2. **The cheapest blockers 2.1 just named.** The map turned "retire the old
+   surface" into nine specific questions, and three of them are code-only and
+   small: where browser-session revocation goes now that the `devices` tab turns
+   out to manage CLI/desktop devices rather than sessions; whether
+   `SSOProvidersList` can unlink as well as list; and which API key the Worker's
+   `/api/agent/*` routes should trust once the legacy minting UI is gone (that
+   one is a decision, not a build, and it gates deleting the Account section).
+   Each clears a `gaps` entry in `legacySettingsMap.ts` and its test.
+3. **5.4's bundle budget in CI**, which is now purely a minutes decision: 5.6's
+   job exists to hang it on, and the measurement exists (`bun run cf:budget`).
+   What it needs that 5.6 does not is a full install and a Worker build — see
+   5.4 for why the `--ignore-scripts` install cannot produce a bundle. Read the
+   first real run of 5.6 before adding to it.
+4. **Lint in 5.6's job.** Types and tests are covered; lint is not. The obvious
+   `bun run check --lint` is the wrong shape for CI because it auto-fixes, so
+   this is a small decision — probably `eslint` over the same QwkSearch paths
+   `tsconfig.qwksearch.json` lists, with no `--fix`, sharing the install that is
+   already paid for. Check first whether upstream's rules are even clean on
+   those files; if they are not, the item is "record which", not "turn it on".
+
+Then, for whichever you pick:
+
+1. Prefer an item whose seam is already understood and whose "done" is testable
+   without Cloudflare credentials — those are the ones a code-only run can finish.
+2. Keep changes **additive**: new files under `worker/`, `src/features/QwkSearch/`
+   or a new `impls/` directory. Edits to upstream files are the merge cost against
+   LobeHub, so keep them to registration points (an enum, a switch, a route mount)
+   and list every one in `apps/qwk-in-lobe/README.md` § What changed vs. upstream.
+3. Ship a test with it. `bunx vitest run <path>` under `apps/qwk-in-lobe`.
+
+   A full `pnpm install --ignore-scripts` inside `apps/qwk-in-lobe` **does** work in
+   a code-only environment — measured at **1m23s and 4.2 GB** on a cold store,
+   which is cheaper than the "few minutes and about 3 GB" this page used to
+   estimate, and cheap enough that 5.6 does it on every engine PR. Anything
+   touching `src/` needs it, and it is what makes `bun run check <files>` (lint
+   + auto-discovered related tests in one pass) available, which is the workflow
+   `apps/qwk-in-lobe/AGENTS.md` documents. Prefer it unless the change is
+   `worker/`-only. With it, `bun run test:qwksearch` runs the whole integration
+   surface — 579 tests — in about a minute; that is what CI runs, so a green run
+   of it locally is the same signal.
+
+   **`bun run build:worker:server` cannot finish after an `--ignore-scripts`
+   install.** It fails at `[UNLOADABLE_DEPENDENCY] … @napi-rs/canvas …
+   skia.linux-x64-gnu.node` — the native binding is a stub when postinstall never
+   ran — and it fails identically on a clean tree, so it is not a signal about
+   your change. It is still useful as a *resolution* check: the error comes after
+   `✓ N modules transformed`, so a new import that the Worker bundle cannot
+   resolve fails earlier and differently. Compare the module count against a
+   stashed tree to confirm your files were transformed.
+
+   **Do not run `bun run check --type`.** The repo-wide type check reaches
+   ~13.8 GB RSS and gets OOM-killed on a 15 GB box — twice observed now. Write a
+   throwaway `tsconfig.scoped.json` that `extends` the real one and narrows
+   `include` to the files you changed, then `npx tsgo --noEmit -p` it: about a
+   minute, and it keeps the path aliases that passing bare filenames loses.
+   Expect pre-existing errors from `apps/desktop` and `apps/server` in the
+   output (missing `electron` types and similar) — filter to your own paths.
+
+   For a QwkSearch change that config already exists: `bun run
+   type-check:qwksearch` (§5.5) is the same trick, committed, with the filtering
+   built in, and `bun run type-check:worker` is it narrowed to `worker/`. This is
+   not optional diligence — it is the only check that looks at those files at
+   all, and skipping it is how §1.3 shipped two identifiers that do not exist.
+   §5.6's CI job runs the wider one, so a skipped local run now surfaces as a red
+   check instead of as nothing.
+
+   **If the change is `worker/`-only and `apps/qwk-in-lobe/node_modules` is empty** — it is in a fresh clone, because
+   `apps/qwk-in-lobe` is a separate pnpm workspace outside the root turbo graph — a
+   full `pnpm install` is not the only option for a `worker/` change. Those
+   modules depend on very little: an install of `vitest`, `drizzle-orm` and
+   `hono` in a scratch directory, symlinked to `apps/qwk-in-lobe/node_modules`,
+   plus a throwaway config with `root` pointing at
+   `apps/qwk-in-lobe`, runs the whole `worker/qwksearch` and
+   `worker/routes/qwksearch` suite in about a second. Anything touching `src/`
+   needs the real install.
+
+   Three aliases in that throwaway config decide how much of the suite collects.
+   With only the first, 3 of 9 files run (62 tests); with all three, **7 of 9
+   run (112 tests)**:
+
+   | Alias | Points at | Unblocks |
+   |---|---|---|
+   | `@lobechat/web-crawler/src/utils/htmlToMarkdown` | a stub returning `{ content }` | `extract.test.ts`, `article.test.ts` |
+   | `@/server` | `apps/server/src` | `searchSettings.test.ts` |
+   | `@/database` | `packages/database/src` | `extractionPreferences.test.ts`, `extractionSettings.test.ts`, and the two above |
+
+   **Delete the symlink before you commit.** `.gitignore` has `node_modules/`
+   with a trailing slash, which matches directories only — a real install is
+   ignored, a symlink is not, and it will sit in `git status` as an untracked
+   path waiting to be added.
+
+   The last two files cannot be made to collect this way:
+   `articleAi.test.ts` needs `@lobechat/business-const` and
+   `spaVariants.test.ts` needs `cookie` — the first is a workspace package that
+   is not in the tree at all, so only a real install reaches it. **On a real
+   install `bunx vitest run worker` collects all of them: 10 files, 129 tests,
+   10 seconds** — the tenth being `scripts/workerBudget.test.ts`, which the
+   filename filter picks up too.
+
+   **Type-check what you changed**: `bun run type-check:qwksearch` (§5.5) covers
+   every QwkSearch file in about a minute and filters out the ~500 upstream
+   errors. On a real install it reports **clean**, so on that tree *any* error it
+   prints is yours. `bun run type-check:worker` is the same thing narrowed to
+   `worker/`, which is what a stub install can manage — and there the errors it
+   will not resolve are all `TS2307`, so anything that is *not* a missing module
+   is yours too.
+4. Update this page's status and add the seam to the integrations reference in
+   the same change.
+
+## What CI will and will not tell you
+
+Three things about this repo's CI are worth knowing before you read a red check
+on a `apps/qwk-in-lobe` change:
+
+- **The repo-wide install outage is fixed by handing the SDK transport back to
+  fetch.** `bun install --frozen-lockfile` could not resolve two
+  specifiers #422 (`d81427c7`) introduced in
+  `packages/qwksearch-api-client/package.json`, because neither version was
+  ever published:
+
+  | Specifier | Latest actually on npm |
+  |---|---|
+  | `api2client: ^1.0.1` | 1.0.0 |
+  | `grab-url: ^1.6.23` | 1.6.22 |
+
+  The install died before compiling a line, so all 24 Coverage jobs, Test
+  Reports, Publish to npm, Lockfile and the Cloudflare Workers build went down
+  with it, on `master` and on every branch. Reverting #422 is what cleared it:
+  `qwksearch-api-client` sends its requests with the generated Hey API fetch
+  client again, the package declares no runtime dependencies, and the lockfile
+  needed no change — it never carried an entry for those two.
+
+  **Do not re-land the grab transport by downgrading the specifiers**, which is
+  the obvious-looking move and does not work: `api2client@1.0.0` is published
+  broken — its tarball ships only `README.md`, `package.json` and `src/`, while
+  `main`, `module`, `types`, `exports` and `bin` all point into a `dist/` that
+  is not in the package, so Vite fails with "Failed to resolve entry for
+  package". `^1.6.23` is equally real: it is the first `grab-url` carrying
+  `onRawResponse`, which is what puts the HTTP status and the parsed error body
+  on a failed result. Without it a failed request resolves with no `response`
+  at all and `response.status` throws — the exact status-branching that
+  `error-result-shape.test.ts` exists to protect.
+
+  Both packages live outside this repo (`vtempest/GRAB-URL`), so nothing here
+  can publish them. Re-landing #422 is a `git revert` of the revert plus a
+  `bun install` once `api2client@1.0.1` and `grab-url@1.6.23` are on npm —
+  check with `npm view api2client version` before trying.
+- **One job now installs `apps/qwk-in-lobe`, and only one.** The root `workspaces`
+  are `packages/*`, `packages/render-url-to-html/*` and `apps/*`;
+  `apps/qwk-in-lobe` is a separate pnpm workspace outside that graph, so every
+  other workflow — Coverage, API, Lockfile, npm-publish — installs with bun at
+  the repo root and cannot see it. `LobeHub Engine`
+  (`.github/workflows/lobehub-engine.yml`, §5.6) is the exception: it installs
+  with pnpm and runs the Worker type-check and the QwkSearch integration suite.
+
+  Two consequences worth keeping straight. **A red check on one of the other
+  workflows is still almost certainly not yours** if your change is
+  `apps/qwk-in-lobe`-only — they never installed your code. And **a green run on a
+  PR that touches nothing under `apps/qwk-in-lobe` says nothing about the engine
+  either**, because the job is path-filtered and did not run. What it does *not*
+  cover: the Worker bundle-size budget (5.4), the repo-wide type-check outside
+  `worker/`, and lint.
+- **The Coverage workflow was already red on `master` before that**, for
+  unrelated reasons the install fix did not touch. As of `52eb7cce` (#412, run
+  34445607248) and still at `c67266af` (#430, run 34540292102) **four** jobs
+  failed with nothing of that work in them: `chat-agent-toolkit`,
+  `extract-youtube`, `search-web-api` and `shadcn-settings`. All four are now
+  fixed, and none of them was a flake — each was a real defect:
+
+  | Job | What was actually wrong |
+  |---|---|
+  | `extract-youtube` | `typescript@^7.0.2` is the native compiler and exposes no JS API, so `ts-jest` refused to start and all 10 suites reported 0 tests. The package now aliases `typescript` to `@typescript/typescript6`, which the root already installed but nothing consumed. |
+  | `chat-agent-toolkit` | `openrouter-default-model.test.js` asserted a default of `nvidia/nemotron-3-super-120b-a12b:free` and a model `type` of `text-generation`; the database says `openrouter/free` (the auto-router every consumer prefers) and `text`. The assertions were stale, not the data. |
+  | `shadcn-settings` | `TextControl` rendered a fully controlled `<input>` with no draft state, so a host passing only `onCommit` — which the optional `onChange` advertises as supported — could not type at all, and blur committed the stale value. |
+  | `search-web-api` | Three separate faults: an autocomplete *example* was named `*.test.ts` and Vitest fails a test file that declares no suite; the mocked-fetch dispatcher matched `search.yahoo.com/search` before `news.search.yahoo.com/search`, so `yahoo_news` parsed the general-search page; and four suites call the live engines, whose rate limits decided the job. |
+
+  Live-network suites are now opt-in behind `RUN_LIVE_TESTS=1`
+  (`bun run test:live` in `packages/search-web-api`), so what gates CI is the
+  mocked `sources-unit.test.ts` that covers the same engines deterministically.
+  `search-web-api` was also the only package whose coverage reporters omitted
+  `lcov`, which is why its Codecov upload had always logged
+  `not_found_files: packages/search-web-api/coverage/lcov.info`.
+
+  **Do not treat the list as permanently fixed**: read the same job on your own
+  base commit before treating a failure as yours, or you will wave through a
+  real one.
+
+Also: **PRs here auto-merge.** `.github/workflows/auto-merge-claude.yml` merged
+#393 about ten seconds after it was opened, before its own checks finished. So
+the PR is the delivery, not a review checkpoint — get the change right before
+opening it, and expect any follow-up commit pushed afterwards to need its own
+PR against the new `master`.

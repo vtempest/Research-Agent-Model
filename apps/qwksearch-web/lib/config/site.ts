@@ -1,34 +1,49 @@
 // Icon components are no longer imported - we use string names instead
 // and resolve them dynamically in client components
 
-export const /** App Name in title case */
-  APP_NAME: string = "QwkSearch",
-  NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://beta.qwksearch.com",
-  NEXT_PUBLIC_GOOGLE_CLIENT_ID =
-    "921732917742-79ql1h9hek2qsdn9f5vnk6lg26jq0vi2.apps.googleusercontent.com",
+export interface Config {
+  /** App Name in title case */
+  appName: string;
+  baseUrl: string;
+  googleClientId: string;
   /** App Email for support */
-  APP_EMAIL: string = "support@qwksearch.com",
+  appEmail: string;
   /** Terms & Privacy Last Revised Date */
-  LAST_REVISED_DATE: string = "2026-01-15",
+  lastRevisedDate: string;
   /** Windows product ID for native & URL links */
-  DOWNLOAD_WINDOWS_STORE_ID: string = "9PCGF9GNK460",
-  /** Download Button URL for Chrome extension  */
-  DOWNLOAD_CHROME_URL: string =
-    "https://chromewebstore.google.com/detail/tab-manager-ai/manhemnhmipdhdpabojcplebckhckeko",
+  downloadWindowsStoreId: string;
+  /** Download Button URL for Chrome extension */
+  downloadChromeUrl: string;
   /** Default prompt template for article */
-  DEFAULT_SUMMARIZE_PROMPT: string =
-    "Summarize in bullet points and bold topics",
+  defaultSummarizePrompt: string;
   /** Max char length for article body sent to the LLM */
-  MAX_ARTICLE_LENGTH: number = 1500;
+  maxArticleLength: number;
+}
+
+export const config: Config = {
+  appName: "QwkSearch",
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "https://beta.qwksearch.com",
+  googleClientId:
+    "921732917742-79ql1h9hek2qsdn9f5vnk6lg26jq0vi2.apps.googleusercontent.com",
+  appEmail: "support@qwksearch.com",
+  lastRevisedDate: "2026-01-15",
+  downloadWindowsStoreId: "9PCGF9GNK460",
+  downloadChromeUrl:
+    "https://chromewebstore.google.com/detail/tab-manager-ai/manhemnhmipdhdpabojcplebckhckeko",
+  defaultSummarizePrompt: "Summarize in bullet points and bold topics",
+  maxArticleLength: 1500,
+};
 
 export const listFooterLinks: FooterLink[] = [
-  // {
-  //   url: "https://airesearch.js.org/docs/functions",
-  //   text: "Docs",
-  //   icon: "HelpCircle",
-  // },
   {
-    url: "https://www.linkedin.com/company/104158840/admin/page-posts/published/",
+    url: "/docs",
+    text: "Docs",
+    // A book, not a help circle: this is the product's documentation, and the
+    // dock renders the icon beside the label where the distinction reads.
+    icon: "BookOpen",
+  },
+  {
+    url: "https://www.linkedin.com/company/qwksearch/posts/",
     text: "Blog",
     icon: "Newspaper",
   },
@@ -37,6 +52,8 @@ export const listFooterLinks: FooterLink[] = [
     text: "Support",
     icon: "MessageCircle",
   },
+  { url: "/features", text: "Features", icon: "Sparkles" },
+  { url: "/#downloads", text: "Downloads", icon: "Download" },
   { url: "/legal/privacy", text: "Privacy", icon: "Lock" },
   { url: "https://rights.institute/ethics", text: "Ethics", icon: "Bot" },
   { url: "/enterprise", text: "Enterprise", icon: "Building2" },

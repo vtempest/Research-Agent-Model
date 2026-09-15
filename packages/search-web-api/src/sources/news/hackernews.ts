@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the Hacker News (Algolia) API for story search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const hackernews: EngineFunction = async (
   query: string,

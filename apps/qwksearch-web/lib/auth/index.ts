@@ -5,7 +5,7 @@ import { getDB } from "../database";
 import * as schema from "../database/schema";
 import { getCloudflareContext } from "../cloudflare/context";
 import { detectVpnAndLocation } from "../cloudflare/ip-geolocation";
-import { APP_NAME, APP_EMAIL, NEXT_PUBLIC_BASE_URL } from "../config/site";
+import { config } from "../config/site";
 
 export interface Env {
   EMAIL: {
@@ -19,15 +19,55 @@ export interface Env {
   };
 }
 
+/**
+ * Reduces a configured entry to the bare origin better-auth compares against.
+ * Non-wildcard entries are matched by exact string equality with the request's
+ * origin, so a stray trailing slash or path (`https://qwksearch.com/`) would
+ * silently never match. Wildcard patterns are passed through untouched — they
+ * are glob-matched, not parsed as URLs.
+ */
+function normalizeTrustedOrigin(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.includes("*") || trimmed.includes("?")) return trimmed;
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    return trimmed.replace(/\/+$/, "");
+  }
+}
+
+/** The origin this request was actually addressed to, or undefined if unparseable. */
+function originOfRequest(request: Request | undefined): string | undefined {
+  if (!request?.url) return undefined;
+  try {
+    return new URL(request.url).origin;
+  } catch {
+    return undefined;
+  }
+}
+
 async function authBuilder() {
   const db = getDB();
 
-  const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {};
+  const socialProviders: Record<
+    string,
+    { clientId: string; clientSecret: string; scope?: string[] }
+  > = {};
 
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     socialProviders.google = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      // Signing in asks for identity only. The same OAuth client also backs
+      // the optional Google Drive connector (lib/integrations/googleDocsService),
+      // and none of that connector's scopes may leak into the login consent
+      // screen: a first-time Google sign-in should read "name, email address,
+      // profile picture", never "see and download all your Google Drive
+      // files". Drive access is granted separately and incrementally, the
+      // first time the user actually connects Drive. Pinning the list here
+      // (rather than relying on the provider default) keeps it that way.
+      scope: ["openid", "email", "profile"],
     };
   }
 
@@ -52,23 +92,34 @@ async function authBuilder() {
   // and omits the CORS headers, which surfaced as a blocked preflight when
   // signing in from beta.qwksearch.com. Extra origins can be supplied via the
   // BETTER_AUTH_TRUSTED_ORIGINS env var (comma-separated).
-  const trustedOrigins = Array.from(
+  const staticTrustedOrigins = Array.from(
     new Set(
       [
-        NEXT_PUBLIC_BASE_URL,
+        config.baseUrl,
         "https://qwksearch.com",
         "https://*.qwksearch.com",
         "http://localhost:3000",
         ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",") ?? []),
       ]
-        .map((origin) => origin?.trim())
+        .map(normalizeTrustedOrigin)
         .filter((origin): origin is string => Boolean(origin)),
     ),
   );
 
   return betterAuth({
-    baseURL: NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
-    trustedOrigins,
+    baseURL: config.baseUrl || "http://localhost:3000",
+    // Resolved per request so the origin the app is actually being served from
+    // is always trusted. The static list can only ever name hosts known at
+    // build time, so any other one (a *.workers.dev deploy, a preview URL, a
+    // dev server on a port other than 3000, an apex/`www.` variant) had its
+    // POST /api/auth/sign-in/social rejected with a 403 by better-auth's
+    // origin check, which is what broke the login page. Echoing the request's
+    // own origin does not weaken CSRF protection: a cross-site request carries
+    // the attacker's `Origin` header, never this host's, so it still fails.
+    trustedOrigins: (request: Request) => {
+      const self = originOfRequest(request);
+      return self ? [...staticTrustedOrigins, self] : staticTrustedOrigins;
+    },
     database: drizzleAdapter(db, {
       provider: "sqlite",
       schema,
@@ -125,6 +176,11 @@ async function authBuilder() {
       },
     },
     socialProviders,
+    user: {
+      deleteUser: {
+        enabled: true,
+      },
+    },
     emailVerification: {
       sendOnSignUp: false,
       autoSignInAfterVerification: true,
@@ -144,10 +200,10 @@ async function authBuilder() {
             }
 
             await env.EMAIL.send({
-              from: APP_EMAIL || "noreply@example.com",
+              from: config.appEmail || "noreply@example.com",
               to: email,
-              subject: `Sign in to ${APP_NAME}`,
-              html: `<p>Click the link below to sign in to ${APP_NAME}:</p><p><a href="${url}">Sign in</a></p><p>This link expires in 5 minutes.</p>`,
+              subject: `Sign in to ${config.appName}`,
+              html: `<p>Click the link below to sign in to ${config.appName}:</p><p><a href="${url}">Sign in</a></p><p>This link expires in 5 minutes.</p>`,
             });
           } catch (error) {
             console.error("[auth] Magic link send failed:", error);

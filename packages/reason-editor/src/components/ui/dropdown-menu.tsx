@@ -10,6 +10,14 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Gutter Radix keeps between a menu and the viewport edge when it flips or
+ * shifts a menu back into view. Matches the toolbar's own panel margin, and
+ * pairs with the `[data-richtext-menu]` sizing rules in `styles/global.scss`
+ * that stop wide menus from being clipped on narrow screens.
+ */
+const MENU_COLLISION_PADDING = 8;
+
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -31,7 +39,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      'richtext-flex richtext-cursor-default richtext-select-none richtext-items-center richtext-rounded-sm richtext-px-2 richtext-py-1.5 richtext-text-sm richtext-outline-none focus:richtext-bg-accent data-[state=open]:richtext-bg-accent',
+      'richtext-flex richtext-cursor-default richtext-select-none richtext-items-center richtext-gap-2 richtext-rounded-sm richtext-px-2 richtext-py-1.5 richtext-text-sm richtext-outline-none focus:richtext-bg-accent data-[state=open]:richtext-bg-accent [&_svg]:richtext-pointer-events-none [&_svg]:richtext-shrink-0 [&_svg:not([class*=size-])]:richtext-size-4',
       inset && 'richtext-pl-8',
       className
     )}
@@ -48,10 +56,12 @@ const DropdownMenuSubContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.SubContent
+    collisionPadding={MENU_COLLISION_PADDING}
+    data-richtext-menu
     data-richtext-portal
     ref={ref}
     className={cn(
-      'richtext-z-50 richtext-min-w-[8rem] richtext-overflow-hidden richtext-rounded-md !richtext-border !richtext-border-blue-400/30 richtext-bg-blue-500/15 richtext-backdrop-blur-md richtext-p-1 richtext-text-popover-foreground richtext-shadow-lg data-[state=open]:richtext-animate-in data-[state=closed]:richtext-animate-out data-[state=closed]:richtext-fade-out-0 data-[state=open]:richtext-fade-in-0 data-[state=closed]:richtext-zoom-out-95 data-[state=open]:richtext-zoom-in-95 data-[side=bottom]:richtext-slide-in-from-top-2 data-[side=left]:richtext-slide-in-from-right-2 data-[side=right]:richtext-slide-in-from-left-2 data-[side=top]:richtext-slide-in-from-bottom-2',
+      'richtext-z-50 richtext-min-w-[8rem] richtext-overflow-hidden richtext-rounded-md !richtext-border !richtext-border-border richtext-bg-popover richtext-backdrop-blur-md richtext-p-1 richtext-text-popover-foreground richtext-shadow-lg data-[state=open]:richtext-animate-in data-[state=closed]:richtext-animate-out data-[state=closed]:richtext-fade-out-0 data-[state=open]:richtext-fade-in-0 data-[state=closed]:richtext-zoom-out-95 data-[state=open]:richtext-zoom-in-95 data-[side=bottom]:richtext-slide-in-from-top-2 data-[side=left]:richtext-slide-in-from-right-2 data-[side=right]:richtext-slide-in-from-left-2 data-[side=top]:richtext-slide-in-from-bottom-2',
       className
     )}
     {...props}
@@ -65,11 +75,13 @@ const DropdownMenuContent = React.forwardRef<
 >(({ className, sideOffset = 4, ...props }, ref) => (
   <DropdownMenuPrimitive.Portal data-richtext-portal>
     <DropdownMenuPrimitive.Content
+      collisionPadding={MENU_COLLISION_PADDING}
+      data-richtext-menu
       data-richtext-portal
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'richtext-z-50 richtext-min-w-[8rem] richtext-overflow-hidden richtext-rounded-md !richtext-border !richtext-border-blue-400/30 richtext-bg-blue-500/15 richtext-backdrop-blur-md richtext-p-1 richtext-text-popover-foreground richtext-shadow-md data-[state=open]:richtext-animate-in data-[state=closed]:richtext-animate-out data-[state=closed]:richtext-fade-out-0 data-[state=open]:richtext-fade-in-0 data-[state=closed]:richtext-zoom-out-95 data-[state=open]:richtext-zoom-in-95 data-[side=bottom]:richtext-slide-in-from-top-2 data-[side=left]:richtext-slide-in-from-right-2 data-[side=right]:richtext-slide-in-from-left-2 data-[side=top]:richtext-slide-in-from-bottom-2',
+        'richtext-z-50 richtext-min-w-[8rem] richtext-overflow-hidden richtext-rounded-md !richtext-border !richtext-border-border richtext-bg-popover richtext-backdrop-blur-md richtext-p-1 richtext-text-popover-foreground richtext-shadow-md data-[state=open]:richtext-animate-in data-[state=closed]:richtext-animate-out data-[state=closed]:richtext-fade-out-0 data-[state=open]:richtext-fade-in-0 data-[state=closed]:richtext-zoom-out-95 data-[state=open]:richtext-zoom-in-95 data-[side=bottom]:richtext-slide-in-from-top-2 data-[side=left]:richtext-slide-in-from-right-2 data-[side=right]:richtext-slide-in-from-left-2 data-[side=top]:richtext-slide-in-from-bottom-2',
         className
       )}
       {...props}
@@ -87,7 +99,7 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      'richtext-relative richtext-flex richtext-cursor-default richtext-select-none richtext-items-center richtext-rounded-sm richtext-px-2 richtext-py-1.5 richtext-text-sm richtext-outline-none richtext-transition-colors focus:richtext-bg-accent focus:richtext-text-accent-foreground data-[disabled]:richtext-pointer-events-none data-[disabled]:richtext-opacity-50',
+      'richtext-relative richtext-flex richtext-cursor-default richtext-select-none richtext-items-center richtext-gap-2 richtext-rounded-sm richtext-px-2 richtext-py-1.5 richtext-text-sm richtext-outline-none richtext-transition-colors focus:richtext-bg-accent focus:richtext-text-accent-foreground data-[disabled]:richtext-pointer-events-none data-[disabled]:richtext-opacity-50 [&_svg]:richtext-pointer-events-none [&_svg]:richtext-shrink-0 [&_svg:not([class*=size-])]:richtext-size-4',
       inset && 'richtext-pl-8',
       className
     )}
@@ -104,7 +116,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     checked={checked}
     ref={ref}
     className={cn(
-      'richtext-relative richtext-flex richtext-cursor-default richtext-select-none richtext-items-center richtext-rounded-sm richtext-py-1.5 richtext-pl-8 richtext-pr-2 richtext-text-sm richtext-outline-none richtext-transition-colors focus:richtext-bg-accent focus:richtext-text-accent-foreground data-[disabled]:richtext-pointer-events-none data-[disabled]:richtext-opacity-50',
+      'richtext-relative richtext-flex richtext-cursor-default richtext-select-none richtext-items-center richtext-gap-2 richtext-rounded-sm richtext-py-1.5 richtext-pl-8 richtext-pr-2 richtext-text-sm richtext-outline-none richtext-transition-colors focus:richtext-bg-accent focus:richtext-text-accent-foreground data-[disabled]:richtext-pointer-events-none data-[disabled]:richtext-opacity-50 [&_svg]:richtext-pointer-events-none [&_svg]:richtext-shrink-0 [&_svg:not([class*=size-])]:richtext-size-4',
       className
     )}
     {...props}
@@ -127,7 +139,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      'richtext-relative richtext-flex richtext-cursor-default richtext-select-none richtext-items-center richtext-rounded-sm richtext-py-1.5 richtext-pl-8 richtext-pr-2 richtext-text-sm richtext-outline-none richtext-transition-colors focus:richtext-bg-accent focus:richtext-text-accent-foreground data-[disabled]:richtext-pointer-events-none data-[disabled]:richtext-opacity-50',
+      'richtext-relative richtext-flex richtext-cursor-default richtext-select-none richtext-items-center richtext-gap-2 richtext-rounded-sm richtext-py-1.5 richtext-pl-8 richtext-pr-2 richtext-text-sm richtext-outline-none richtext-transition-colors focus:richtext-bg-accent focus:richtext-text-accent-foreground data-[disabled]:richtext-pointer-events-none data-[disabled]:richtext-opacity-50 [&_svg]:richtext-pointer-events-none [&_svg]:richtext-shrink-0 [&_svg:not([class*=size-])]:richtext-size-4',
       className
     )}
     {...props}

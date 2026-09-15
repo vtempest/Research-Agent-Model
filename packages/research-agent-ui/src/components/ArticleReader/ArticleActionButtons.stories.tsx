@@ -1,3 +1,6 @@
+/**
+ * @fileoverview Storybook stories for the ArticleActionButtons component covering default, active (highlighted/favorited), loading, zoomed-in, and no-URL states.
+ */
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
@@ -5,9 +8,9 @@ import ArticleActionButtons from './ArticleActionButtons';
 
 /**
  * `ArticleActionButtons` is the toolbar at the top of the article extract
- * panel: Ask AI, Suggest, Copy, Highlight, Favorite, Open-in-new-tab, zoom
- * controls, and Close. Every button has a hover tooltip showing its keyboard
- * shortcut (e.g. `Alt+A`).
+ * panel: Ask AI, Suggest, Copy, Share, Highlight, Favorite, Open-in-new-tab,
+ * zoom controls, and Close. Every button has a hover tooltip showing its
+ * keyboard shortcut (e.g. `Alt+A`) where one is bound — Share has none.
  */
 const meta: Meta<typeof ArticleActionButtons> = {
   title: 'ArticleReader/ArticleActionButtons',
@@ -24,6 +27,7 @@ const meta: Meta<typeof ArticleActionButtons> = {
     onAskClick: fn(),
     onSuggestClick: fn(),
     onCopyClick: fn(),
+    onShareClick: fn(),
     onFavoriteClick: fn(),
     onHighlightToggle: fn(),
     onZoomIn: fn(),

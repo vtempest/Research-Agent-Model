@@ -1,0 +1,108 @@
+---
+title: "MCP Server"
+description: "Give Claude Desktop or any MCP client QwkSearch's web search, extraction and rendering tools."
+icon: "Plug"
+---
+
+The QwkSearch MCP server exposes web search, content extraction and JavaScript
+rendering as [Model Context Protocol](https://modelcontextprotocol.io) tools, so
+any MCP-compatible assistant — Claude Desktop, Claude Code, Cursor, or your own
+agent — can research the web through QwkSearch.
+
+It's published as
+[`qwksearch-mcp-server`](https://www.npmjs.com/package/qwksearch-mcp-server) and
+speaks MCP over stdio.
+
+## Tools
+
+<Accordions type="single">
+
+<Accordion title="web_search — search 75+ engines">
+
+Searches the web and returns titles, descriptions, URLs, and which engines each
+result came from.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `query` | string | — | The search query |
+| `category` | enum | `general` | One of `general`, `news`, `videos`, `images`, `science`, `files`, `it`, `academic`, `torrents`, `social`, `maps`, `shopping` |
+| `page` | number | `1` | Result page number |
+
+</Accordion>
+
+<Accordion title="extract_page — URL, PDF or YouTube to structured text">
+
+Extracts a page's main content using Mozilla Readability and Postlight Mercury
+with 100+ per-site adapters. Returns title, author, date, source, word count,
+an APA citation, and the content itself. PDFs and YouTube URLs are handled too.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `url` | string | — | Page to extract |
+| `images` | boolean | `true` | Include images |
+| `links` | boolean | `true` | Include links |
+| `formatting` | boolean | `true` | Preserve formatting |
+| `timeout` | number | `10` | HTTP timeout in seconds |
+
+</Accordion>
+
+<Accordion title="render_page_with_javascript — for SPAs and bot-protected pages">
+
+Renders a page with full JavaScript execution via Cloudflare Browser Rendering.
+Slower than `extract_page`, but works on React/SPA sites and pages behind bot
+protection. Requires `SCRAPER_API_KEY` — without it the tool reports itself as
+unavailable rather than failing silently.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `url` | string | — | Page to render |
+| `wait` | number | `0` | Extra wait after load, in ms |
+| `timeout` | number | `30000` | Timeout in ms |
+| `waitUntil` | enum | `networkidle2` | `domcontentloaded`, `load`, `networkidle0`, or `networkidle2` |
+
+</Accordion>
+
+</Accordions>
+
+## Connect it to Claude Desktop
+
+Add this to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "qwksearch": {
+      "command": "bunx",
+      "args": ["qwksearch-mcp-server"],
+      "env": {
+        "SCRAPER_API_KEY": "your-key"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop and the three tools appear. `SCRAPER_API_KEY` is
+optional — leave it out and `web_search` and `extract_page` still work; only
+JavaScript rendering is disabled.
+
+## Run it from source
+
+```bash
+cd packages/qwksearch-mcp-server
+bun install
+bun run start    # serves MCP over stdin/stdout
+bun test
+```
+
+## Environment variables
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `SCRAPER_API_KEY` | For `render_page_with_javascript` | — | Authorizes the Browser Rendering service |
+| `SCRAPER_URL` | No | `https://scraper.qwksearch.workers.dev` | Point at your own scraper deployment |
+
+## The other direction
+
+QwkSearch's own research agent can call MCP servers *you* register, under
+**Settings → MCP servers**. See [Chat & research agent](/docs/chat).

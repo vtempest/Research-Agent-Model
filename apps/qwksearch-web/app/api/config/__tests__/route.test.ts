@@ -24,15 +24,21 @@ vi.mock('@/lib/config', () => ({
 }))
 
 vi.mock('chat-agent-toolkit/models/registry', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    getActiveProviders: vi.fn().mockResolvedValue([]),
-  })),
+  default: vi.fn(),
 }))
 
 vi.mock('@/lib/config/env', () => ({
   getEnv: vi.fn(),
 }))
 
+// POST is admin-only; default to an authorized admin so the existing
+// behavior tests exercise the handler body. The guard itself is covered in
+// the dedicated tests below and in lib/auth/__tests__/admin.test.ts.
+vi.mock('@/lib/auth/admin', () => ({
+  assertAdmin: vi.fn(),
+}))
+
+import { assertAdmin } from '@/lib/auth/admin'
 import configManager from '@/lib/config'
 import { getEnv } from '@/lib/config/env'
 import ModelRegistry from 'chat-agent-toolkit/models/registry'
@@ -43,6 +49,16 @@ const mockGetUIConfigSections = configManager.getUIConfigSections as ReturnType<
 const mockUpdateConfig = configManager.updateConfig as ReturnType<typeof vi.fn>
 const mockGetEnv = getEnv as ReturnType<typeof vi.fn>
 const mockModelRegistry = ModelRegistry as unknown as ReturnType<typeof vi.fn>
+
+/**
+ * Point the mocked ModelRegistry constructor at a fixed set of active
+ * providers. Uses a `function` implementation so `new ModelRegistry()` works.
+ */
+function stubModelRegistry(providers: unknown[]) {
+  mockModelRegistry.mockImplementation(function () {
+    return { getActiveProviders: vi.fn().mockResolvedValue(providers) }
+  })
+}
 
 const baseConfig = () => ({
   modelProviders: [],
@@ -55,10 +71,13 @@ beforeEach(() => {
   mockGetUIConfigSections.mockReturnValue([])
   mockGetEnv.mockReturnValue(undefined)
   // restoreMocks (vitest config) wipes the factory implementation before each
-  // test, so re-establish the default ModelRegistry behavior here.
-  mockModelRegistry.mockImplementation(() => ({
-    getActiveProviders: vi.fn().mockResolvedValue([]),
-  }))
+  // test, so re-establish the default ModelRegistry behavior here. The route
+  // calls `new ModelRegistry()`, and vitest only lets a mock stand in for a
+  // constructor when its implementation is a `function` (an arrow throws
+  // "is not a constructor"), so keep these implementations non-arrow.
+  stubModelRegistry([])
+  // null = authorized; tests for the guard override this per-case.
+  ;(assertAdmin as ReturnType<typeof vi.fn>).mockResolvedValue(null)
 })
 
 function makeRequest(method = 'GET', body?: unknown) {
@@ -83,11 +102,7 @@ describe('GET /api/config', () => {
       modelProviders: [{ id: 'openai', chatModels: [] }],
       search: { tavilyApiKey: '' },
     })
-    mockModelRegistry.mockImplementation(() => ({
-      getActiveProviders: vi.fn().mockResolvedValue([
-        { id: 'openai', chatModels: [{ key: 'gpt-4o' }] },
-      ]),
-    }))
+    stubModelRegistry([{ id: 'openai', chatModels: [{ key: 'gpt-4o' }] }])
 
     const res = await GET(makeRequest())
     const data = await res.json()
@@ -126,12 +141,33 @@ describe('GET /api/config', () => {
 })
 
 describe('POST /api/config', () => {
+  it('rejects non-admin callers without touching the config', async () => {
+    ;(assertAdmin as ReturnType<typeof vi.fn>).mockResolvedValue(
+      new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 }),
+    )
+    const res = await POST(makeRequest('POST', { key: 'theme', value: 'dark' }))
+    expect(res.status).toBe(403)
+    expect(mockUpdateConfig).not.toHaveBeenCalled()
+  })
+
   it('calls updateConfig and returns 200', async () => {
     const res = await POST(makeRequest('POST', { key: 'theme', value: 'dark' }))
     expect(res.status).toBe(200)
     expect(mockUpdateConfig).toHaveBeenCalledWith('theme', 'dark')
     const data = await res.json()
     expect(data.message).toMatch(/success/i)
+  })
+
+  it('allows updating api.requireApiKey boolean setting', async () => {
+    const res = await POST(makeRequest('POST', { key: 'api.requireApiKey', value: 'true' }))
+    expect(res.status).toBe(200)
+    expect(mockUpdateConfig).toHaveBeenCalledWith('api.requireApiKey', 'true')
+  })
+
+  it('allows updating api.requireApiKey to false', async () => {
+    const res = await POST(makeRequest('POST', { key: 'api.requireApiKey', value: false }))
+    expect(res.status).toBe(200)
+    expect(mockUpdateConfig).toHaveBeenCalledWith('api.requireApiKey', false)
   })
 
   it('returns 400 when key is missing', async () => {

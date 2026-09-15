@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the Photon (Komoot) geocoding API for place search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const photon: EngineFunction = async (
   query: string,

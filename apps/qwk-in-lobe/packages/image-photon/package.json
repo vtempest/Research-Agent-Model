@@ -1,0 +1,14 @@
+{
+  "name": "@lobechat/image-photon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "sharp-compatible image pipeline backed by the Photon WASM codec, so image processing runs on Cloudflare Workers",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "src/index.ts",
+  "dependencies": {
+    "@cf-wasm/photon": "^0.4.0"
+  }
+}

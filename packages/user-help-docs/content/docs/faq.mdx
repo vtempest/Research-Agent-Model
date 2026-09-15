@@ -1,0 +1,107 @@
+---
+title: "FAQ"
+description: "Common questions about accounts, privacy, models, limits and licensing."
+icon: "CircleQuestionMark"
+---
+
+<Accordions type="single">
+
+<Accordion title="Do I need an account?">
+
+No. Search, reading and cited answers all work signed-out, with guest rate
+limits. An account adds saved history, your own provider keys, file uploads,
+the REASON editor, and a personal API key.
+
+</Accordion>
+
+<Accordion title="What does QwkSearch store about my searches?">
+
+Signed in, chats and searches are saved to your account so you can return to
+them and so the agent can reuse context. Privacy mode turns that off for a
+session — nothing is written to history and no memory is stored. Signed out,
+nothing is written to history at all.
+
+You can delete a single chat, or all of them, from the app or via
+`DELETE /api/agent/chats`. Deleting your account removes your data.
+
+</Accordion>
+
+<Accordion title="Which language model answers my question?">
+
+Whichever you pick. The picker covers Claude, GPT, Gemini, Grok, Llama,
+DeepSeek and others. Add your own provider key under **Settings → Providers**
+and QwkSearch routes through it instead — including any OpenAI-compatible
+endpoint, so a local Ollama or vLLM server works. See
+[Chat & research agent](/docs/chat).
+
+</Accordion>
+
+<Accordion title="Why did a search return fewer results than usual?">
+
+Engines rate-limit, go down, or change their markup. Run
+**Settings → Search → Test engines** (`POST /api/search/engines/test`) to see
+which ones are currently responding, and disable the dead ones so they stop
+costing you time on every query. See [Search](/docs/search).
+
+</Accordion>
+
+<Accordion title="A page wouldn't extract. What now?">
+
+Server-side extraction can't get past hard paywalls, bot challenges, or content
+that only exists after client-side JavaScript runs. Use the
+[browser extension](/docs/browser-extension), which reads the page from the tab
+you already have open and authenticated. For JS-rendered public pages,
+`render-url-to-html` renders first and then extracts — see
+[Reading & extraction](/docs/reader).
+
+</Accordion>
+
+<Accordion title="Are the citations trustworthy?">
+
+Answers are generated from text QwkSearch actually extracted from each source,
+not from search-result snippets, and every claim links to the document behind
+it. That makes the citation checkable — which is the point. It does not make
+the underlying source correct, so open the ones that matter.
+
+</Accordion>
+
+<Accordion title="What file types can I upload?">
+
+PDF, DOCX, TXT and HTML, stored in Cloudflare R2 and extracted with the same
+pipeline as a URL. Google Docs can be imported directly. YouTube URLs are
+turned into transcripts rather than uploaded.
+
+</Accordion>
+
+<Accordion title="Can I use QwkSearch from Claude Desktop or another assistant?">
+
+Yes — run the [MCP server](/docs/mcp-server), which exposes search, extraction
+and rendering as MCP tools. The reverse also works: register external MCP
+servers in **Settings** and the research agent can call them.
+
+</Accordion>
+
+<Accordion title="Can I run my own instance?">
+
+Yes. It deploys to Cloudflare Workers with D1, KV and R2, or runs locally. See
+[Self-hosting](/docs/self-hosting).
+
+</Accordion>
+
+<Accordion title="What's the license?">
+
+The repo is released under the
+[PROSPER license](https://rights.institute/PROSPER). Individual npm packages
+carry the same license; see each package's `package.json`.
+
+</Accordion>
+
+<Accordion title="Where do I report a bug or ask for a feature?">
+
+[GitHub issues](https://github.com/OpenSourceAGI/qwksearch-research-agent/issues)
+for bugs, [discussions](https://github.com/vtempest/qwksearch-research-agent/discussions)
+for ideas, and [Discord](https://discord.gg/SJdBqBz3tV) for everything else.
+
+</Accordion>
+
+</Accordions>

@@ -178,9 +178,15 @@ export async function sendMessage(
   setLoading(true);
   setMessageAppeared(false);
 
-  // Update URL to include chat ID (for sharing/bookmarking)
-  if (messages.length <= 1) {
-    window.history.replaceState(null, "", `/c/${chatId}`);
+  // Reflect the chat ID in the URL as a `?chat=` param once the conversation
+  // starts (for sharing/bookmarking/reload), without changing the route:
+  // chats live as tabs within the current page, not a separate `/c/<id>`
+  // page. Skipped when the host app owns this itself (e.g. the tabbed
+  // workspace, which mirrors the active tab on every switch already).
+  if (messages.length <= 1 && !researchAgentUIConfig.onOpenChat) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("chat", chatId);
+    window.history.replaceState(null, "", `${url.pathname}?${url.searchParams.toString()}${url.hash}`);
   }
 
   // Accumulator for streaming response
@@ -219,6 +225,26 @@ export async function sendMessage(
    * Handles individual streaming events from the chat API.
    * @param data - Parsed JSON event from the stream
    */
+  /**
+   * Appends a persistent error bubble to the conversation so failures stay
+   * visible after the toast disappears. Without this, a failed response left
+   * the user's message with no reply at all — the only signal was a transient
+   * toast, which reads as "the chat produced no output".
+   */
+  const showErrorInChat = (errorMsg: string) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        content: `⚠️ **The response failed:** ${errorMsg}`,
+        messageId: generateMessageId(),
+        chatId: chatId,
+        role: "assistant",
+        createdAt: new Date(),
+      },
+    ]);
+    setMessageAppeared(true);
+  };
+
   const messageHandler = async (data: any) => {
     // Handle error events
     if (data.type === "error") {
@@ -238,6 +264,7 @@ export async function sendMessage(
         setChatModelProvider?.({ key: "", providerId: "" });
       }
       toast.error(errorMsg);
+      showErrorInChat(errorMsg);
       setLoading(false);
       return;
     }
@@ -448,7 +475,14 @@ export async function sendMessage(
         sourceExtractionEnabled,
         thinkingTimeLimit,
         systemInstructions: localStorage.getItem("systemInstructions") ?? undefined,
+        // User-editable replacement for the built-in query-expansion prompt
+        // (Settings → Search Settings). Blank means "use the built-in one".
+        queryExpansionPrompt:
+          localStorage.getItem("queryExpansionPrompt") ?? undefined,
       },
+      // A chat POST is not idempotent — retrying re-sends the message and
+      // hammers the backend while the user sees nothing. Fail fast instead.
+      sseMaxRetryAttempts: 1,
       onSseError: (error: unknown) => {
         const errMsg =
           error instanceof Error ? error.message : String(error);
@@ -460,6 +494,7 @@ export async function sendMessage(
           return;
         }
         toast.error("Failed to send message. Please try again.");
+        showErrorInChat(`${errMsg}. Please try again.`);
         setLoading(false);
       },
     });

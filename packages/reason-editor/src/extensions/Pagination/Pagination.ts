@@ -30,10 +30,17 @@ export interface PaginationOptions extends GeneralOptions<PaginationOptions> {
 }
 
 export const Pagination = PaginationPlus.extend({
-  //@ts-expect-error - this.parent typing from the extended pagination plugin
   addOptions() {
+    // `PaginationPlus`'s typings don't surface `this.parent` on the extension
+    // context. Reach it through a narrowed alias rather than a
+    // `@ts-expect-error`, which goes stale (and then errors as unused) as the
+    // upstream typings change.
+    const parent = (this as unknown as {
+      parent?: () => Partial<PaginationOptions>;
+    }).parent;
+
     return {
-      ...this.parent?.(),
+      ...parent?.(),
       pageHeight: 1056,
       pageWidth: 816,
       pageGap: 50,

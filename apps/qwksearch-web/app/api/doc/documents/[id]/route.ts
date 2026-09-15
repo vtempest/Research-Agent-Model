@@ -5,8 +5,8 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getDB } from "@/lib/database";
-import { documents } from "@/lib/database/schema";
-import { eq } from "drizzle-orm";
+import { documents, documentAccessRequests } from "@/lib/database/schema";
+import { eq, and } from "drizzle-orm";
 import { initAuth } from "@/lib/auth";
 import { AuthSession } from "@/lib/auth/session";
 
@@ -41,7 +41,28 @@ export async function GET(
 
     // Check access permissions
     if (document.userId && document.userId !== userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      // Let the caller know whether this user has already sent an access
+      // request, so the UI can render "request pending" instead of a
+      // fresh "Request access" button on reload.
+      let accessRequested = false;
+      if (userId) {
+        const [existingRequest] = await db
+          .select({ id: documentAccessRequests.id })
+          .from(documentAccessRequests)
+          .where(
+            and(
+              eq(documentAccessRequests.documentId, document.id),
+              eq(documentAccessRequests.requesterUserId, userId),
+            ),
+          )
+          .limit(1);
+        accessRequested = Boolean(existingRequest);
+      }
+
+      return NextResponse.json(
+        { error: "Unauthorized", accessRequested },
+        { status: 403 },
+      );
     }
 
     return NextResponse.json(document);

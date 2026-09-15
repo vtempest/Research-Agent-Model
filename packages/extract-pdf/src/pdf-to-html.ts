@@ -9,34 +9,7 @@ import {
 } from "./utils/page-number-functions";
 import TextItem from "./models/text-item";
 import Page from "./models/page";
-
-/**
- * Fetch wrapper for grabbing binary content
- */
-async function grab(url: string, options: { responseType?: string; timeout?: number } = {}) {
-  const timeout = options.timeout ? options.timeout * 1000 : 10000;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    if (options.responseType === "arraybuffer") {
-      return await response.arrayBuffer();
-    }
-    return await response.text();
-  } catch (error) {
-    clearTimeout(timeoutId);
-    throw error;
-  }
-}
+import { grab } from "./utils/grab";
 
 import CalculateGlobalStats from "./transforms/calculate-global-stats";
 import CompactLines from "./transforms/line-item/compact-lines";
@@ -52,6 +25,57 @@ import DetectListLevels from "./transforms/block/detect-list-levels";
 import ToTextBlocks from "./transforms/to-text-blocks";
 import ToHTML from "./transforms/to-html";
 import ParseResult from "./models/parse-result";
+import {
+  convertPDFToHTMLWithLiteParse,
+  type LiteParseHTMLOptions,
+} from "./liteparse-to-html";
+import {
+  convertPDFToHTMLWithLiteParseWasm,
+  type LiteParseWasmHTMLOptions,
+} from "./liteparse-wasm-to-html";
+import { loadPdfJs } from "./utils/load-pdfjs";
+import {
+  scanPagesForOCR,
+  type OcrScanResult,
+  type ScanPagesForOCROptions,
+} from "./ocr-page-scan";
+import {
+  ocrPdfPagesWithDocling,
+  type DoclingOcrOptions,
+} from "./docling-ocr";
+
+/**
+ * Where the OCR-capable Docling processing happens for
+ * {@link convertPDFToHTML}.
+ * - `"frontend"` (default) — all pages parsed by the pure-JS text-layer
+ *   pipeline; no OCR, no model, works everywhere.
+ * - `"hybrid"` — every page goes through the JS pipeline, then a regex scan
+ *   ({@link scanPagesForOCR}) flags pages containing infographics/figures/
+ *   tables (or with no usable text layer) and only those pages are re-done
+ *   with the Granite Docling OCR model.
+ * - `"docling"` — every page is rasterized and OCR'd with Granite Docling
+ *   (in-process via the optional `@huggingface/transformers` dependency, or
+ *   remotely when `processorUrl` is set).
+ * - any `http(s)://` URL — like `"docling"`, but all pages are sent to that
+ *   docling-compatible processor API (this package's `server/`, or another
+ *   deployment).
+ */
+export type ProcessorMode = "frontend" | "hybrid" | "docling" | (string & {});
+
+/**
+ * Which parsing engine {@link convertPDFToHTML} runs.
+ * - `"ts-block-algorithm"` (default) — the pure-TS pipeline in this file: groups
+ *   pdfjs text spans into lines/blocks and renders headings/lists/code blocks.
+ *   Works in Node.js, Cloudflare Workers, and browsers.
+ * - `"liteparse"` — delegates to [LiteParse](https://github.com/run-llama/liteparse),
+ *   a native/OCR-capable parser. Node.js only (ships a napi addon), and requires
+ *   the optional `@llamaindex/liteparse` dependency to be installed.
+ * - `"liteparse-wasm"` — delegates to LiteParse's WebAssembly build. Runs
+ *   anywhere WASM does — browsers, Cloudflare Workers, and Node.js — and
+ *   requires the optional `@llamaindex/liteparse-wasm` dependency to be
+ *   installed. OCR requires passing an `ocrEngine` callback (e.g. tesseract-js).
+ */
+export type ParseMethod = "ts-block-algorithm" | "liteparse" | "liteparse-wasm";
 
 /**
  * Extracts formatted text from PDF with parsing of linebreaks ,
@@ -67,6 +91,18 @@ import ParseResult from "./models/parse-result";
  * @param {Object} [options]
  * @param {boolean} options.addPageNumbers default=false - Adds  #  to end of each page
  * @param {boolean} options.removePageHeaders default=true - Removes repeated headers found on each page
+ * @param {ParseMethod} options.method default="ts-block-algorithm" - Parsing engine to use;
+ *   `"liteparse"` delegates to LiteParse (Node.js only, see {@link ParseMethod})
+ * @param {ProcessorMode} options.processor default="frontend" - Where OCR happens:
+ *   `"frontend"` (all JS, no OCR), `"hybrid"` (regex-scan pages for
+ *   infographics/tables and OCR only those), `"docling"` (OCR every page), or
+ *   the URL of a docling-compatible processor API (see {@link ProcessorMode})
+ * @param {string} options.processorUrl - Remote docling-compatible API base URL
+ *   used by `"hybrid"`/`"docling"` instead of the in-process model
+ * @param {Object} options.ocrScanOptions - Threshold tuning for the hybrid
+ *   page scan, see {@link ScanPagesForOCROptions}
+ * @param {Object} options.doclingOptions - Prompt/maxTokens/scale for the OCR
+ *   model, see {@link DoclingOcrOptions}
  * @returns {string|Object} HTML formatted text
  * @category Extract
  * @author [vtempest (2025)](https://github.com/vtempest),
@@ -75,10 +111,41 @@ import ParseResult from "./models/parse-result";
  */
 export async function convertPDFToHTML(
   pdfURLOrBuffer: any,
-  options: { addPageNumbers?: boolean; addCitation?: boolean } = {},
+  options: {
+    addPageNumbers?: boolean;
+    addCitation?: boolean;
+    method?: ParseMethod;
+    processor?: ProcessorMode;
+    processorUrl?: string;
+    ocrScanOptions?: ScanPagesForOCROptions;
+    doclingOptions?: Omit<DoclingOcrOptions, "processorUrl">;
+  } & Pick<LiteParseHTMLOptions, "liteParseOptions"> = {},
 ) {
+  if (options.method === "liteparse") {
+    const { method: _method, ...liteParseOptions } = options;
+    return convertPDFToHTMLWithLiteParse(pdfURLOrBuffer, liteParseOptions);
+  }
+
+  if (options.method === "liteparse-wasm") {
+    const { method: _method, ...liteParseOptions } = options;
+    return convertPDFToHTMLWithLiteParseWasm(
+      pdfURLOrBuffer,
+      liteParseOptions as unknown as LiteParseWasmHTMLOptions,
+    );
+  }
+
   // try {
   var { addPageNumbers = false, addCitation = true } = options;
+
+  // Resolve where OCR happens: "frontend" | "hybrid" | "docling" | a
+  // processor URL (which means "docling" against that remote API).
+  const processor = options.processor ?? "frontend";
+  const processorIsUrl = /^https?:\/\//i.test(processor);
+  const processorMode = processorIsUrl ? "docling" : processor;
+  const doclingOptions: DoclingOcrOptions = {
+    ...options.doclingOptions,
+    processorUrl: processorIsUrl ? processor : options.processorUrl,
+  };
 
   // pass in databuffer or download all pdf data
   // and convert to array buffer
@@ -92,9 +159,7 @@ export async function convertPDFToHTML(
 
   let pdfDocument;
   try {
-    let { resolvePDFJS } = await import("https://cdn.jsdelivr.net/npm/pdfjs-serverless@1.1.0/+esm" as any);
-    
-    const { getDocument } = await resolvePDFJS();
+    const { getDocument } = await loadPdfJs();
     pdfDocument = await getDocument({
       data: new Uint8Array(buffer),
       useSystemFonts: true,
@@ -163,6 +228,19 @@ export async function convertPDFToHTML(
     pages[page.pageNumber - 1].items = textItems;
   }
 
+  // Raw per-page text (items grouped into lines by y) captured before the
+  // transforms mutate the pages — input for the OCR page scan.
+  const pageTexts = pages.map((page) =>
+    Object.values(
+      (page.items as any[]).reduce((lines: any, item: any) => {
+        (lines[item.y] = lines[item.y] || []).push(item.text);
+        return lines;
+      }, {}),
+    )
+      .map((line: any) => line.join(" "))
+      .join("\n"),
+  );
+
   var parseResult = new ParseResult({ pages });
 
   let lastTransformation: (typeof transformations)[number] | undefined,
@@ -191,14 +269,35 @@ export async function convertPDFToHTML(
     lastTransformation = transformation;
   });
 
-  var html = parseResult.pages.reduce((acc, page, pageNumber) => {
-    return (
-      acc +
+  var pageHtmls = parseResult.pages.map(
+    (page, pageNumber) =>
       `<p id="page-${pageNumber + 1}">${
         addPageNumbers ? ` [${pageNumber + 1}] ` : ""
-      }${page.items.join('</p><p id="page-' + pageNumber + '">')}</p>`
+      }${page.items.join('</p><p id="page-' + pageNumber + '">')}</p>`,
+  );
+
+  // Regex scan flagging pages with infographics/figures/tables (or no usable
+  // text layer) — the pages worth OCR'ing in hybrid mode.
+  const ocrScan = scanPagesForOCR(pageTexts, options.ocrScanOptions);
+
+  if (processorMode === "docling" || processorMode === "hybrid") {
+    const targetPages =
+      processorMode === "docling"
+        ? pageHtmls.map((_, index) => index + 1)
+        : ocrScan.pagesNeedingOcr;
+    const ocrResults = await ocrPdfPagesWithDocling(
+      pdfDocument,
+      targetPages,
+      doclingOptions,
     );
-  }, "");
+    // Pages whose OCR failed keep their frontend-parsed HTML.
+    for (const [pageNumber, ocrHtml] of ocrResults)
+      pageHtmls[pageNumber - 1] = `<section class="ocr-page" id="page-${pageNumber}">${
+        addPageNumbers ? ` [${pageNumber}] ` : ""
+      }${ocrHtml}</section>`;
+  }
+
+  var html = pageHtmls.join("");
 
   if (addCitation) {
     // Get metadata
@@ -219,7 +318,44 @@ export async function convertPDFToHTML(
     title = html.slice(0, 400).match(/<h[0-9]>(.*?)<\/h[0-9]>/)?.[1] || title;
   }
 
-  return { author, title, html, format: "pdf" };
+  return {
+    author,
+    title,
+    html,
+    format: "pdf",
+    processor: processorMode,
+    ocrScan,
+  } as {
+    author?: string;
+    title?: string;
+    html: string;
+    format: string;
+    processor: string;
+    ocrScan: OcrScanResult;
+  };
 }
 
+export { convertPDFToHTMLWithLiteParse };
+export type { LiteParseHTMLOptions } from "./liteparse-to-html";
+export { convertPDFToHTMLWithLiteParseWasm };
+export type { LiteParseWasmHTMLOptions } from "./liteparse-wasm-to-html";
+export { detectPdfNeedsOcr } from "./detect-needs-ocr";
+export type {
+  DetectPdfNeedsOcrOptions,
+  PdfOcrAssessment,
+} from "./detect-needs-ocr";
+export { scanPagesForOCR } from "./ocr-page-scan";
+export type {
+  OcrScanResult,
+  PageOcrScan,
+  ScanPagesForOCROptions,
+} from "./ocr-page-scan";
+export {
+  doctagsToHtml,
+  ocrImageWithDocling,
+  ocrPdfPagesWithDocling,
+  renderPdfPageToPngBase64,
+} from "./docling-ocr";
+export type { DoclingOcrOptions } from "./docling-ocr";
+export { loadPdfJs } from "./utils/load-pdfjs";
 

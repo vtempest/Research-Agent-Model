@@ -32,20 +32,27 @@ export const FontFamily =
         button({ editor, extension, t }: any) {
           const fontFamilyList = ensureNameValueOptions(extension?.options?.fontFamilyList || []);
 
-          const items = fontFamilyList.map((font) => ({
-            action: () => {
-              if (font.value === 'Default') {
-                editor.chain().focus().unsetFontFamily().run();
-                return;
-              }
-              editor.chain().focus().setFontFamily(font.value).run();
-            },
-            isActive: () => editor.isActive('textStyle', { fontFamily: font.value }) || false,
-            // disabled: !editor.can().setFontFamily(font.value),
-            title: font.value === 'Default' ? 'Inter' : font.name,
-            font: font.value === 'Default' ? 'Inter' : font.value,
-            default: font.value === 'Default',
-          }));
+          const items = fontFamilyList
+            .map((font) => ({
+              action: () => {
+                if (font.value === 'Default') {
+                  editor.chain().focus().unsetFontFamily().run();
+                  return;
+                }
+                editor.chain().focus().setFontFamily(font.value).run();
+              },
+              isActive: () => editor.isActive('textStyle', { fontFamily: font.value }) || false,
+              // disabled: !editor.can().setFontFamily(font.value),
+              title: font.value === 'Default' ? 'Inter' : font.name,
+              font: font.value === 'Default' ? 'Inter' : font.value,
+              default: font.value === 'Default',
+            }))
+            // Keep the "Default" reset entry pinned first, alphabetize the rest.
+            .sort((a, b) => {
+              if (a.default) return -1;
+              if (b.default) return 1;
+              return a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+            });
 
           return {
             // component: FontFamilyButton,

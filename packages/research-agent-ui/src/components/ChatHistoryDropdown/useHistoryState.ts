@@ -1,6 +1,5 @@
 /**
- * Hook managing all state and logic for the chat history dropdown,
- * including fetching chats, pinning, deleting, clearing, and private mode.
+ * @fileoverview Hook managing all state and logic for the chat history dropdown, including fetching chats, pinning, deleting, clearing, and private mode.
  */
 "use client";
 
@@ -13,6 +12,7 @@ import {
   clearAllGuestChats,
   type GuestChat,
 } from "../../lib/guest";
+import { apiErrorMessage } from "../../lib/apiError";
 import { Chat } from "../../types/research";
 import { toast } from "sonner";
 import { listChats, deleteChatById, deleteAllChats, searchChats } from "qwksearch-api-client";
@@ -105,9 +105,9 @@ export function useHistoryState() {
 
     try {
       if (isAuthenticated) {
-        const { data, error } = await listChats();
+        const { data, error, response } = await listChats();
 
-        if (error && (error as any).status === 401) {
+        if (error && response?.status === 401) {
           // Stale session — fall back to guest chats silently
           const guestChats = getGuestChats().map((chat) => ({
             ...chat,
@@ -120,7 +120,9 @@ export function useHistoryState() {
         }
 
         if (error) {
-          throw new Error(`Failed to fetch chats: ${(error as any).message}`);
+          throw new Error(
+            `Failed to fetch chats: ${apiErrorMessage(error, response?.status)}`,
+          );
         }
 
         setChats(Array.isArray(data?.chats) ? data.chats : []);
@@ -157,10 +159,14 @@ export function useHistoryState() {
     setDeleting(true);
     try {
       if (isAuthenticated) {
-        const { error } = await deleteChatById({ path: { id: chatToDelete } });
+        const { error, response } = await deleteChatById({
+          path: { id: chatToDelete },
+        });
 
         if (error) {
-          throw new Error(`Failed to delete chat: ${(error as any).message}`);
+          throw new Error(
+            `Failed to delete chat: ${apiErrorMessage(error, response?.status)}`,
+          );
         }
       } else {
         deleteGuestChat(chatToDelete);
@@ -184,10 +190,12 @@ export function useHistoryState() {
     setClearingAll(true);
     try {
       if (isAuthenticated) {
-        const { error } = await deleteAllChats();
+        const { error, response } = await deleteAllChats();
 
         if (error) {
-          throw new Error(`Failed to clear history: ${(error as any).message}`);
+          throw new Error(
+            `Failed to clear history: ${apiErrorMessage(error, response?.status)}`,
+          );
         }
       } else {
         clearAllGuestChats();
@@ -223,10 +231,14 @@ export function useHistoryState() {
       setSearching(true);
       try {
         if (isAuthenticated) {
-          const { data, error } = await searchChats({ query: { q: query } });
+          const { data, error, response } = await searchChats({
+            query: { q: query },
+          });
 
           if (error) {
-            throw new Error(`Failed to search chats: ${(error as any).message}`);
+            throw new Error(
+              `Failed to search chats: ${apiErrorMessage(error, response?.status)}`,
+            );
           }
 
           setSearchResults(Array.isArray(data?.chats) ? data.chats : []);

@@ -87,11 +87,49 @@ export const MoreMark =  Extension.create<MoreMarkOptions>({
     const extensions: Extensions = [];
 
     if (this.options.subscript !== false) {
-      extensions.push(TiptapSubscript.configure(this.options.subscript));
+      extensions.push(
+        TiptapSubscript.extend({
+          //@ts-expect-error - button comes from GeneralOptions defaults applied by the toolbar
+          addOptions() {
+            return {
+              ...this.parent?.(),
+              button: ({ editor, t }: any) => ({
+                componentProps: {
+                  action: () => editor.commands.toggleSubscript(),
+                  isActive: () => editor.isActive('subscript') || false,
+                  disabled: !editor.can().toggleSubscript(),
+                  icon: 'Subscript',
+                  tooltip: t('editor.subscript.tooltip'),
+                  shortcutKeys: ['mod', ','],
+                },
+              }),
+            };
+          },
+        }).configure(this.options.subscript),
+      );
     }
 
     if (this.options.superscript !== false) {
-      extensions.push(TiptapSuperscript.configure(this.options.superscript));
+      extensions.push(
+        TiptapSuperscript.extend({
+          //@ts-expect-error - button comes from GeneralOptions defaults applied by the toolbar
+          addOptions() {
+            return {
+              ...this.parent?.(),
+              button: ({ editor, t }: any) => ({
+                componentProps: {
+                  action: () => editor.commands.toggleSuperscript(),
+                  isActive: () => editor.isActive('superscript') || false,
+                  disabled: !editor.can().toggleSuperscript(),
+                  icon: 'Superscript',
+                  tooltip: t('editor.superscript.tooltip'),
+                  shortcutKeys: ['mod', '.'],
+                },
+              }),
+            };
+          },
+        }).configure(this.options.superscript),
+      );
     }
 
     return extensions;

@@ -1,34 +1,29 @@
 <p align="center">
     <img width="300px" src="https://i.imgur.com/BmaDQeR.png" />
-<br /> 
-    <a href="https://www.npmjs.com/package/search-web-api"><img src="https://img.shields.io/npm/dm/search-web-api.svg" alt="NPM Monthly Downloads"></a>
-    <a href="https://www.npmjs.com/package/search-web-api"><img src="https://img.shields.io/npm/v/search-web-api.svg" alt="npm version"></a>
-    <a href="https://discord.gg/SJdBqBz3tV">
-        <img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat"
-            alt="Join Discord" />
-    </a>  
-     <a href="https://github.com/vtempest/qwksearch-research-agent/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/vtempest/qwksearch-research-agent" /></a>
-<br />
-    <a href="https://github.com/vtempest/qwksearch-research-agent/discussions">
-    <img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/vtempest/qwksearch-research-agent" />
-    </a>
-    <a href="https://github.com/vtempest/qwksearch-research-agent/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/vtempest/qwksearch-research-agent" />
-    </a>
-    <img src="https://img.shields.io/github/last-commit/vtempest/qwksearch-research-agent.svg" alt="GitHub last commit" />
-<br />
-    <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">
-        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"
-            alt="PRs Welcome" />
-    </a>
-    <a href="https://codespaces.new/vtempest/qwksearch-research-agent">
-    <img src="https://github.com/codespaces/badge.svg" width="150" height="20" />
-    </a>
 </p>
 
-    
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://qwksearch.com/api/docs"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/qwksearch-research-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/search-web-api"><img src="https://img.shields.io/npm/dm/search-web-api.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/search-web-api"><img src="https://img.shields.io/npm/v/search-web-api.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/search-web-api"><img src="https://img.shields.io/npm/dt/search-web-api.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/search-web-api"><img src="https://img.shields.io/npm/types/search-web-api" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=search-web-api"><img src="https://packagephobia.com/badge?p=search-web-api" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/qwksearch-research-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/qwksearch-research-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/qwksearch-research-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/qwksearch-research-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/qwksearch-research-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/qwksearch-research-agent/tree/master/packages/search-web-api"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Hono-E36002?logo=hono&logoColor=white" alt="Hono" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</p>
+<!-- template-git-repo:badges:end -->
+
 # Meta-Search Web Sources API
 
 - **Multi-engine aggregation**: 70+ major sites search sources across 10 categories
@@ -307,3 +302,27 @@ app/
 │   └── engine-descriptions.ts
 └── index.ts          # Main entry point
 ```
+
+## Testing
+
+```bash
+bun run test           # the suites CI gates on — no network
+bun run test:coverage  # the same, with coverage (writes coverage/lcov.info)
+bun run test:live      # adds the suites that call the real search engines
+```
+
+`bun run test` runs only deterministic suites: `test/sources-unit.test.ts`
+exercises every engine against mocked responses, and
+`src/search/__tests__/public-searxng.test.ts` covers the SearXNG client.
+
+`test/api.test.ts`, `test/search.test.ts`, `test/sources.test.ts`,
+`test/engine-health-suite.test.ts` and `test/autocomplete-ai.test.ts` really do
+query the upstream engines, so whether they pass depends on third-party
+availability and on whether an engine feels like rate-limiting your IP. They
+are excluded unless `RUN_LIVE_TESTS=1` is set — which is what `test:live` does
+— and they are the right thing to run by hand when you change an engine, since
+a mock only proves the parser still matches the fixture.
+
+`examples/autocomplete-engines.ts` (`bun run example:autocomplete`) prints what
+each autocomplete backend answers. It asserts nothing, so it is an example
+rather than a suite.

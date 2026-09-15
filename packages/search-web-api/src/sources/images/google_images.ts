@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that scrapes Google Images search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const google_images: EngineFunction = async (
   query: string,

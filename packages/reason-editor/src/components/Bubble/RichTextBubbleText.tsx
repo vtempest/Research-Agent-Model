@@ -4,12 +4,13 @@
 
 import { TextSelection } from '@tiptap/pm/state';
 import { BubbleMenu } from '@tiptap/react/menus';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { ActionButton } from '@/components';
 import { IconComponent } from '@/components/icons';
 import { Popover, PopoverContent, PopoverTrigger, Separator } from '@/components/ui';
+import { getAiState, isAiEnabled } from '@/extensions/Ai';
 import { RichTextBold } from '@/extensions/Bold';
 import { RichTextCode } from '@/extensions/Code';
 import { RichTextColor } from '@/extensions/Color';
@@ -117,9 +118,32 @@ function ParagraphFormat() {
   );
 }
 
+/**
+ * "Ask AI" trigger for the selection bubble — the shortest path from
+ * highlighting text to rewriting it. Renders nothing when the Ai extension is
+ * not registered, so the bubble is unchanged for editors without it.
+ */
+function AskAiButton() {
+  const editor = useEditorInstance();
+
+  if (!isAiEnabled(editor)) return null;
+
+  return (
+    <ActionButton
+      action={() => editor.commands.openAiMenu()}
+      shortcutKeys={['mod', 'J']}
+      tooltip='Ask AI'
+    >
+      <Sparkles className='richtext-size-4 richtext-text-violet-600' />
+    </ActionButton>
+  );
+}
+
 function DefaultButtonBubble() {
   return (
     <>
+      <AskAiButton />
+
       <ParagraphFormat />
 
       <Separator
@@ -160,6 +184,12 @@ export function RichTextBubbleText({ buttonBubble }: RichTextBubbleTextProps) {
 
     // check content select length is not empty
     if ($from.pos === to) {
+      return false;
+    }
+
+    // The AI panel anchors to the same selection; showing both stacks two
+    // floating surfaces on top of each other.
+    if (getAiState(editor.view.state)?.panel.status !== 'closed') {
       return false;
     }
 

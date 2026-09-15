@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the OpenStreetMap Nominatim API for place search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const openstreetmap: EngineFunction = async (
   query: string,

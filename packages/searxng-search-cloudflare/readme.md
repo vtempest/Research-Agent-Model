@@ -1,5 +1,7 @@
 # SearXNG on Render.com - Deployment Guide
 
+[![Coverage](https://codecov.io/gh/OpenSourceAGI/qwksearch-research-agent/graph/badge.svg?component=package-searxng-search-cloudflare)](https://codecov.io/gh/OpenSourceAGI/qwksearch-research-agent)
+
 Deploy your own private SearXNG search engine proxy on Render.com with custom configuration in minutes.
 
 ## 🌟 What is SearXNG?

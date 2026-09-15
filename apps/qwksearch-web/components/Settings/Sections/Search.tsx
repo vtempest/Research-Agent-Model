@@ -1,4 +1,5 @@
 import { UIConfigField } from '../../../lib/config/types';
+import DetectedLocation from '../DetectedLocation';
 import SettingsField from '../SettingsField';
 
 const Search = ({
@@ -10,6 +11,7 @@ const Search = ({
 }) => {
   return (
     <div className="flex-1 space-y-6 overflow-y-auto px-6 py-6">
+      <DetectedLocation />
       {fields.map((field) => (
         <SettingsField
           key={field.key}

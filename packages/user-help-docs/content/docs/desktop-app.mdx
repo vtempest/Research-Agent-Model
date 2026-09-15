@@ -1,0 +1,39 @@
+---
+title: "Desktop App"
+description: "QwkSearch Desktop — select text anywhere on screen and search without leaving your workflow."
+icon: "Monitor"
+---
+
+**QwkSearch Desktop** is a Tauri app that puts the research agent one keystroke
+away from whatever you're doing. Select any text on screen, press <kbd>`</kbd>
+(backtick), and the answer appears — no window switching, no copy-paste into a
+browser tab.
+
+Source lives in
+[`apps/qwksearch-desktop`](https://github.com/OpenSourceAGI/qwksearch-research-agent/tree/master/apps/qwksearch-desktop).
+
+## Why Tauri
+
+The app is a Svelte front end in a system webview rather than a bundled
+Chromium, so the installer is small and idle memory stays low — which matters
+for something meant to sit running all day waiting for a hotkey.
+
+## Build from source
+
+```bash
+bun x git0 vtempest/qwksearch-research-agent
+cd qwksearch-research-agent/apps/qwksearch-desktop
+bun install
+bun run tauri dev      # run locally
+bun run tauri build    # produce an installer
+```
+
+Tauri needs a Rust toolchain plus your platform's webview dependencies; see the
+[Tauri prerequisites](https://tauri.app/start/prerequisites/). Dockerfiles for
+reproducible Linux and Windows builds are in the app directory.
+
+## Related
+
+- [Browser extension](/docs/browser-extension) — the same selection-to-search
+  flow, scoped to the browser
+- [VS Code extension](/docs/vscode-extension) — and scoped to the editor

@@ -112,27 +112,33 @@ export async function searchWeb(
 
   let url = `${searchDomain}/search`;
 
-  if (privateSearxng) url += "&format=json";
-
   //on cloudflare to avoid "Too many redirects" change SSL mode to Full
   if (proxy && !privateSearxng) url = proxy + url;
 
-  let resultHTML: any;
+  let rawResponse: any;
   try {
     const params: Record<string, any> = {
-      q: encodeURIComponent(query),
+      // grab-url encodes GET params itself, so the query is passed raw here -
+      // pre-encoding it would double-encode spaces and symbols.
+      q: query,
       ["category_" + categoryName]: 1,
       language: lang,
       safesearch: safesearch ? "1" : "0",
       pageno: page,
+      // grab-url parses HTML responses into a DOM by default; the public
+      // instance path scrapes raw markup, so keep the body as text.
+      dom: false,
       headers: {
         "accept-language": lang + ",en;q=0.9",
+        accept: privateSearxng
+          ? "application/json, text/html;q=0.9"
+          : "text/html, application/xhtml+xml",
       },
     };
     if (privateSearxng) params.format = "json";
     if (recency && RECENCY_ALLOWED_LIST.includes(recency)) params.time_range = recency;
 
-    resultHTML = await grab(searchDomain + "/search", params);
+    rawResponse = await grab(url, params);
   } catch (error: any) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.warn(`[searchWeb] Failed to fetch from SearXNG domain "${searchDomain}": ${errorMsg}`);
@@ -147,36 +153,54 @@ export async function searchWeb(
     return [];
   }
 
+  // grab-url resolves instead of rejecting when a request fails: network and
+  // HTTP errors come back as `{ error }` and non-JSON bodies as `{ data }`.
+  // Normalizing here keeps the parsing below from reading `.results` off an
+  // error object, which used to throw and surface as a 500 from the API route.
+  const response = normalizeGrabResponse(rawResponse);
+
+  if (response.error) {
+    console.warn(
+      `[searchWeb] SearXNG domain "${searchDomain}" returned an error: ${response.error}`,
+    );
+
+    // Public instances are picked at random, so another one is worth a try.
+    // A private instance would just fail the same way; the caller falls back
+    // to the public instances instead.
+    if (!privateSearxng && maxRetries > 0) {
+      return (await searchWeb(query, {
+        ...options,
+        maxRetries: maxRetries - 1,
+      })) as SearxngSearchResult[];
+    }
+
+    return privateSearxng ? { results: [], suggestions: [], infoboxes: [] } : [];
+  }
+
   if (privateSearxng) {
-    let parsedData: any;
+    const parsedData = response.json ?? parseJSONText(response.text);
 
-    // Check if resultHTML is already an object (grab-url auto-parsed JSON)
-    if (typeof resultHTML === "object" && resultHTML !== null) {
-      parsedData = resultHTML;
-    } else if (typeof resultHTML === "string") {
-      // It's a string, try to parse it
-      if (!resultHTML.startsWith("{")) {
-        console.warn(
-          "Private SearXNG instance did not return valid JSON, falling back or returning empty",
-        );
-        return { results: [], suggestions: [], infoboxes: [] };
-      }
-
-      try {
-        parsedData = JSON.parse(resultHTML);
-      } catch (e) {
-        console.error("Failed to parse JSON from private instance", e);
-        return { results: [], suggestions: [], infoboxes: [] };
-      }
-    } else {
-      console.error("Unexpected resultHTML type:", typeof resultHTML);
+    // A private instance can answer 200 with an HTML error/captcha page, or
+    // with JSON that has no `results` (rate limited, format=json disabled).
+    // Return an empty response so the caller can fall back to public
+    // instances instead of blowing up on `undefined.map`.
+    if (!parsedData || !Array.isArray(parsedData.results)) {
+      console.warn(
+        `[searchWeb] Private SearXNG instance "${searchDomain}" did not return JSON results (page ${page}).`,
+      );
       return { results: [], suggestions: [], infoboxes: [] };
     }
 
-    let { results, suggestions, infoboxes } = parsedData;
+    const { suggestions, infoboxes } = parsedData;
 
-    results = results.map((result: any) => {
-      let title = result.title.replace(/<\/?[^>]+(>|$)/g, "");
+    // Some engines return entries without a usable link; skip those rather
+    // than throwing while normalizing them.
+    const usableResults = parsedData.results.filter(
+      (result: any) => result && typeof result.url === "string" && result.url,
+    );
+
+    const results = usableResults.map((result: any) => {
+      let title = String(result.title ?? "").replace(/<\/?[^>]+(>|$)/g, "");
 
       const TITLE_SPLITTERS_RE = /( [|\-\/:\u00bb] )|( - )|(\|)/;
 
@@ -211,7 +235,9 @@ export async function searchWeb(
 
       const snippet = result.content?.replace(/<\/?[^>]+(>|$)/g, "");
       const thumbnail = result.thumbnail;
-      const score = Math.round(result.score * 100) / 100;
+      const score = Number.isFinite(result.score)
+        ? Math.round(result.score * 100) / 100
+        : undefined;
 
       const domain = result.url
         ?.replace(/(http:\/\/|https:\/\/|www.)/gi, "")
@@ -225,7 +251,10 @@ export async function searchWeb(
         if (parts.length > 1) {
           // Basic check
           const dateObj = parseDate(result.metadata);
-          date = dateObj ? dateObj.toISOString().split("T")[0] : undefined;
+          date =
+            dateObj && !Number.isNaN(dateObj.getTime())
+              ? dateObj.toISOString().split("T")[0]
+              : undefined;
           const sourcePart = parts[1]; // assuming second part might be source
           source = sourcePart || null;
         }
@@ -263,10 +292,16 @@ export async function searchWeb(
         ...(result.iframe_src ? { iframe_src: result.iframe_src } : {}),
       };
     });
-    return { results, suggestions: suggestions || [], infoboxes };
+
+    return {
+      results,
+      suggestions: suggestions || [],
+      infoboxes: infoboxes || [],
+    };
   }
 
   // Public instance scraping (HTML parsing)
+  const resultHTML = response.text ?? "";
   let results: SearxngSearchResult[] = [];
   const resultRegex = /<article class="result[^>]*>[\s\S]*?<\/article>/g;
   const titleUrlRegex = /<h3><a href="([^"]*)"[^>]*>(.*?)<\/a><\/h3>/;
@@ -385,6 +420,74 @@ export const searchSearxng = async (
     return { results: result.results, suggestions: result.suggestions || [] };
   }
 };
+
+/**
+ * Normalized view of whatever `grab` handed back.
+ * Exactly one of `json`, `text` or `error` is meaningful.
+ */
+export interface NormalizedGrabResponse {
+  /** Parsed JSON body, when the response was JSON with search results. */
+  json?: any;
+  /** Raw body text, when the response was HTML or another text format. */
+  text?: string;
+  /** Message describing why the request did not produce a usable body. */
+  error?: string;
+}
+
+/**
+ * `grab` resolves rather than rejects on failure: network and HTTP errors come
+ * back as `{ error }`, JSON bodies are merged onto the root of the response
+ * object, and text/binary bodies are placed on `.data`. This flattens those
+ * shapes (plus the plain string a raw fetch would return) into one union so
+ * callers never read `.results` off an error object.
+ *
+ * @param raw The value returned by `grab`.
+ * @returns The body as JSON or text, or the error that prevented both.
+ */
+export function normalizeGrabResponse(raw: any): NormalizedGrabResponse {
+  if (raw === null || raw === undefined) return { error: "empty response" };
+  if (typeof raw === "string") return { text: raw };
+  if (typeof raw !== "object") return { error: `unexpected response type "${typeof raw}"` };
+
+  if (typeof raw.error === "string" && raw.error) return { error: raw.error };
+  if (Array.isArray(raw.results)) return { json: raw };
+
+  const { data } = raw;
+  if (typeof data === "string") return { text: data };
+  if (data && typeof data === "object") {
+    if (typeof data.error === "string" && data.error) return { error: data.error };
+    if (Array.isArray(data.results)) return { json: data };
+  }
+
+  // An object with neither results nor a body: hand it back as JSON and let
+  // the caller decide whether it is usable.
+  return { json: raw };
+}
+
+/**
+ * Parse a JSON object out of a response body, tolerating HTML error pages.
+ *
+ * @param text The raw response body, if there was one.
+ * @returns The parsed object, or null when the body was not a JSON object.
+ */
+function parseJSONText(text: string | undefined): any {
+  if (!text) return null;
+
+  const trimmed = text.trim();
+  if (!trimmed.startsWith("{")) {
+    console.warn(
+      "Private SearXNG instance did not return valid JSON, falling back or returning empty",
+    );
+    return null;
+  }
+
+  try {
+    return JSON.parse(trimmed);
+  } catch (e) {
+    console.error("Failed to parse JSON from private instance", e);
+    return null;
+  }
+}
 
 // Helper function to decode HTML entities
 function convertURLSafeHTMLToHTML(html: string): string {

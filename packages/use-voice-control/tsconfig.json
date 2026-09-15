@@ -12,8 +12,20 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": []
+    "types": ["node"]
   },
-  "include": ["speech/index.ts", "speech/core", "speech/types", "vite.config.ts"],
+  "include": [
+    "speech/index.ts",
+    "speech/core",
+    "speech/types",
+    "speech/client",
+    "speech/react",
+    "speech/node",
+    "speech/utils/markdown-to-speech.ts",
+    "speech/utils/wav.ts",
+    "speech/utils/semantic-split.d.ts",
+    "speech/utils/sentence-detector.d.ts",
+    "vite.config.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,5 +1,28 @@
 import tailwindcssAnimate from 'tailwindcss-animate';
 
+/**
+ * Reads a `--richtext-*` design token (see `src/styles/global.scss`) as a
+ * complete colour rather than the bare `H S L` triplet shadcn v3 assumes.
+ *
+ * The tokens alias the host application's own theme variables, and a host is
+ * free to express its palette in any colour space — this product uses
+ * `oklch()` — so the old `hsl(var(--token))` wrapper would produce an invalid
+ * declaration and the editor would fall back to unstyled white. Reading the
+ * token directly works whatever colour space the host themes in.
+ *
+ * Tailwind calls this with an explicit `opacityValue` for opacity modifiers
+ * (`bg-primary/90`), which `color-mix()` applies to the opaque token — what
+ * the `hsl(… / α)` slash syntax used to do. Without a modifier it instead
+ * threads its own `--tw-*-opacity` variable through `opacityVariable` (and
+ * pins it to 1 on the same rule), so the token is emitted unwrapped.
+ *
+ * @param {string} token CSS custom property name, e.g. `--richtext-primary`.
+ */
+const themeColor = (token) => ({ opacityValue, opacityVariable } = {}) =>
+  opacityValue === undefined || opacityVariable !== undefined
+    ? `var(${token})`
+    : `color-mix(in oklab, var(${token}) calc(${opacityValue} * 100%), transparent)`;
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class', "[class~='dark']"],
@@ -33,45 +56,45 @@ export default {
     },
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        border: themeColor('--richtext-border'),
+        input: themeColor('--richtext-input'),
+        ring: themeColor('--richtext-ring'),
+        background: themeColor('--richtext-background'),
+        foreground: themeColor('--richtext-foreground'),
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: themeColor('--richtext-primary'),
+          foreground: themeColor('--richtext-primary-foreground'),
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: themeColor('--richtext-secondary'),
+          foreground: themeColor('--richtext-secondary-foreground'),
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: themeColor('--richtext-destructive'),
+          foreground: themeColor('--richtext-destructive-foreground'),
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: themeColor('--richtext-muted'),
+          foreground: themeColor('--richtext-muted-foreground'),
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: themeColor('--richtext-accent'),
+          foreground: themeColor('--richtext-accent-foreground'),
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: themeColor('--richtext-popover'),
+          foreground: themeColor('--richtext-popover-foreground'),
         },
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: themeColor('--richtext-card'),
+          foreground: themeColor('--richtext-card-foreground'),
         },
       },
       borderRadius: {
-        xl: 'calc(var(--radius) + 4px)',
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        xl: 'calc(var(--richtext-radius) + 4px)',
+        lg: 'var(--richtext-radius)',
+        md: 'calc(var(--richtext-radius) - 2px)',
+        sm: 'calc(var(--richtext-radius) - 4px)',
       },
       keyframes: {
         'accordion-down': {

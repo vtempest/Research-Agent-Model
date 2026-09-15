@@ -1,4 +1,7 @@
-import { EngineFunction } from "../../types/search-engine-interface.js";
+/**
+ * @fileoverview Engine adapter that queries the PeerTube API for video search results.
+ */
+import { EngineFunction } from "../../types/search-engine-interface";
 
 export const peertube: EngineFunction = async (
   query: string,
