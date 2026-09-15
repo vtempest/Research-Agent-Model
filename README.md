@@ -6,7 +6,7 @@
     <a href="https://qwksearch.com/api/docs"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <a href="https://qwksearch.com/api/docs"><img src="https://img.shields.io/badge/API-blue?logo=fastapi&logoColor=white" alt="API" /></a>
     <a href="https://youtu.be/DzykBAdrw6s"><img height="20px" src="https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube" /></a>
-    <a href="https://stats.uptimerobot.com/wgqOZtDv0i"><img src="https://img.shields.io/badge/Uptime--Status-brightgreen?logo=uptimerobot&logoColor=white" alt="Uptime Status" /></a>
+    <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" /></a>
     <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/OpenSourceAGI/qwksearch-research-agent"><img height="24px" src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare Workers" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/qwksearch-research-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/qwksearch-research-agent" alt="GitHub Stars" /></a>
