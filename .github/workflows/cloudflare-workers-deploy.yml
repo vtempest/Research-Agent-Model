@@ -14,6 +14,10 @@ on:
         description: 'Optional directory name under apps/. Leave empty to deploy all folders containing web or .com.'
         required: false
         type: string
+      environment:
+        description: 'Wrangler environment (production, staging, or leave blank for default).'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -84,13 +88,20 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Node 24 prevents intentionally selecting the deprecated Node 20 runtime.
-      # No npm cache here: it safely supports apps with or without package-lock.json.
+      # Node 24: intentionally above the deprecated Node 20 runtime that
+      # `actions/setup-node@v4` still defaults to. Cache the npm store so a
+      # repeat deploy of an unchanged app reuses ~90% of the install; the
+      # cache key includes the package.json (and package-lock.json when one
+      # exists) so a dependency edit busts it.
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
           check-latest: true
+          cache: npm
+          cache-dependency-path: |
+            apps/${{ matrix.app }}/package-lock.json
+            apps/${{ matrix.app }}/package.json
 
       - name: Show app files
         run: |
@@ -98,16 +109,35 @@ jobs:
           echo "Current directory: $(pwd)"
           ls -la
 
-      # npm ci needs a package-lock.json. npm install works both with and without one.
+      # Prefer a lockfile-bound install when one exists; fall back to a plain
+      # install for apps that have not yet committed one. Both paths keep
+      # postinstall scripts enabled — unlike the LobeHub engine job, the
+      # apps here need their native-build postinstall to produce dist.
       - name: Install dependencies
-        run: npm install
+        id: install
+        run: |
+          if [[ -f package-lock.json ]]; then
+            echo "package-lock.json found, running npm ci"
+            npm ci
+          else
+            echo "No package-lock.json, running npm install"
+            npm install
+          fi
 
       - name: Build app
+        if: steps.install.outcome == 'success'
         run: npm run build --if-present
 
       - name: Deploy Worker with Wrangler
+        if: steps.install.outcome == 'success'
         env:
           CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
           CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx wrangler deploy
+          DEPLOY_ENV: ${{ inputs.environment }}
+        run: |
+          if [[ -n "${DEPLOY_ENV}" ]]; then
+            npx wrangler deploy --env "${DEPLOY_ENV}"
+          else
+            npx wrangler deploy
+          fi
