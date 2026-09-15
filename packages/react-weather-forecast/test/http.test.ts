@@ -32,6 +32,57 @@ describe('grabJson', () => {
     await expect(grabJson('https://example.test', 'Weather request')).resolves.toEqual({ temperature: 21 });
   });
 
+  describe('retryRateLimits', () => {
+    it('repeats a rate-limited request by default', async () => {
+      mockGrab.mockResolvedValue({ error: true, reason: 'RateLimited' } as never);
+
+      await expect(
+        grabJson('https://example.test', 'ipapi.co lookup', { ...noDelay, attempts: 3 })
+      ).rejects.toThrow('ipapi.co lookup failed: RateLimited');
+      expect(mockGrab).toHaveBeenCalledTimes(3);
+    });
+
+    it('gives up at once when the caller has somewhere else to ask', async () => {
+      mockGrab.mockResolvedValue({ error: true, reason: 'RateLimited' } as never);
+
+      await expect(
+        grabJson('https://example.test', 'ipwho.is lookup', {
+          ...noDelay,
+          attempts: 3,
+          retryRateLimits: false,
+        })
+      ).rejects.toThrow('ipwho.is lookup failed: RateLimited');
+      // A daily quota is spent for the day; the retries would only spend more.
+      expect(mockGrab).toHaveBeenCalledTimes(1);
+    });
+
+    it('gives up at once on a 429 as well', async () => {
+      mockGrab.mockResolvedValue({ error: 'HTTP error: 429 Too Many Requests' } as never);
+
+      await expect(
+        grabJson('https://example.test', 'ipwho.is lookup', {
+          ...noDelay,
+          attempts: 3,
+          retryRateLimits: false,
+        })
+      ).rejects.toThrow('ipwho.is lookup failed: 429 Too Many Requests');
+      expect(mockGrab).toHaveBeenCalledTimes(1);
+    });
+
+    it('still repeats a failure that is not a rate limit', async () => {
+      mockGrab.mockResolvedValue({ error: 'HTTP error: 503 Service Unavailable' } as never);
+
+      await expect(
+        grabJson('https://example.test', 'ipwho.is lookup', {
+          ...noDelay,
+          attempts: 2,
+          retryRateLimits: false,
+        })
+      ).rejects.toThrow('ipwho.is lookup failed: 503 Service Unavailable');
+      expect(mockGrab).toHaveBeenCalledTimes(2);
+    });
+  });
+
   it('unwraps a body grab-url could not parse as root JSON', async () => {
     mockGrab.mockResolvedValue({ data: { temperature: 21 } } as never);
 

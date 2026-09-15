@@ -41,6 +41,16 @@ export type GrabJsonOptions = {
    * malformed only wastes the upstream's rate limit.
    */
   retryClientErrors?: boolean;
+  /**
+   * default=true Repeat a request the upstream answered with a rate limit.
+   *
+   * Worth turning off wherever another upstream can answer the same question:
+   * a free IP lookup's limit is a daily quota, so the retry is spent on the
+   * one provider that has already said no, and spends quota to be told so
+   * again. The geolocation chain turns it off for every provider but the last
+   * one, which has nowhere left to move on to.
+   */
+  retryRateLimits?: boolean;
 };
 
 /**
@@ -56,14 +66,23 @@ const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504, 520, 521, 5
 export class HttpRequestError extends Error {
   readonly status?: number;
   readonly retryable: boolean;
+  /** The upstream refused because a quota or rate limit is spent, not because it broke. */
+  readonly rateLimited: boolean;
 
-  constructor(message: string, options: { status?: number; retryable?: boolean } = {}) {
+  constructor(
+    message: string,
+    options: { status?: number; retryable?: boolean; rateLimited?: boolean } = {}
+  ) {
     super(message);
     this.name = 'HttpRequestError';
     this.status = options.status;
     this.retryable = options.retryable ?? isRetryableStatus(options.status);
+    this.rateLimited = options.rateLimited ?? options.status === 429;
   }
 }
+
+/** A refusal that repeating cannot clear, only waiting or asking someone else can. */
+const RATE_LIMIT_REASON = /rate|limit|quota|too many/i;
 
 /** No status at all means the request never reached the server -- worth a repeat. */
 export function isRetryableStatus(status?: number): boolean {
@@ -198,6 +217,7 @@ async function grabJsonOnce<T>(url: string, label: string, options: GrabJsonOpti
     const reason = data.reason ?? 'unknown error';
     throw new HttpRequestError(`${label} failed: ${reason}`, {
       retryable: /rate|limit|busy|timeout|try again/i.test(reason),
+      rateLimited: RATE_LIMIT_REASON.test(reason),
     });
   }
 
@@ -240,9 +260,13 @@ export async function grabJson<T>(
 
     lastError = failure;
 
+    const spentQuota =
+      failure instanceof HttpRequestError &&
+      failure.rateLimited &&
+      options.retryRateLimits === false;
     const retryable =
       !(failure instanceof HttpRequestError) || failure.retryable || options.retryClientErrors === true;
-    if (!retryable || attempt === attempts) break;
+    if (spentQuota || !retryable || attempt === attempts) break;
 
     // Exponential backoff: 1x, 2x, 4x ... of the configured delay.
     if (retryDelay > 0) await wait(retryDelay * 2 ** (attempt - 1));

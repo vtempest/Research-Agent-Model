@@ -81,8 +81,14 @@ export type WeatherForecastData = {
 /** Ids of the weather upstreams bundled with the package. */
 export type WeatherProviderId = 'open-meteo' | 'open-meteo-gfs' | 'met-no' | 'wttr';
 
-/** Ids of the IP geolocation upstreams bundled with the package. */
-export type GeoProviderId = 'ipapi' | 'ipwho' | 'geojs' | 'freeipapi';
+/**
+ * Ids of the geolocation sources bundled with the package.
+ *
+ * `browser` is the device's own geolocation. It is not in the default chain
+ * because asking for it raises the browser's permission prompt; name it
+ * explicitly to put it in front of the IP lookups.
+ */
+export type GeoProviderId = 'ipwho' | 'ipapi' | 'geojs' | 'freeipapi' | 'browser';
 
 export type WeatherForecastOptions = {
   latitude?: number;
@@ -103,10 +109,22 @@ export type WeatherForecastOptions = {
    */
   weatherProviders?: (WeatherProviderId | WeatherProvider)[];
   /**
-   * default=['ipapi', 'ipwho', 'geojs', 'freeipapi'] IP geolocation upstreams,
+   * default=['ipwho', 'ipapi', 'geojs', 'freeipapi'] IP geolocation upstreams,
    * tried in order. `geoEndpoint`, when given, is always tried first.
    */
   geoProviders?: (GeoProviderId | GeoProvider)[];
+  /**
+   * default=true Reuse a location resolved in the last 12 hours rather than
+   * spending an IP lookup on every load.
+   *
+   * The free lookups allow 1,000 requests/day against a quota a browser call
+   * shares with every other visitor to the domain, so re-resolving per refresh
+   * is what turns into `429 Too Many Requests`. Turn this off only where a
+   * moving client has to be re-located on each load.
+   */
+  cacheLocation?: boolean;
+  /** default=43200000 Milliseconds a cached location stays usable. */
+  locationCacheTtl?: number;
   /** default=3 Tries per upstream request before it is treated as failed. */
   retryAttempts?: number;
   /** default=400 Milliseconds before the first retry; each further wait doubles. */

@@ -31,28 +31,19 @@ type GeoResult = {
  * geolocation carries no coordinates. They are run by different operators, so
  * one of them being rate-limited is not all of them being rate-limited.
  *
+ * They are only ever a fallback here: `request.cf` below answers from
+ * Cloudflare's own edge data, at no quota cost and with no third-party request
+ * at all, which is the whole reason to deploy this worker rather than call a
+ * public IP API from the page. Ordered like the package's own chain, ipwho.is
+ * first.
+ *
  * Requests go through `grab-url` rather than `fetch` so a cold or throttled
  * upstream is retried (with backoff) before the next one is tried.
  */
 const IP_LOOKUPS: { source: string; url: (ip: string) => string; parse: (body: any) => Partial<GeoResult> }[] = [
   {
-    source: 'ipapi.co',
-    url: (ip) => `https://ipapi.co/${encodeURIComponent(ip)}/json/`,
-    parse: (data) => ({
-      ip: data.ip,
-      country: data.country_name,
-      countryCode: data.country_code,
-      region: data.region,
-      city: data.city,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      timezone: data.timezone,
-      postalCode: data.postal,
-    }),
-  },
-  {
     source: 'ipwho.is',
-    url: (ip) => `https://ipwho.is/${encodeURIComponent(ip)}`,
+    url: (ip) => `https://ipwho.is/${encodeURIComponent(ip)}?rate=1`,
     parse: (data) =>
       data?.success === false
         ? {}
@@ -67,6 +58,21 @@ const IP_LOOKUPS: { source: string; url: (ip: string) => string; parse: (body: a
             timezone: data.timezone?.id ?? data.timezone,
             postalCode: data.postal,
           },
+  },
+  {
+    source: 'ipapi.co',
+    url: (ip) => `https://ipapi.co/${encodeURIComponent(ip)}/json/`,
+    parse: (data) => ({
+      ip: data.ip,
+      country: data.country_name,
+      countryCode: data.country_code,
+      region: data.region,
+      city: data.city,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      timezone: data.timezone,
+      postalCode: data.postal,
+    }),
   },
   {
     source: 'geojs.io',
@@ -125,10 +131,23 @@ async function lookupIp(ip: string): Promise<GeoResult> {
   throw new Error(`IP geolocation failed: ${failures.join('; ')}`);
 }
 
+/**
+ * An answer is worth caching in the caller's browser for as long as the
+ * package reuses one (12 hours), which keeps a reloaded page from re-asking.
+ * `private` because the answer is about that one caller: a shared cache must
+ * never hand one visitor's location to the next.
+ *
+ * A failure is never cached -- the next request should get a real attempt.
+ */
+const CACHE_CONTROL = 'private, max-age=43200';
+
 const json = (body: unknown, status = 200) =>
   Response.json(body, {
     status,
-    headers: { 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' },
+    headers: {
+      'Cache-Control': status === 200 ? CACHE_CONTROL : 'no-store',
+      'Access-Control-Allow-Origin': '*',
+    },
   });
 
 export default {

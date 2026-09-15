@@ -51,6 +51,8 @@ function requestKey(options: WeatherForecastOptions): string {
     options.retryDelay,
     options.timeout,
     options.allowStaleCache,
+    options.cacheLocation,
+    options.locationCacheTtl,
     options.reloadAttempts,
     options.reloadDelay,
     options.fallbackLocation?.latitude,
