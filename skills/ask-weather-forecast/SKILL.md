@@ -1,6 +1,6 @@
 ---
 name: ask-weather-forecast
-description: Guide to react-weather-forecast (packages/react-weather-forecast, published as use-weather-forecast), the Open-Meteo weather widget — getWeatherForecast and its location resolution (explicit coordinates, a geo Worker, or ipapi.co), getClientLocation, the useWeatherForecast hook, the WeatherForecast component and its compact mode, the WMO-code-to-icon mapping, the 30-minute localStorage cache, and the bundled Cloudflare geo Worker. Use when embedding or restyling the weather widget, when it resolves the wrong location or rate-limits, when adding a weather condition or icon, or when deploying the geo Worker.
+description: Guide to react-weather-forecast (packages/react-weather-forecast, published as use-weather-forecast), the Open-Meteo weather widget — getWeatherForecast and its location resolution (explicit coordinates, a geo Worker, or ipwho.is), getClientLocation, the useWeatherForecast hook, the WeatherForecast component and its compact mode, the WMO-code-to-icon mapping, the 12-hour location cache and 30-minute forecast cache in localStorage, and the bundled Cloudflare geo Worker. Use when embedding or restyling the weather widget, when it resolves the wrong location or rate-limits (429), when adding a weather condition or icon, or when deploying the geo Worker.
 ---
 
 # Working With react-weather-forecast
@@ -24,20 +24,34 @@ Peers: `react`, `react-dom`. No key, no bundled data.
 
 ## Location resolution, in order
 
+0. **A location resolved in the last 12 hours** → reused from `localStorage`, no request
+   at all. This is checked first, before anything below, and is why the widget does not
+   re-resolve on every refresh. `cacheLocation={false}` / `{ cache: false }` skips it.
 1. **`latitude` + `longitude`** given → used directly, no lookup.
 2. **`geoEndpoint`** set → `GET {geoEndpoint}` (plus `?ip=` when `ip` is given). That is
    the bundled `worker/geo-worker.ts`, which uses Cloudflare's own `request.cf` geo data
-   for the caller and falls back to ipapi.co for an explicit `ip`.
-3. Otherwise → **`https://ipapi.co/json/`** directly from the browser.
+   for the caller and falls back to the public lookups only for an explicit `ip`.
+3. Otherwise → **`https://ipwho.is/?rate=1`** directly from the browser, then ipapi.co,
+   get.geojs.io and freeipapi.com behind it. (`rate=1` asks ipwho.is to report the quota
+   it has left alongside the location.)
 
-Option 3 is the default and is the usual source of trouble: ipapi.co rate-limits by IP,
-and calling it from the client exposes the visitor to a third party. Deploy the worker
-(`bun run worker:deploy`) and pass `geoEndpoint` for anything real.
+Option 3 is the default and is the usual source of trouble: every free IP lookup is
+1,000 requests/day against a quota a browser call shares with everyone on the domain,
+and calling one from the client exposes the visitor to a third party. Deploy the worker
+(`bun run worker:deploy`) and pass `geoEndpoint` for anything real — Cloudflare's edge
+geo costs no quota and involves no third party at all.
 
-Either lookup is repeated before it throws — `getClientLocation(geoEndpoint, ip,
-{ attempts, retryDelay })`, 3 tries with a 500ms, then 1s wait by default — because
-ipapi.co answers a rate limit as HTTP 200 with `{ error: true, reason: 'RateLimited' }`
-and a worker can drop a request while it cold-starts. Only the last error is thrown.
+A lookup is repeated before the chain moves on — `getClientLocation(geoEndpoint, ip,
+{ attempts, retryDelay })`, 2 tries per provider with a 500ms, then 1s wait by default —
+because a worker can drop a request while it cold-starts. **A rate-limited provider is
+the exception: it is not retried while another provider is left to ask**, since a daily
+quota will not come back in 500ms and the retry only spends more of it. The last
+provider in the chain, having nowhere to move on to, still retries. Only after every
+provider has failed does an error reach the caller, listing what each one said.
+
+`browser` (the device's own geolocation) is bundled as a provider but is **not** in the
+default chain — requesting it raises the permission prompt. Put it first explicitly
+(`geoProviders={['browser', 'ipwho']}`) where asking is expected.
 
 ## Options and shapes
 
@@ -114,9 +128,19 @@ Three layers, tried in this order before an error reaches the user:
 `src/weatherCodes.ts`) maps it to a `WeatherCondition`, and `<WeatherIcon>` renders it.
 Add a condition in both places.
 
-**Caching.** 30 minutes in `localStorage`, keyed by the full Open-Meteo URL (prefix
-`weather-forecast-cache:`). Any option that changes the URL is a different cache entry.
-`clearWeatherForecastCache()` clears it.
+**Caching.** Two caches in `localStorage`, both under the prefix
+`weather-forecast-cache:`.
+
+- **Location, 12 hours** (`…:location:`, keyed by endpoint + ip). Reused before any
+  lookup is attempted. This is the one that matters for a `429`: the forecast cache is
+  keyed by coordinates, so it can only be consulted *after* the location is known, which
+  means an uncached location costs an IP lookup on every single refresh. Tune with
+  `cacheLocation` / `locationCacheTtl`; empty with `clearCachedLocations()`.
+- **Forecast, 30 minutes**, keyed by the request (location + units + range + timezone),
+  then kept a further day as the stale-fallback entry. Any option that changes the URL is
+  a different entry.
+
+`clearWeatherForecastCache()` clears both.
 
 **Timezones.** `timezone` defaults to `auto` (Open-Meteo infers it from the
 coordinates). The component formats times with `Intl.DateTimeFormat` in that zone and
@@ -128,7 +152,8 @@ falls back to the browser's zone when the string is missing or invalid.
 | --- | --- |
 | The package isn't found as `react-weather-forecast` | The npm name is `use-weather-forecast`. |
 | Wrong city, or the datacenter's location | IP geolocation resolved the server or a VPN exit. Pass explicit coordinates, or use `geoEndpoint` so Cloudflare's edge geo is used. |
-| `ipapi.co lookup failed: …` | Rate-limited or blocked, and every repeat failed too. Deploy the geo worker and set `geoEndpoint`. |
+| `ipwho.is lookup failed: …` / `ipapi.co lookup failed: …` | Rate-limited or blocked, and every provider behind it failed too. Deploy the geo worker and set `geoEndpoint`. |
+| `429 Too Many Requests` from a lookup, repeatedly | The daily quota is shared by everyone on the domain. Check that the location cache is not disabled (`cacheLocation={false}`, or a caller passing `cache: false`), and that nothing is resolving the location outside this package on every render. Then deploy the worker. |
 | `Geolocation worker lookup failed: <status>` | The endpoint is wrong or not deployed. |
 | `Invalid weather response` | Open-Meteo replied without `current`/`hourly`/`daily` — usually invalid coordinates (only one of lat/lon given, so the pair was ignored). |
 | `Weather request failed: 400 Bad Request` | A malformed URL, not a malformed query. Check that nothing hands grab-url a path with a `?` on it — see the `?` trap above — then that the coordinates and timezone survived `src/lib/validate.ts`. |

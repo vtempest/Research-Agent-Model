@@ -1,6 +1,12 @@
 export * from './types';
 export * from './weatherCodes';
-export { clearWeatherForecastCache } from './lib/cache';
+export {
+  clearWeatherForecastCache,
+  clearCachedLocations,
+  readCachedLocation,
+  writeCachedLocation,
+  LOCATION_TTL_MS,
+} from './lib/cache';
 export { grabJson, HttpRequestError, isRetryableStatus, type GrabJsonOptions } from './api/http';
 export {
   normalizeCoordinates,

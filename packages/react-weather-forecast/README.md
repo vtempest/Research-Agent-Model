@@ -24,7 +24,7 @@
 
 [![Coverage](https://codecov.io/gh/OpenSourceAGI/qwksearch-research-agent/graph/badge.svg?component=package-react-weather-forecast)](https://codecov.io/gh/OpenSourceAGI/qwksearch-research-agent)
 
-React weather forecast component using Open-Meteo for current, hourly, and daily forecasts and Cloudflare/ipapi.co for IP geolocation, with a fallback chain behind both.
+React weather forecast component using Open-Meteo for current, hourly, and daily forecasts and Cloudflare/ipwho.is for IP geolocation, with a fallback chain behind both.
 
 ## Features
 
@@ -33,6 +33,8 @@ React weather forecast component using Open-Meteo for current, hourly, and daily
 - Next days forecast.
 - Four weather upstreams tried in order, four IP geolocation upstreams behind that.
 - Every request validated before it is sent, retried with backoff when it can recover.
+- A resolved location cached for 12 hours, so a refreshing widget never spends a
+  lookup it has already made -- the difference between working all day and a `429`.
 - Stale-cache fallback so a total outage still renders a widget.
 - Latitude/longitude override.
 - Split SVG weather icon components.
@@ -110,15 +112,29 @@ exponential backoff from `retryDelay` (400ms, then 800ms, ...). A `429`, a
 called invalid (`400`, `404`) is not, since replaying it only burns the
 upstream's rate limit.
 
+One exception, in the geolocation chain: a provider that answered with a rate
+limit is *not* retried while another provider is still to be tried. A free IP
+lookup's limit is a daily quota, so the retry would be spent asking the one
+operator that has already said no. The last provider in the chain, which has
+nowhere left to move on to, still retries.
+
 ### Fallback APIs
 
 | Order | Weather | IP geolocation |
 | --- | --- | --- |
 | 1 | `open-meteo` -- `api.open-meteo.com/v1/forecast` | `geoEndpoint` (the bundled worker), when given |
-| 2 | `open-meteo-gfs` -- the GFS model endpoint | `ipapi` -- ipapi.co |
-| 3 | `met-no` -- met.no, a different operator and model | `ipwho` -- ipwho.is |
+| 2 | `open-meteo-gfs` -- the GFS model endpoint | `ipwho` -- ipwho.is |
+| 3 | `met-no` -- met.no, a different operator and model | `ipapi` -- ipapi.co |
 | 4 | `wttr` -- wttr.in, no key required | `geojs` -- get.geojs.io |
 | 5 | | `freeipapi` -- freeipapi.com |
+
+ipwho.is leads the geolocation chain: it is free, keyless and CORS-enabled, and
+unlike ipapi.co it does not spend the rest of the day answering `RateLimited` as
+a `200` once the quota is gone. `browser` -- the device's own geolocation -- is
+bundled too but deliberately left out of the default chain, since asking for it
+raises the browser's permission prompt; name it first in `geoProviders` in a
+place where asking is expected and the IP lookups stay behind it for everyone
+who declines.
 
 The fallbacks normalize their own condition codes, units and timestamps into
 the same shape Open-Meteo returns, so a failover is invisible in the rendered
@@ -179,20 +195,29 @@ npm run build
 This package no longer uses ipinfo.io. Instead:
 
 - Pass `geoEndpoint` pointing at a deployed instance of the bundled Cloudflare Worker
-  (`worker/geo-worker.ts`) for accurate results. The worker reads Cloudflare's built-in
-  geolocation (`request.cf`) for the visitor's own IP, and falls back to `ipapi.co`
-  when a `?ip=` query param (or the `ip` prop) is supplied for an arbitrary address.
-- If `geoEndpoint` is omitted, the package falls back to calling `ipapi.co` directly
-  from the browser (`https://ipapi.co/json/`, or `https://ipapi.co/<ip>/json/` when an
-  `ip` is supplied). Unlike the previous ip-api.com fallback, this works over HTTPS with
-  no mixed-content issues, though ipapi.co's free tier is rate-limited (1,000
-  requests/day) — deploy the worker and pass `geoEndpoint` for higher-volume or
-  production use.
+  (`worker/geo-worker.ts`) for accurate results, and for production prefer it over any
+  public IP API. The worker reads Cloudflare's built-in geolocation (`request.cf`) for
+  the visitor's own IP: no third-party request, no shared quota, no CORS, and nothing
+  an ad blocker recognises as a tracker. It falls back to the public lookups only for a
+  `?ip=` query param (or the `ip` prop) naming an arbitrary address, or for the rare
+  network Cloudflare has no coordinates for. A successful answer is returned
+  `Cache-Control: private, max-age=43200`, so a reloaded page does not re-ask.
+- If `geoEndpoint` is omitted, the package calls `ipwho.is` directly from the browser
+  (`https://ipwho.is/?rate=1`, or `https://ipwho.is/<ip>?rate=1` when an `ip` is
+  supplied). It is free, needs no key, supports CORS and works over HTTPS with no
+  mixed-content issues; `rate=1` makes it report what is left of the quota alongside
+  the location, which is useful while watching request volume. Its free tier allows
+  1,000 requests/day, **shared by every visitor to your domain** for a browser call --
+  deploy the worker and pass `geoEndpoint` for higher-volume or production use.
+- A resolved location is **cached for 12 hours** (see [Caching](#caching)), so the
+  quota is spent once per visitor per half-day rather than once per render. Turning
+  this off with `cacheLocation={false}` is what re-creates the `429`.
 - A failed lookup is **repeated** before the chain moves on: `getClientLocation`
   tries each provider twice by default, waiting 500ms, then walks the rest of the
-  chain (ipapi.co, ipwho.is, get.geojs.io, freeipapi.com) so a single rate-limited
-  or cold-start response doesn't take the whole forecast down. Tune it with the
-  third argument: `getClientLocation(geoEndpoint, ip, { attempts: 5, retryDelay: 250, providers: ['ipwho'] })`.
+  chain (ipwho.is, ipapi.co, get.geojs.io, freeipapi.com) so a single cold-start
+  response doesn't take the whole forecast down. A rate-limited provider is not
+  retried while another one is left to ask. Tune it with the third argument:
+  `getClientLocation(geoEndpoint, ip, { attempts: 5, retryDelay: 250, providers: ['ipwho'] })`.
 - A response **without usable coordinates counts as a failure** rather than being
   passed on as `NaN`, and `fallbackLocation` covers the case where every provider
   is down.
@@ -212,7 +237,24 @@ This deploys `worker/geo-worker.ts` via Wrangler. Use the resulting `*.workers.d
 
 ## Caching
 
-`getWeatherForecast` caches each response in `localStorage` for 30 minutes, keyed by
+Two things are cached in `localStorage`, on different clocks, because they go
+stale at different rates.
+
+**The resolved location, for 12 hours.** The weather at a place changes through
+the day; the place a visitor is looking from does not. Every free IP lookup
+bills per request against a daily quota, and for a browser call that quota is
+shared by everyone on the domain -- so a widget that re-resolves its location on
+each refresh, each tab and each remount exhausts 1,000 requests without needing
+many users, and then answers `429 Too Many Requests` for the rest of the day.
+Caching the location is the single most effective thing against that, and it is
+on by default. `cacheLocation={false}` forces a fresh lookup every time;
+`locationCacheTtl` changes the window; `clearCachedLocations()` empties it.
+
+Note that the forecast cache below cannot help here: it is keyed by coordinates,
+so it can only be consulted *after* the location is known.
+
+**The forecast itself, for 30 minutes.** `getWeatherForecast` caches each response
+in `localStorage` for 30 minutes, keyed by
 the request itself (location + units + forecast range + timezone), so a fallback
 provider's answer is reused exactly like the primary one's. Repeated calls for the same
 location/options within that window are served from the cache instead of hitting
@@ -225,7 +267,7 @@ or when `localStorage` is unavailable/full.
 ## Notes
 
 - Open-Meteo powers the forecast data, with met.no and wttr.in behind it.
-- Cloudflare's `request.cf`, ipapi.co, ipwho.is, get.geojs.io and freeipapi.com
+- Cloudflare's `request.cf`, ipwho.is, ipapi.co, get.geojs.io and freeipapi.com
   power IP geolocation (see above).
 - HTTP requests go through [`grab-url`](https://www.npmjs.com/package/grab-url), the
   repo-wide client, rather than raw `fetch`. It is the package's only runtime

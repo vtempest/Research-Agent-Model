@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
-import { getClientLocation } from '../src/api/geolocation';
+import { getClientLocation, locationCacheKey } from '../src/api/geolocation';
+import { clearWeatherForecastCache, writeCachedLocation } from '../src/lib/cache';
 import grab from 'grab-url';
 import { requestedUrl } from './requested-url';
 
@@ -17,6 +18,9 @@ const noDelay = { retryDelay: 0 };
 
 describe('getClientLocation', () => {
   beforeEach(() => {
+    // A resolved location is cached for 12 hours, so one test's answer would
+    // otherwise be handed to the next without a request being made at all.
+    clearWeatherForecastCache();
     vi.resetAllMocks();
   });
 
@@ -72,7 +76,57 @@ describe('getClientLocation', () => {
     });
   });
 
-  describe('via ipapi.co (default)', () => {
+  describe('via ipwho.is (default)', () => {
+    it('asks ipwho.is first, with the quota reported alongside the location', async () => {
+      grabResolves({
+        success: true,
+        city: 'Berlin',
+        region: 'Berlin',
+        country: 'Germany',
+        timezone: { id: 'Europe/Berlin' },
+        latitude: 52.52,
+        longitude: 13.4,
+      });
+
+      const location = await getClientLocation();
+
+      // `rate=1` makes ipwho.is report what is left of the daily quota.
+      expect(requestedUrl(mockGrab.mock.calls[0] as never)).toBe('https://ipwho.is/?rate=1');
+      expect(location).toEqual({
+        city: 'Berlin',
+        region: 'Berlin',
+        country: 'Germany',
+        timezone: 'Europe/Berlin',
+        latitude: 52.52,
+        longitude: 13.4,
+      });
+    });
+
+    it('scopes the lookup to an explicit IP', async () => {
+      grabResolves({ success: true, latitude: 1, longitude: 2 });
+
+      await getClientLocation(undefined, '1.1.1.1');
+
+      expect(requestedUrl(mockGrab.mock.calls[0] as never)).toBe('https://ipwho.is/1.1.1.1?rate=1');
+    });
+
+    it('treats `success: false` as a failure and moves on', async () => {
+      grabResolves(
+        { success: false, message: 'Reserved range' },
+        { city: 'Austin', latitude: 30.27, longitude: -97.74 }
+      );
+
+      const location = await getClientLocation(undefined, undefined, noDelay);
+
+      expect(mockGrab.mock.calls[1][0]).toBe('https://ipapi.co/json/');
+      expect(location.city).toBe('Austin');
+    });
+  });
+
+  describe('via ipapi.co', () => {
+    /** ipapi.co is the first fallback now, so its cases address it directly. */
+    const viaIpapi = { ...noDelay, providers: ['ipapi'] };
+
     it('hits the json endpoint and maps country_name to country', async () => {
       grabResolves({
         city: 'Berlin',
@@ -83,7 +137,7 @@ describe('getClientLocation', () => {
         longitude: 13.4,
       });
 
-      const location = await getClientLocation();
+      const location = await getClientLocation(undefined, undefined, viaIpapi);
 
       expect(mockGrab.mock.calls[0][0]).toBe('https://ipapi.co/json/');
       expect(location).toEqual({
@@ -99,7 +153,7 @@ describe('getClientLocation', () => {
     it('scopes the lookup to an explicit IP', async () => {
       grabResolves({ latitude: 1, longitude: 2 });
 
-      await getClientLocation(undefined, '1.1.1.1');
+      await getClientLocation(undefined, '1.1.1.1', viaIpapi);
 
       expect(mockGrab.mock.calls[0][0]).toBe('https://ipapi.co/1.1.1.1/json/');
     });
@@ -107,33 +161,33 @@ describe('getClientLocation', () => {
     it('throws on a failed request', async () => {
       grabResolves({ error: 'HTTP error: 429 Too Many Requests' });
 
-      await expect(getClientLocation(undefined, undefined, { attempts: 1 })).rejects.toThrow(
-        'ipapi.co lookup failed: 429 Too Many Requests'
-      );
+      await expect(
+        getClientLocation(undefined, undefined, { ...viaIpapi, attempts: 1 })
+      ).rejects.toThrow('ipapi.co lookup failed: 429 Too Many Requests');
     });
 
     it('throws on a 200 response carrying an error flag', async () => {
       grabResolves({ error: true, reason: 'RateLimited' });
 
-      await expect(getClientLocation(undefined, undefined, { attempts: 1 })).rejects.toThrow(
-        'ipapi.co lookup failed: RateLimited'
-      );
+      await expect(
+        getClientLocation(undefined, undefined, { ...viaIpapi, attempts: 1 })
+      ).rejects.toThrow('ipapi.co lookup failed: RateLimited');
     });
 
     it('falls back to a generic message when no reason is given', async () => {
       grabResolves({ error: true });
 
-      await expect(getClientLocation(undefined, undefined, { attempts: 1 })).rejects.toThrow(
-        'ipapi.co lookup failed: unknown error'
-      );
+      await expect(
+        getClientLocation(undefined, undefined, { ...viaIpapi, attempts: 1 })
+      ).rejects.toThrow('ipapi.co lookup failed: unknown error');
     });
 
     it('throws when the response is empty', async () => {
       grabResolves(null);
 
-      await expect(getClientLocation(undefined, undefined, { attempts: 1 })).rejects.toThrow(
-        'ipapi.co lookup failed: empty response'
-      );
+      await expect(
+        getClientLocation(undefined, undefined, { ...viaIpapi, attempts: 1 })
+      ).rejects.toThrow('ipapi.co lookup failed: empty response');
     });
   });
 
@@ -193,12 +247,16 @@ describe('getClientLocation', () => {
       // `recordDelays` in http.test.ts.
       const delays: number[] = [];
       const timeout = globalThis.setTimeout;
+      // Only the waits: jsdom schedules its own zero-delay work when the
+      // resolved location is written to localStorage.
       vi.spyOn(globalThis, 'setTimeout').mockImplementation(((handler: TimerHandler, ms?: number) => {
-        if (ms !== undefined) delays.push(ms);
+        if (ms) delays.push(ms);
         return timeout(handler, 0);
       }) as typeof globalThis.setTimeout);
 
-      await getClientLocation(undefined, undefined, { retryDelay: 20 });
+      // A provider with another one behind it moves on instead of waiting, so
+      // the backoff is only observable on the last provider in the chain.
+      await getClientLocation(undefined, undefined, { retryDelay: 20, providers: ['ipapi'] });
 
       expect(delays).toEqual([20]);
       expect(mockGrab).toHaveBeenCalledTimes(2);
@@ -214,24 +272,38 @@ describe('getClientLocation', () => {
   });
 
   describe('falling back to the next provider', () => {
-    it('moves on to ipwho.is when ipapi.co stays rate-limited', async () => {
+    it('moves on to ipapi.co when ipwho.is is rate-limited, without spending a retry on it', async () => {
       grabResolves(
         { error: true, reason: 'RateLimited' },
-        { error: true, reason: 'RateLimited' },
-        { success: true, city: 'Berlin', timezone: { id: 'Europe/Berlin' }, latitude: 52.52, longitude: 13.4 }
+        { city: 'Berlin', region: 'Berlin', timezone: 'Europe/Berlin', latitude: 52.52, longitude: 13.4 }
       );
 
       const location = await getClientLocation(undefined, undefined, noDelay);
 
-      expect(mockGrab.mock.calls[2][0]).toBe('https://ipwho.is/');
+      // A daily quota does not come back in 500ms: the second call is the next
+      // operator, not the same one asked again.
+      expect(mockGrab).toHaveBeenCalledTimes(2);
+      expect(mockGrab.mock.calls[1][0]).toBe('https://ipapi.co/json/');
       expect(location).toEqual({
         city: 'Berlin',
-        region: undefined,
+        region: 'Berlin',
         country: undefined,
         timezone: 'Europe/Berlin',
         latitude: 52.52,
         longitude: 13.4,
       });
+    });
+
+    it('still retries the last provider, which has nowhere to move on to', async () => {
+      grabResolves({ error: true, reason: 'RateLimited' }, { latitude: 1, longitude: 2 });
+
+      const location = await getClientLocation(undefined, undefined, {
+        ...noDelay,
+        providers: ['ipapi'],
+      });
+
+      expect(mockGrab).toHaveBeenCalledTimes(2);
+      expect(location.latitude).toBe(1);
     });
 
     it('treats a 200 without coordinates as a failure instead of returning NaN', async () => {
@@ -292,7 +364,7 @@ describe('getClientLocation', () => {
       const location = await getClientLocation('https://geo.example.workers.dev', undefined, noDelay);
 
       expect(mockGrab.mock.calls[0][0]).toBe('https://geo.example.workers.dev');
-      expect(mockGrab.mock.calls[2][0]).toBe('https://ipapi.co/json/');
+      expect(mockGrab.mock.calls[2][0]).toBe('https://ipwho.is/');
       expect(location.city).toBe('Austin');
     });
 
@@ -339,6 +411,87 @@ describe('getClientLocation', () => {
           fallbackLocation: { city: 'Austin' },
         })
       ).rejects.toThrow('ipapi.co lookup failed: RateLimited');
+    });
+  });
+
+  describe('reusing a resolved location', () => {
+    it('serves a location resolved earlier without spending a lookup', async () => {
+      grabResolves({ success: true, city: 'Austin', latitude: 30.27, longitude: -97.74 });
+
+      const first = await getClientLocation(undefined, undefined, noDelay);
+      const second = await getClientLocation(undefined, undefined, noDelay);
+
+      // The quota is the reason this cache exists: a widget that refreshes its
+      // forecast must not re-resolve its location every time.
+      expect(mockGrab).toHaveBeenCalledTimes(1);
+      expect(second).toEqual(first);
+    });
+
+    it('looks the location up again when the cache is turned off', async () => {
+      mockGrab.mockResolvedValue({ success: true, latitude: 1, longitude: 2 } as never);
+
+      await getClientLocation(undefined, undefined, { ...noDelay, cache: false });
+      await getClientLocation(undefined, undefined, { ...noDelay, cache: false });
+
+      expect(mockGrab).toHaveBeenCalledTimes(2);
+    });
+
+    it('ignores an entry older than the configured ttl', async () => {
+      mockGrab.mockResolvedValue({ success: true, latitude: 1, longitude: 2 } as never);
+
+      await getClientLocation(undefined, undefined, noDelay);
+      await getClientLocation(undefined, undefined, { ...noDelay, cacheTtl: 0 });
+
+      expect(mockGrab).toHaveBeenCalledTimes(2);
+    });
+
+    it('keeps an explicit IP apart from the location of the caller itself', async () => {
+      mockGrab.mockResolvedValue({ success: true, latitude: 1, longitude: 2 } as never);
+
+      await getClientLocation(undefined, undefined, noDelay);
+      await getClientLocation(undefined, '8.8.8.8', noDelay);
+
+      expect(mockGrab).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not serve a cached entry that has no usable coordinates', async () => {
+      writeCachedLocation(locationCacheKey(), { city: 'Austin' });
+      grabResolves({ success: true, latitude: 1, longitude: 2 });
+
+      const location = await getClientLocation(undefined, undefined, noDelay);
+
+      expect(location.latitude).toBe(1);
+    });
+  });
+
+  describe('via the browser', () => {
+    const withBrowser = { ...noDelay, providers: ['browser', 'ipwho'] };
+
+    function mockGeolocation(implementation: Geolocation['getCurrentPosition']) {
+      Object.defineProperty(navigator, 'geolocation', {
+        configurable: true,
+        value: { getCurrentPosition: implementation },
+      });
+    }
+
+    it('asks the device before any IP lookup when it is named', async () => {
+      mockGeolocation(((success: PositionCallback) =>
+        success({ coords: { latitude: 48.8566, longitude: 2.3522 } } as GeolocationPosition)) as never);
+
+      const location = await getClientLocation(undefined, undefined, withBrowser);
+
+      expect(mockGrab).not.toHaveBeenCalled();
+      expect(location.latitude).toBe(48.8566);
+    });
+
+    it('falls through to the IP lookups when the user declines', async () => {
+      mockGeolocation(((_: PositionCallback, failure: PositionErrorCallback) =>
+        failure({ message: 'User denied Geolocation' } as GeolocationPositionError)) as never);
+      grabResolves({ success: true, city: 'Austin', latitude: 30.27, longitude: -97.74 });
+
+      const location = await getClientLocation(undefined, undefined, withBrowser);
+
+      expect(location.city).toBe('Austin');
     });
   });
 });
